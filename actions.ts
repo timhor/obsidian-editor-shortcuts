@@ -1,5 +1,15 @@
 import { Editor, EditorPosition } from 'obsidian';
 
+export const insertLineAbove = (editor: Editor) => {
+  const { line } = editor.getCursor();
+  const startOfCurrentLine: EditorPosition = {
+    line,
+    ch: 0,
+  };
+  editor.replaceRange('\n', startOfCurrentLine);
+  editor.setSelection(startOfCurrentLine);
+};
+
 export const insertLineBelow = (editor: Editor) => {
   const { line } = editor.getCursor();
   const endOfCurrentLine: EditorPosition = {
