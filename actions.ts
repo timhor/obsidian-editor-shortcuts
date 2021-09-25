@@ -34,3 +34,10 @@ export const joinLines = (editor: Editor) => {
   );
   editor.setSelection(endOfCurrentLine);
 };
+
+export const duplicateLine = (editor: Editor) => {
+  const { line } = editor.getCursor();
+  const contentsOfCurrentLine = editor.getLine(line);
+  const startOfCurrentLine = getLineStartPos(line);
+  editor.replaceRange(contentsOfCurrentLine + '\n', startOfCurrentLine);
+};

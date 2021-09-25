@@ -1,9 +1,10 @@
 import { MarkdownView, Plugin } from 'obsidian';
 import {
-  deleteLine,
   insertLineAbove,
   insertLineBelow,
+  deleteLine,
   joinLines,
+  duplicateLine,
 } from './actions';
 
 export default class CodeEditorShortcuts extends Plugin {
@@ -91,6 +92,26 @@ export default class CodeEditorShortcuts extends Plugin {
           return;
         }
         joinLines(editor);
+      },
+    });
+
+    this.addCommand({
+      id: 'duplicateLine',
+      name: 'Duplicate line',
+      hotkeys: [
+        {
+          modifiers: ['Mod', 'Shift'],
+          key: 'D',
+        },
+      ],
+      callback: () => {
+        const editor =
+          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
+        if (!editor.hasFocus()) {
+          console.log('No-op: editor not in focus');
+          return;
+        }
+        duplicateLine(editor);
       },
     });
   }
