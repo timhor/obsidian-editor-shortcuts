@@ -1,5 +1,10 @@
 import { MarkdownView, Plugin } from 'obsidian';
-import { deleteLine, insertLineAbove, insertLineBelow } from './actions';
+import {
+  deleteLine,
+  insertLineAbove,
+  insertLineBelow,
+  joinLines,
+} from './actions';
 
 export default class CodeEditorShortcuts extends Plugin {
   async onload() {
@@ -66,6 +71,26 @@ export default class CodeEditorShortcuts extends Plugin {
           return;
         }
         deleteLine(editor);
+      },
+    });
+
+    this.addCommand({
+      id: 'joinLines',
+      name: 'Join lines',
+      hotkeys: [
+        {
+          modifiers: ['Mod'],
+          key: 'J',
+        },
+      ],
+      callback: () => {
+        const editor =
+          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
+        if (!editor.hasFocus()) {
+          console.log('No-op: editor not in focus');
+          return;
+        }
+        joinLines(editor);
       },
     });
   }
