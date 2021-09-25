@@ -19,3 +19,16 @@ export const insertLineBelow = (editor: Editor) => {
   editor.replaceRange('\n', endOfCurrentLine);
   editor.setSelection({ line: line + 1, ch: 0 });
 };
+
+export const deleteLine = (editor: Editor) => {
+  const { line } = editor.getCursor();
+  const startOfCurrentLine: EditorPosition = {
+    line,
+    ch: 0,
+  };
+  const startOfNextLine: EditorPosition = {
+    line: line + 1,
+    ch: 0,
+  };
+  editor.replaceRange('', startOfCurrentLine, startOfNextLine);
+};

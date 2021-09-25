@@ -1,5 +1,5 @@
 import { MarkdownView, Plugin } from 'obsidian';
-import { insertLineAbove, insertLineBelow } from './actions';
+import { deleteLine, insertLineAbove, insertLineBelow } from './actions';
 
 export default class CodeEditorShortcuts extends Plugin {
   async onload() {
@@ -42,6 +42,30 @@ export default class CodeEditorShortcuts extends Plugin {
           return;
         }
         insertLineBelow(editor);
+      },
+    });
+
+    this.addCommand({
+      id: 'deleteLine',
+      name: 'Delete line',
+      hotkeys: [
+        {
+          modifiers: ['Mod', 'Shift'],
+          key: 'K',
+        },
+        {
+          modifiers: ['Ctrl', 'Shift'],
+          key: 'K',
+        },
+      ],
+      callback: () => {
+        const editor =
+          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
+        if (!editor.hasFocus()) {
+          console.log('No-op: editor not in focus');
+          return;
+        }
+        deleteLine(editor);
       },
     });
   }
