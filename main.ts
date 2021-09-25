@@ -5,6 +5,7 @@ import {
   deleteLine,
   joinLines,
   duplicateLine,
+  selectLine,
 } from './actions';
 
 export default class CodeEditorShortcuts extends Plugin {
@@ -112,6 +113,26 @@ export default class CodeEditorShortcuts extends Plugin {
           return;
         }
         duplicateLine(editor);
+      },
+    });
+
+    this.addCommand({
+      id: 'selectLine',
+      name: 'Select line',
+      hotkeys: [
+        {
+          modifiers: ['Mod'],
+          key: 'L',
+        },
+      ],
+      callback: () => {
+        const editor =
+          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
+        if (!editor.hasFocus()) {
+          console.log('No-op: editor not in focus');
+          return;
+        }
+        selectLine(editor);
       },
     });
   }

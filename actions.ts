@@ -41,3 +41,17 @@ export const duplicateLine = (editor: Editor) => {
   const startOfCurrentLine = getLineStartPos(line);
   editor.replaceRange(contentsOfCurrentLine + '\n', startOfCurrentLine);
 };
+
+export const selectLine = (editor: Editor) => {
+  const { line } = editor.getCursor('from');
+  const startOfCurrentLine = getLineStartPos(line);
+
+  // if a line is already selected, expand the selection to the next line
+  const selections = editor.listSelections();
+  const existingSelectedLine =
+    selections.length > 0 ? selections[0].head.line : line;
+  const nextUnselectedLine = existingSelectedLine + 1;
+  const startOfNextUnselectedLine = getLineStartPos(nextUnselectedLine);
+
+  editor.setSelection(startOfCurrentLine, startOfNextUnselectedLine);
+};
