@@ -6,6 +6,7 @@ import {
   joinLines,
   duplicateLine,
   selectLine,
+  transformCase,
 } from './actions';
 
 export default class CodeEditorShortcuts extends Plugin {
@@ -86,6 +87,18 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) => selectLine(editor),
+    });
+
+    this.addCommand({
+      id: 'transformToUppercase',
+      name: 'Transform selection to uppercase',
+      editorCallback: (editor) => transformCase(editor, 'upper'),
+    });
+
+    this.addCommand({
+      id: 'transformToLowercase',
+      name: 'Transform selection to lowercase',
+      editorCallback: (editor) => transformCase(editor, 'lower'),
     });
   }
 

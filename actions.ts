@@ -57,3 +57,12 @@ export const selectLine = (editor: Editor) => {
 
   editor.setSelection(startOfCurrentLine, startOfNextUnselectedLine);
 };
+
+export const transformCase = (editor: Editor, caseType: 'upper' | 'lower') => {
+  const selectedText = editor.getSelection();
+  editor.replaceSelection(
+    caseType === 'upper'
+      ? selectedText.toUpperCase()
+      : selectedText.toLowerCase(),
+  );
+};

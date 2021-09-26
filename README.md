@@ -10,6 +10,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Join line below to current line                  | `Ctrl` + `J`               |
 | Duplicate line                                   | `Ctrl` + `Shift` + `D`     |
 | Select line (repeat to keep expanding selection) | `Ctrl` + `L`               |
+| Transform selection to uppercase                 | Not set                    |
+| Transform selection to lowercase                 | Not set                    |
 
 \* On macOS, replace `Ctrl` with `Cmd`
 
