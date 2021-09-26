@@ -1,7 +1,7 @@
 {
   "id": "obsidian-editor-shortcuts",
   "name": "Code Editor Shortcuts",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "minAppVersion": "0.9.12",
   "description": "Add keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code or Sublime Text",
   "author": "Tim Hor",
