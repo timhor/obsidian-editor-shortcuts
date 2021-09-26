@@ -42,10 +42,15 @@ export const joinLines = (editor: Editor) => {
 };
 
 export const duplicateLine = (editor: Editor) => {
-  const { line } = editor.getCursor();
-  const contentsOfCurrentLine = editor.getLine(line);
-  const startOfCurrentLine = getLineStartPos(line);
-  editor.replaceRange(contentsOfCurrentLine + '\n', startOfCurrentLine);
+  const selections = editor.listSelections();
+  if (selections.length === 0) {
+    return;
+  }
+  const { from, to } = getSelectionBoundaries(selections[0]);
+  const fromLineStart = getLineStartPos(from.line);
+  const toLineEnd = getLineEndPos(to.line, editor);
+  const contentsOfSelectedLines = editor.getRange(fromLineStart, toLineEnd);
+  editor.replaceRange(contentsOfSelectedLines + '\n', fromLineStart);
 };
 
 export const selectLine = (editor: Editor) => {
