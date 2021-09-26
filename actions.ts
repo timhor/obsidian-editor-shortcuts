@@ -1,5 +1,5 @@
 import { Editor } from 'obsidian';
-import { getLineStartPos, getLineEndPos } from 'utils';
+import { getLineStartPos, getLineEndPos, getSelectionBoundaries } from 'utils';
 
 export const insertLineAbove = (editor: Editor) => {
   const { line } = editor.getCursor();
@@ -20,15 +20,9 @@ export const deleteSelectedLines = (editor: Editor) => {
   if (selections.length === 0) {
     return;
   }
-  let { anchor, head } = selections[0];
-
-  // in case user selects upwards
-  if (anchor.line > head.line) {
-    [anchor, head] = [head, anchor];
-  }
-
-  const startOfCurrentLine = getLineStartPos(anchor.line);
-  const startOfNextLine = getLineStartPos(head.line + 1);
+  const { from, to } = getSelectionBoundaries(selections[0]);
+  const startOfCurrentLine = getLineStartPos(from.line);
+  const startOfNextLine = getLineStartPos(to.line + 1);
   editor.replaceRange('', startOfCurrentLine, startOfNextLine);
 };
 

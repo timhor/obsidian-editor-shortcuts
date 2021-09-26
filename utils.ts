@@ -1,4 +1,4 @@
-import { Editor, EditorPosition } from 'obsidian';
+import { Editor, EditorPosition, EditorSelection } from 'obsidian';
 
 export const getLineStartPos = (line: number): EditorPosition => ({
   line,
@@ -12,3 +12,14 @@ export const getLineEndPos = (
   line,
   ch: editor.getLine(line).length,
 });
+
+export const getSelectionBoundaries = (selection: EditorSelection) => {
+  let { anchor: from, head: to } = selection;
+
+  // in case user selects upwards
+  if (from.line > to.line) {
+    [from, to] = [to, from];
+  }
+
+  return { from, to };
+};
