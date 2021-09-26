@@ -24,11 +24,13 @@ export const deleteLine = (editor: Editor) => {
 
 export const joinLines = (editor: Editor) => {
   const { line } = editor.getCursor();
-  const contentsOfNextLine = editor.getLine(line + 1);
+  const contentsOfNextLine = editor.getLine(line + 1).trimStart();
   const endOfCurrentLine = getLineEndPos(line, editor);
   const endOfNextLine = getLineEndPos(line + 1, editor);
   editor.replaceRange(
-    ' ' + contentsOfNextLine,
+    contentsOfNextLine.length > 0
+      ? ' ' + contentsOfNextLine
+      : contentsOfNextLine,
     endOfCurrentLine,
     endOfNextLine,
   );
