@@ -58,6 +58,13 @@ export const selectLine = (editor: Editor) => {
   editor.setSelection(startOfCurrentLine, startOfNextUnselectedLine);
 };
 
+export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
+  const { line } = editor.getCursor('from');
+  editor.setSelection(
+    boundary === 'start' ? getLineStartPos(line) : getLineEndPos(line, editor),
+  );
+};
+
 export const transformCase = (editor: Editor, caseType: 'upper' | 'lower') => {
   const selectedText = editor.getSelection();
   editor.replaceSelection(

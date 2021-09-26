@@ -7,6 +7,7 @@ import {
   duplicateLine,
   selectLine,
   transformCase,
+  goToLineBoundary,
 } from './actions';
 
 export default class CodeEditorShortcuts extends Plugin {
@@ -87,6 +88,18 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) => selectLine(editor),
+    });
+
+    this.addCommand({
+      id: 'goToLineStart',
+      name: 'Go to start of line',
+      editorCallback: (editor) => goToLineBoundary(editor, 'start'),
+    });
+
+    this.addCommand({
+      id: 'goToLineEnd',
+      name: 'Go to end of line',
+      editorCallback: (editor) => goToLineBoundary(editor, 'end'),
     });
 
     this.addCommand({
