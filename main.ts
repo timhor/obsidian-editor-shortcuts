@@ -2,7 +2,7 @@ import { Plugin } from 'obsidian';
 import {
   insertLineAbove,
   insertLineBelow,
-  deleteLine,
+  deleteSelectedLines,
   joinLines,
   duplicateLine,
   selectLine,
@@ -51,7 +51,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'K',
         },
       ],
-      editorCallback: (editor) => deleteLine(editor),
+      editorCallback: (editor) => deleteSelectedLines(editor),
     });
 
     this.addCommand({
