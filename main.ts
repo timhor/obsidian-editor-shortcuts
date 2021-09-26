@@ -1,4 +1,4 @@
-import { MarkdownView, Plugin } from 'obsidian';
+import { Plugin } from 'obsidian';
 import {
   insertLineAbove,
   insertLineBelow,
@@ -21,15 +21,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'Enter',
         },
       ],
-      callback: () => {
-        const editor =
-          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
-        if (!editor.hasFocus()) {
-          console.log('No-op: editor not in focus');
-          return;
-        }
-        insertLineAbove(editor);
-      },
+      editorCallback: (editor) => insertLineAbove(editor),
     });
 
     this.addCommand({
@@ -41,15 +33,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'Enter',
         },
       ],
-      callback: () => {
-        const editor =
-          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
-        if (!editor.hasFocus()) {
-          console.log('No-op: editor not in focus');
-          return;
-        }
-        insertLineBelow(editor);
-      },
+      editorCallback: (editor) => insertLineBelow(editor),
     });
 
     this.addCommand({
@@ -65,15 +49,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'K',
         },
       ],
-      callback: () => {
-        const editor =
-          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
-        if (!editor.hasFocus()) {
-          console.log('No-op: editor not in focus');
-          return;
-        }
-        deleteLine(editor);
-      },
+      editorCallback: (editor) => deleteLine(editor),
     });
 
     this.addCommand({
@@ -85,15 +61,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'J',
         },
       ],
-      callback: () => {
-        const editor =
-          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
-        if (!editor.hasFocus()) {
-          console.log('No-op: editor not in focus');
-          return;
-        }
-        joinLines(editor);
-      },
+      editorCallback: (editor) => joinLines(editor),
     });
 
     this.addCommand({
@@ -105,15 +73,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'D',
         },
       ],
-      callback: () => {
-        const editor =
-          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
-        if (!editor.hasFocus()) {
-          console.log('No-op: editor not in focus');
-          return;
-        }
-        duplicateLine(editor);
-      },
+      editorCallback: (editor) => duplicateLine(editor),
     });
 
     this.addCommand({
@@ -125,15 +85,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'L',
         },
       ],
-      callback: () => {
-        const editor =
-          this.app.workspace.getActiveViewOfType(MarkdownView).editor;
-        if (!editor.hasFocus()) {
-          console.log('No-op: editor not in focus');
-          return;
-        }
-        selectLine(editor);
-      },
+      editorCallback: (editor) => selectLine(editor),
     });
   }
 
