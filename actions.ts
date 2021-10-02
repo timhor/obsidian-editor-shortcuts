@@ -3,6 +3,7 @@ import {
   getLineStartPos,
   getLineEndPos,
   getSelectionBoundaries,
+  wordRangeAtPos,
 } from './utils';
 import { CASE, LOWERCASE_ARTICLES } from './constants';
 
@@ -78,7 +79,15 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
 };
 
 export const transformCase = (editor: Editor, caseType: CASE) => {
-  const selectedText = editor.getSelection();
+  let selectedText = editor.getSelection();
+
+  // apply transform on word at cursor if nothing is selected
+  if (selectedText.length === 0) {
+    const pos = editor.getCursor('from');
+    const { anchor, head } = wordRangeAtPos(pos, editor.getLine(pos.line));
+    editor.setSelection(anchor, head);
+    selectedText = editor.getRange(anchor, head);
+  }
 
   if (caseType === CASE.TITLE) {
     editor.replaceSelection(
