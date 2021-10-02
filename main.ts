@@ -11,9 +11,7 @@ import {
 } from './actions';
 
 export default class CodeEditorShortcuts extends Plugin {
-  async onload() {
-    console.log('Loading plugin: CodeEditorShortcuts');
-
+  onload() {
     this.addCommand({
       id: 'insertLineAbove',
       name: 'Insert line above',
@@ -113,9 +111,5 @@ export default class CodeEditorShortcuts extends Plugin {
       name: 'Transform selection to lowercase',
       editorCallback: (editor) => transformCase(editor, 'lower'),
     });
-  }
-
-  onunload() {
-    console.log('Unloading plugin: CodeEditorShortcuts');
   }
 }
