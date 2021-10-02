@@ -9,6 +9,7 @@ import {
   transformCase,
   goToLineBoundary,
 } from './actions';
+import { CASE } from './constants';
 
 export default class CodeEditorShortcuts extends Plugin {
   onload() {
@@ -103,13 +104,19 @@ export default class CodeEditorShortcuts extends Plugin {
     this.addCommand({
       id: 'transformToUppercase',
       name: 'Transform selection to uppercase',
-      editorCallback: (editor) => transformCase(editor, 'upper'),
+      editorCallback: (editor) => transformCase(editor, CASE.UPPER),
     });
 
     this.addCommand({
       id: 'transformToLowercase',
       name: 'Transform selection to lowercase',
-      editorCallback: (editor) => transformCase(editor, 'lower'),
+      editorCallback: (editor) => transformCase(editor, CASE.LOWER),
+    });
+
+    this.addCommand({
+      id: 'transformToTitlecase',
+      name: 'Transform selection to title case',
+      editorCallback: (editor) => transformCase(editor, CASE.TITLE),
     });
   }
 }

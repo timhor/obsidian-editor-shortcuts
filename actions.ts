@@ -1,5 +1,10 @@
 import { Editor } from 'obsidian';
-import { getLineStartPos, getLineEndPos, getSelectionBoundaries } from 'utils';
+import {
+  getLineStartPos,
+  getLineEndPos,
+  getSelectionBoundaries,
+} from './utils';
+import { CASE, LOWERCASE_ARTICLES } from './constants';
 
 export const insertLineAbove = (editor: Editor) => {
   const { line } = editor.getCursor();
@@ -72,10 +77,31 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
   );
 };
 
-export const transformCase = (editor: Editor, caseType: 'upper' | 'lower') => {
+export const transformCase = (editor: Editor, caseType: CASE) => {
   const selectedText = editor.getSelection();
+
+  if (caseType === CASE.TITLE) {
+    editor.replaceSelection(
+      // use capture group to join with the same separator used to split
+      selectedText
+        .split(/(\s+)/)
+        .map((word, index, allWords) => {
+          if (
+            index > 0 &&
+            index < allWords.length - 1 &&
+            LOWERCASE_ARTICLES.includes(word)
+          ) {
+            return word;
+          }
+          return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(''),
+    );
+    return;
+  }
+
   editor.replaceSelection(
-    caseType === 'upper'
+    caseType === CASE.UPPER
       ? selectedText.toUpperCase()
       : selectedText.toLowerCase(),
   );
