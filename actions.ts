@@ -79,6 +79,7 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
 };
 
 export const transformCase = (editor: Editor, caseType: CASE) => {
+  const originalSelections = editor.listSelections();
   let selectedText = editor.getSelection();
 
   // apply transform on word at cursor if nothing is selected
@@ -106,12 +107,17 @@ export const transformCase = (editor: Editor, caseType: CASE) => {
         })
         .join(''),
     );
-    return;
+  } else {
+    editor.replaceSelection(
+      caseType === CASE.UPPER
+        ? selectedText.toUpperCase()
+        : selectedText.toLowerCase(),
+    );
   }
 
-  editor.replaceSelection(
-    caseType === CASE.UPPER
-      ? selectedText.toUpperCase()
-      : selectedText.toLowerCase(),
-  );
+  // restore original selection after replacing content
+  if (originalSelections.length > 0) {
+    const { anchor, head } = originalSelections[0];
+    editor.setSelection(anchor, head);
+  }
 };
