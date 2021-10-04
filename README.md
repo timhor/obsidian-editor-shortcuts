@@ -2,9 +2,9 @@
 
 This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code or Sublime Text.
 
-| Command                                          | Shortcut\*                 |
+| Command                                          | Shortcut \*                |
 | ------------------------------------------------ | -------------------------- |
-| Insert line below                                | `Ctrl` + `Enter`           |
+| Insert line below                                | `Ctrl` + `Enter` \*\*      |
 | Insert line above                                | `Ctrl` + `Shift` + `Enter` |
 | Delete line                                      | `Ctrl` + `Shift` + `K`     |
 | Duplicate line                                   | `Ctrl` + `Shift` + `D`     |
@@ -17,6 +17,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Transform selection to title case                | Not set                    |
 
 \* On macOS, replace `Ctrl` with `Cmd`
+
+\*\* This may conflict with the default shortcut for _Toggle checklist status_; changing/removing one of the bindings is recommended
 
 ---
 
