@@ -24,6 +24,11 @@ export const getSelectionBoundaries = (selection: EditorSelection) => {
   return { from, to };
 };
 
+export const getLeadingWhitespace = (lineContent: string) => {
+  const indentation = lineContent.match(/^\s+/);
+  return indentation ? indentation[0] : '';
+};
+
 const isWordCharacter = (char: string) => /\w/.test(char);
 
 export const wordRangeAtPos = (

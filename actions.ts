@@ -4,6 +4,7 @@ import {
   getLineEndPos,
   getSelectionBoundaries,
   wordRangeAtPos,
+  getLeadingWhitespace,
 } from './utils';
 import { CASE, LOWERCASE_ARTICLES } from './constants';
 
@@ -17,8 +18,9 @@ export const insertLineAbove = (editor: Editor) => {
 export const insertLineBelow = (editor: Editor) => {
   const { line } = editor.getCursor();
   const endOfCurrentLine = getLineEndPos(line, editor);
-  editor.replaceRange('\n', endOfCurrentLine);
-  editor.setSelection({ line: line + 1, ch: 0 });
+  const indentation = getLeadingWhitespace(editor.getLine(line));
+  editor.replaceRange('\n' + indentation, endOfCurrentLine);
+  editor.setSelection({ line: line + 1, ch: indentation.length });
 };
 
 export const deleteSelectedLines = (editor: Editor) => {
