@@ -45,10 +45,6 @@ export default class CodeEditorShortcuts extends Plugin {
           modifiers: ['Mod', 'Shift'],
           key: 'K',
         },
-        {
-          modifiers: ['Ctrl', 'Shift'],
-          key: 'K',
-        },
       ],
       editorCallback: (editor) => deleteSelectedLines(editor),
     });
