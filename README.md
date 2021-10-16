@@ -16,6 +16,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Transform selection to lowercase                 | Not set                    |
 | Transform selection to title case                | Not set                    |
 | Expand selection to brackets                     | Not set                    |
+| Expand selection to quotes                       | Not set                    |
 
 \* On macOS, replace `Ctrl` with `Cmd`
 

@@ -11,8 +11,16 @@ export enum DIRECTION {
   BACKWARD = 'backward',
 }
 
-export const MATCHING_BRACKETS: { [key: string]: string } = {
+export type MatchingCharacterMap = { [key: string]: string };
+
+export const MATCHING_BRACKETS: MatchingCharacterMap = {
   '[': ']',
   '(': ')',
   '{': '}',
+};
+
+export const MATCHING_QUOTES: MatchingCharacterMap = {
+  "'": "'",
+  '"': '"',
+  '`': '`',
 };

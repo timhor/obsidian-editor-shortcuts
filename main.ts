@@ -9,6 +9,7 @@ import {
   transformCase,
   goToLineBoundary,
   expandSelectionToBrackets,
+  expandSelectionToQuotes,
 } from './actions';
 import { CASE } from './constants';
 
@@ -120,6 +121,12 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'expandSelectionToBrackets',
       name: 'Expand selection to brackets',
       editorCallback: (editor) => expandSelectionToBrackets(editor),
+    });
+
+    this.addCommand({
+      id: 'expandSelectionToQuotes',
+      name: 'Expand selection to quotes',
+      editorCallback: (editor) => expandSelectionToQuotes(editor),
     });
   }
 }

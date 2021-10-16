@@ -6,12 +6,15 @@ import {
   wordRangeAtPos,
   getLeadingWhitespace,
   findPosOfNextCharacter,
+  CheckCharacter,
 } from './utils';
 import {
   CASE,
   DIRECTION,
   LOWERCASE_ARTICLES,
+  MatchingCharacterMap,
   MATCHING_BRACKETS,
+  MATCHING_QUOTES,
 } from './constants';
 
 export const insertLineAbove = (editor: Editor) => {
@@ -130,7 +133,15 @@ export const transformCase = (editor: Editor, caseType: CASE) => {
   }
 };
 
-export const expandSelectionToBrackets = (editor: Editor) => {
+export const expandSelection = ({
+  editor,
+  openingCharacterCheck,
+  matchingCharacterMap,
+}: {
+  editor: Editor;
+  openingCharacterCheck: CheckCharacter;
+  matchingCharacterMap: MatchingCharacterMap;
+}) => {
   let anchor = editor.getCursor('anchor');
   let head = editor.getCursor('head');
 
@@ -142,7 +153,7 @@ export const expandSelectionToBrackets = (editor: Editor) => {
   const newAnchor = findPosOfNextCharacter({
     editor,
     startPos: anchor,
-    checkCharacter: (char: string) => /[\(\[\{]/.test(char),
+    checkCharacter: openingCharacterCheck,
     searchDirection: DIRECTION.BACKWARD,
   });
   if (!newAnchor) {
@@ -153,7 +164,7 @@ export const expandSelectionToBrackets = (editor: Editor) => {
     editor,
     startPos: head,
     checkCharacter: (char: string) =>
-      char === MATCHING_BRACKETS[newAnchor.match],
+      char === matchingCharacterMap[newAnchor.match],
     searchDirection: DIRECTION.FORWARD,
   });
   if (!newHead) {
@@ -162,3 +173,17 @@ export const expandSelectionToBrackets = (editor: Editor) => {
 
   editor.setSelection(newAnchor.pos, newHead.pos);
 };
+
+export const expandSelectionToBrackets = (editor: Editor) =>
+  expandSelection({
+    editor,
+    openingCharacterCheck: (char: string) => /[\(\[\{]/.test(char),
+    matchingCharacterMap: MATCHING_BRACKETS,
+  });
+
+export const expandSelectionToQuotes = (editor: Editor) =>
+  expandSelection({
+    editor,
+    openingCharacterCheck: (char: string) => /['"`]/.test(char),
+    matchingCharacterMap: MATCHING_QUOTES,
+  });

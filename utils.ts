@@ -56,6 +56,8 @@ export const wordRangeAtPos = (
   };
 };
 
+export type CheckCharacter = (char: string) => boolean;
+
 export const findPosOfNextCharacter = ({
   editor,
   startPos,
@@ -64,7 +66,7 @@ export const findPosOfNextCharacter = ({
 }: {
   editor: Editor;
   startPos: EditorPosition;
-  checkCharacter: (char: string) => boolean;
+  checkCharacter: CheckCharacter;
   searchDirection: DIRECTION;
 }) => {
   let { line, ch } = startPos;
