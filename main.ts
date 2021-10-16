@@ -8,6 +8,7 @@ import {
   selectLine,
   transformCase,
   goToLineBoundary,
+  expandSelectionToBrackets,
 } from './actions';
 import { CASE } from './constants';
 
@@ -113,6 +114,12 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'transformToTitlecase',
       name: 'Transform selection to title case',
       editorCallback: (editor) => transformCase(editor, CASE.TITLE),
+    });
+
+    this.addCommand({
+      id: 'expandSelectionToBrackets',
+      name: 'Expand selection to brackets',
+      editorCallback: (editor) => expandSelectionToBrackets(editor),
     });
   }
 }

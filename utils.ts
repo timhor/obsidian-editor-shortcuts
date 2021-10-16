@@ -1,4 +1,5 @@
 import { Editor, EditorPosition, EditorSelection } from 'obsidian';
+import { DIRECTION } from './constants';
 
 export const getLineStartPos = (line: number): EditorPosition => ({
   line,
@@ -53,4 +54,64 @@ export const wordRangeAtPos = (
       ch: end,
     },
   };
+};
+
+export const findPosOfNextCharacter = ({
+  editor,
+  startPos,
+  checkCharacter,
+  searchDirection,
+}: {
+  editor: Editor;
+  startPos: EditorPosition;
+  checkCharacter: (char: string) => boolean;
+  searchDirection: DIRECTION;
+}) => {
+  let { line, ch } = startPos;
+  let lineContent = editor.getLine(line);
+  let matchFound = false;
+  let matchedChar: string;
+
+  if (searchDirection === DIRECTION.BACKWARD) {
+    while (line > 0) {
+      // ch will initially be 0 if searching from start of line
+      const char = lineContent.charAt(Math.max(ch - 1, 0));
+      matchFound = checkCharacter(char);
+      if (matchFound) {
+        matchedChar = char;
+        break;
+      }
+      ch--;
+      if (ch <= 0) {
+        line--;
+        lineContent = editor.getLine(line);
+        ch = lineContent.length;
+      }
+    }
+  } else {
+    while (line < editor.lineCount()) {
+      const char = lineContent.charAt(ch);
+      matchFound = checkCharacter(char);
+      if (matchFound) {
+        matchedChar = char;
+        break;
+      }
+      ch++;
+      if (ch >= lineContent.length) {
+        line++;
+        lineContent = editor.getLine(line);
+        ch = 0;
+      }
+    }
+  }
+
+  return matchFound
+    ? {
+        match: matchedChar,
+        pos: {
+          line,
+          ch,
+        },
+      }
+    : null;
 };

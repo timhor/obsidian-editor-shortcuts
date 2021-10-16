@@ -5,8 +5,14 @@ import {
   getSelectionBoundaries,
   wordRangeAtPos,
   getLeadingWhitespace,
+  findPosOfNextCharacter,
 } from './utils';
-import { CASE, LOWERCASE_ARTICLES } from './constants';
+import {
+  CASE,
+  DIRECTION,
+  LOWERCASE_ARTICLES,
+  MATCHING_BRACKETS,
+} from './constants';
 
 export const insertLineAbove = (editor: Editor) => {
   const { line } = editor.getCursor();
@@ -122,4 +128,37 @@ export const transformCase = (editor: Editor, caseType: CASE) => {
     const { anchor, head } = originalSelections[0];
     editor.setSelection(anchor, head);
   }
+};
+
+export const expandSelectionToBrackets = (editor: Editor) => {
+  let anchor = editor.getCursor('anchor');
+  let head = editor.getCursor('head');
+
+  // in case user selects upwards
+  if (anchor.line >= head.line && anchor.ch > anchor.ch) {
+    [anchor, head] = [head, anchor];
+  }
+
+  const newAnchor = findPosOfNextCharacter({
+    editor,
+    startPos: anchor,
+    checkCharacter: (char: string) => /[\(\[\{]/.test(char),
+    searchDirection: DIRECTION.BACKWARD,
+  });
+  if (!newAnchor) {
+    return;
+  }
+
+  const newHead = findPosOfNextCharacter({
+    editor,
+    startPos: head,
+    checkCharacter: (char: string) =>
+      char === MATCHING_BRACKETS[newAnchor.match],
+    searchDirection: DIRECTION.FORWARD,
+  });
+  if (!newHead) {
+    return;
+  }
+
+  editor.setSelection(newAnchor.pos, newHead.pos);
 };
