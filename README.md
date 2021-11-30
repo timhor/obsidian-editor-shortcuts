@@ -37,3 +37,9 @@ Go to Settings → Hotkeys to customise the keyboard shortcut for each action.
 ## Contributing
 
 Contributions and suggestions are welcome – feel free to open an issue or raise a pull request.
+
+To get started:
+
+- Switch to the specified Node version: `nvm use`
+- Install dependencies: `yarn install`
+- Run the extension: `yarn start`

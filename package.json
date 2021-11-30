@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "rollup --config rollup.config.js -w",
-    "build": "rollup --config rollup.config.js --environment BUILD:production"
+    "build": "rollup --config rollup.config.js --environment BUILD:production",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "Tim Hor",
@@ -22,11 +23,6 @@
     "rollup": "^2.32.1",
     "tslib": "^2.2.0",
     "typescript": "^4.2.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.{ts,tsx,html,css,md,json}": "prettier --write"
