@@ -38,9 +38,10 @@ export const deleteSelectedLines = (editor: Editor) => {
     return;
   }
   const { from, to } = getSelectionBoundaries(selections[0]);
-  const startOfCurrentLine = getLineStartPos(from.line);
-  const startOfNextLine = getLineStartPos(to.line + 1);
-  editor.replaceRange('', startOfCurrentLine, startOfNextLine);
+  if (from.line === 0)
+    editor.replaceRange('', getLineStartPos(from.line), getLineStartPos(to.line + 1));
+  else
+    editor.replaceRange('', getLineEndPos(from.line - 1, editor), getLineEndPos(to.line, editor));
 };
 
 export const joinLines = (editor: Editor) => {
