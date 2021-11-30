@@ -38,10 +38,20 @@ export const deleteSelectedLines = (editor: Editor) => {
     return;
   }
   const { from, to } = getSelectionBoundaries(selections[0]);
-  if (from.line === 0)
-    editor.replaceRange('', getLineStartPos(from.line), getLineStartPos(to.line + 1));
-  else
-    editor.replaceRange('', getLineEndPos(from.line - 1, editor), getLineEndPos(to.line, editor));
+  if (from.line === 0) {
+    // there is no 'previous line' when cursor is on the first line
+    editor.replaceRange(
+      '',
+      getLineStartPos(from.line),
+      getLineStartPos(to.line + 1),
+    );
+  } else {
+    editor.replaceRange(
+      '',
+      getLineEndPos(from.line - 1, editor),
+      getLineEndPos(to.line, editor),
+    );
+  }
 };
 
 export const joinLines = (editor: Editor) => {
