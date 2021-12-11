@@ -1,17 +1,19 @@
-import { Plugin } from 'obsidian';
 import {
-  insertLineAbove,
-  insertLineBelow,
   deleteSelectedLines,
-  joinLines,
   duplicateLine,
-  selectLine,
-  transformCase,
-  goToLineBoundary,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
+  goToHeader,
+  goToLineBoundary,
+  insertLineAbove,
+  insertLineBelow,
+  joinLines,
+  selectLine,
+  transformCase,
 } from './actions';
+
 import { CASE } from './constants';
+import { Plugin } from 'obsidian';
 
 export default class CodeEditorShortcuts extends Plugin {
   onload() {
@@ -97,6 +99,18 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLineEnd',
       name: 'Go to end of line',
       editorCallback: (editor) => goToLineBoundary(editor, 'end'),
+    });
+
+    this.addCommand({
+      id: 'goToNextHeader',
+      name: 'Go to next header',
+      editorCallback: (editor) => goToHeader(this.app, editor, 'next'),
+    });
+
+    this.addCommand({
+      id: 'goToPrevHeader',
+      name: 'Go to prev header',
+      editorCallback: (editor) => goToHeader(this.app, editor, 'prev'),
     });
 
     this.addCommand({
