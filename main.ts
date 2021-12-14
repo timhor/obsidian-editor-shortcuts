@@ -1,3 +1,4 @@
+import { Plugin } from 'obsidian';
 import {
   deleteSelectedLines,
   duplicateLine,
@@ -11,9 +12,7 @@ import {
   selectLine,
   transformCase,
 } from './actions';
-
 import { CASE } from './constants';
-import { Plugin } from 'obsidian';
 
 export default class CodeEditorShortcuts extends Plugin {
   onload() {
@@ -102,18 +101,6 @@ export default class CodeEditorShortcuts extends Plugin {
     });
 
     this.addCommand({
-      id: 'goToNextHeading',
-      name: 'Go to next heading',
-      editorCallback: (editor) => goToHeading(this.app, editor, 'next'),
-    });
-
-    this.addCommand({
-      id: 'goToPrevHeading',
-      name: 'Go to previous heading',
-      editorCallback: (editor) => goToHeading(this.app, editor, 'prev'),
-    });
-
-    this.addCommand({
       id: 'transformToUppercase',
       name: 'Transform selection to uppercase',
       editorCallback: (editor) => transformCase(editor, CASE.UPPER),
@@ -141,6 +128,18 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'expandSelectionToQuotes',
       name: 'Expand selection to quotes',
       editorCallback: (editor) => expandSelectionToQuotes(editor),
+    });
+
+    this.addCommand({
+      id: 'goToNextHeading',
+      name: 'Go to next heading',
+      editorCallback: (editor) => goToHeading(this.app, editor, 'next'),
+    });
+
+    this.addCommand({
+      id: 'goToPrevHeading',
+      name: 'Go to previous heading',
+      editorCallback: (editor) => goToHeading(this.app, editor, 'prev'),
     });
   }
 }

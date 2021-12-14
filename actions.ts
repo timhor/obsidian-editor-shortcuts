@@ -100,37 +100,6 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
   );
 };
 
-export const goToHeading = (
-  app: App,
-  editor: Editor,
-  boundary: 'prev' | 'next',
-) => {
-  const file = app.metadataCache.getFileCache(app.workspace.getActiveFile());
-  if (!file.headings || file.headings.length === 0) {
-    return;
-  }
-
-  const { line } = editor.getCursor('from');
-  let prevHeadingLine = 0;
-  let nextHeadingLine = editor.lastLine();
-
-  file.headings.forEach(({ position }) => {
-    const { end: headingPos } = position;
-    if (line > headingPos.line && headingPos.line > prevHeadingLine) {
-      prevHeadingLine = headingPos.line;
-    }
-    if (line < headingPos.line && headingPos.line < nextHeadingLine) {
-      nextHeadingLine = headingPos.line;
-    }
-  });
-
-  editor.setSelection(
-    boundary === 'prev'
-      ? getLineEndPos(prevHeadingLine, editor)
-      : getLineEndPos(nextHeadingLine, editor),
-  );
-};
-
 export const transformCase = (editor: Editor, caseType: CASE) => {
   const originalSelections = editor.listSelections();
   let selectedText = editor.getSelection();
@@ -229,3 +198,34 @@ export const expandSelectionToQuotes = (editor: Editor) =>
     openingCharacterCheck: (char: string) => /['"`]/.test(char),
     matchingCharacterMap: MATCHING_QUOTES,
   });
+
+export const goToHeading = (
+  app: App,
+  editor: Editor,
+  boundary: 'prev' | 'next',
+) => {
+  const file = app.metadataCache.getFileCache(app.workspace.getActiveFile());
+  if (!file.headings || file.headings.length === 0) {
+    return;
+  }
+
+  const { line } = editor.getCursor('from');
+  let prevHeadingLine = 0;
+  let nextHeadingLine = editor.lastLine();
+
+  file.headings.forEach(({ position }) => {
+    const { end: headingPos } = position;
+    if (line > headingPos.line && headingPos.line > prevHeadingLine) {
+      prevHeadingLine = headingPos.line;
+    }
+    if (line < headingPos.line && headingPos.line < nextHeadingLine) {
+      nextHeadingLine = headingPos.line;
+    }
+  });
+
+  editor.setSelection(
+    boundary === 'prev'
+      ? getLineEndPos(prevHeadingLine, editor)
+      : getLineEndPos(nextHeadingLine, editor),
+  );
+};
