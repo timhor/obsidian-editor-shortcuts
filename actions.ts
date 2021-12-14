@@ -1,21 +1,21 @@
-import { Editor } from 'obsidian';
-import {
-  getLineStartPos,
-  getLineEndPos,
-  getSelectionBoundaries,
-  wordRangeAtPos,
-  getLeadingWhitespace,
-  findPosOfNextCharacter,
-  CheckCharacter,
-} from './utils';
+import { App, Editor, Vault } from 'obsidian';
 import {
   CASE,
   DIRECTION,
   LOWERCASE_ARTICLES,
-  MatchingCharacterMap,
   MATCHING_BRACKETS,
   MATCHING_QUOTES,
+  MatchingCharacterMap,
 } from './constants';
+import {
+  CheckCharacter,
+  findPosOfNextCharacter,
+  getLeadingWhitespace,
+  getLineEndPos,
+  getLineStartPos,
+  getSelectionBoundaries,
+  wordRangeAtPos,
+} from './utils';
 
 export const insertLineAbove = (editor: Editor) => {
   const { line } = editor.getCursor();
@@ -198,3 +198,34 @@ export const expandSelectionToQuotes = (editor: Editor) =>
     openingCharacterCheck: (char: string) => /['"`]/.test(char),
     matchingCharacterMap: MATCHING_QUOTES,
   });
+
+export const goToHeading = (
+  app: App,
+  editor: Editor,
+  boundary: 'prev' | 'next',
+) => {
+  const file = app.metadataCache.getFileCache(app.workspace.getActiveFile());
+  if (!file.headings || file.headings.length === 0) {
+    return;
+  }
+
+  const { line } = editor.getCursor('from');
+  let prevHeadingLine = 0;
+  let nextHeadingLine = editor.lastLine();
+
+  file.headings.forEach(({ position }) => {
+    const { end: headingPos } = position;
+    if (line > headingPos.line && headingPos.line > prevHeadingLine) {
+      prevHeadingLine = headingPos.line;
+    }
+    if (line < headingPos.line && headingPos.line < nextHeadingLine) {
+      nextHeadingLine = headingPos.line;
+    }
+  });
+
+  editor.setSelection(
+    boundary === 'prev'
+      ? getLineEndPos(prevHeadingLine, editor)
+      : getLineEndPos(nextHeadingLine, editor),
+  );
+};

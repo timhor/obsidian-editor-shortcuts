@@ -1,15 +1,16 @@
 import { Plugin } from 'obsidian';
 import {
-  insertLineAbove,
-  insertLineBelow,
   deleteSelectedLines,
-  joinLines,
   duplicateLine,
-  selectLine,
-  transformCase,
-  goToLineBoundary,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
+  goToHeading,
+  goToLineBoundary,
+  insertLineAbove,
+  insertLineBelow,
+  joinLines,
+  selectLine,
+  transformCase,
 } from './actions';
 import { CASE } from './constants';
 
@@ -127,6 +128,18 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'expandSelectionToQuotes',
       name: 'Expand selection to quotes',
       editorCallback: (editor) => expandSelectionToQuotes(editor),
+    });
+
+    this.addCommand({
+      id: 'goToNextHeading',
+      name: 'Go to next heading',
+      editorCallback: (editor) => goToHeading(this.app, editor, 'next'),
+    });
+
+    this.addCommand({
+      id: 'goToPrevHeading',
+      name: 'Go to previous heading',
+      editorCallback: (editor) => goToHeading(this.app, editor, 'prev'),
     });
   }
 }
