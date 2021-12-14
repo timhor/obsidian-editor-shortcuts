@@ -100,28 +100,34 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
   );
 };
 
-export const goToHeader = (
+export const goToHeading = (
   app: App,
   editor: Editor,
   boundary: 'prev' | 'next',
 ) => {
-  const { line } = editor.getCursor('from');
   const file = app.metadataCache.getFileCache(app.workspace.getActiveFile());
+  if (!file.headings || file.headings.length === 0) {
+    return;
+  }
 
-  let prevHeaderLine = file.headings?.length > 0 ? 0 : line;
-  let nextHeaderLine = file.headings?.length > 0 ? editor.lastLine() : line;
+  const { line } = editor.getCursor('from');
+  let prevHeadingLine = 0;
+  let nextHeadingLine = editor.lastLine();
 
   file.headings.forEach(({ position }) => {
-    const { start, end } = position;
-    if (line - end.line > 0 && line - end.line < line - prevHeaderLine)
-      prevHeaderLine = end.line;
-    if (end.line - line > 0 && end.line - line < nextHeaderLine - line)
-      nextHeaderLine = end.line;
+    const { end: headingPos } = position;
+    if (line > headingPos.line && headingPos.line > prevHeadingLine) {
+      prevHeadingLine = headingPos.line;
+    }
+    if (line < headingPos.line && headingPos.line < nextHeadingLine) {
+      nextHeadingLine = headingPos.line;
+    }
   });
+
   editor.setSelection(
     boundary === 'prev'
-      ? getLineEndPos(prevHeaderLine, editor)
-      : getLineEndPos(nextHeaderLine, editor),
+      ? getLineEndPos(prevHeadingLine, editor)
+      : getLineEndPos(nextHeadingLine, editor),
   );
 };
 

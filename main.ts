@@ -3,7 +3,7 @@ import {
   duplicateLine,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
-  goToHeader,
+  goToHeading,
   goToLineBoundary,
   insertLineAbove,
   insertLineBelow,
@@ -102,15 +102,15 @@ export default class CodeEditorShortcuts extends Plugin {
     });
 
     this.addCommand({
-      id: 'goToNextHeader',
-      name: 'Go to next header',
-      editorCallback: (editor) => goToHeader(this.app, editor, 'next'),
+      id: 'goToNextHeading',
+      name: 'Go to next heading',
+      editorCallback: (editor) => goToHeading(this.app, editor, 'next'),
     });
 
     this.addCommand({
-      id: 'goToPrevHeader',
-      name: 'Go to prev header',
-      editorCallback: (editor) => goToHeader(this.app, editor, 'prev'),
+      id: 'goToPrevHeading',
+      name: 'Go to previous heading',
+      editorCallback: (editor) => goToHeading(this.app, editor, 'prev'),
     });
 
     this.addCommand({
