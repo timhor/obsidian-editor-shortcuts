@@ -10,6 +10,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Duplicate line                                   | `Ctrl` + `Shift` + `D`     |
 | Join line below to current line                  | `Ctrl` + `J`               |
 | Select line (repeat to keep expanding selection) | `Ctrl` + `L`               |
+| Select word                                      | Not set                    |
 | Go to start of line                              | Not set                    |
 | Go to end of line                                | Not set                    |
 | Transform selection to uppercase                 | Not set                    |
