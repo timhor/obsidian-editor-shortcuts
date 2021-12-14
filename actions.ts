@@ -38,18 +38,18 @@ export const deleteSelectedLines = (editor: Editor) => {
     return;
   }
   const { from, to } = getSelectionBoundaries(selections[0]);
-  if (from.line === 0) {
-    // there is no 'previous line' when cursor is on the first line
-    editor.replaceRange(
-      '',
-      getLineStartPos(from.line),
-      getLineStartPos(to.line + 1),
-    );
-  } else {
+  if (to.line === editor.lastLine()) {
+    // there is no 'next line' when cursor is on the last line
     editor.replaceRange(
       '',
       getLineEndPos(from.line - 1, editor),
       getLineEndPos(to.line, editor),
+    );
+  } else {
+    editor.replaceRange(
+      '',
+      getLineStartPos(from.line),
+      getLineStartPos(to.line + 1),
     );
   }
 };
