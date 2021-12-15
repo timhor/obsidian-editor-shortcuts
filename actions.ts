@@ -81,6 +81,21 @@ export const duplicateLine = (editor: Editor) => {
   editor.replaceRange(contentsOfSelectedLines + '\n', fromLineStart);
 };
 
+export const selectWord = (editor: Editor) => {
+  const selections = editor.listSelections();
+  const newSelections = selections.map((selection) => {
+    const { from, to } = getSelectionBoundaries(selection);
+    const selectedText = editor.getRange(from, to);
+    // Do not modify selection if something is selected
+    if (selectedText.length !== 0) {
+      return selection;
+    } else {
+      return wordRangeAtPos(from, editor.getLine(from.line));
+    }
+  });
+  editor.setSelections(newSelections);
+};
+
 export const selectLine = (editor: Editor) => {
   const selections = editor.listSelections();
   if (selections.length === 0) {

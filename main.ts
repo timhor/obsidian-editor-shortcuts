@@ -10,6 +10,7 @@ import {
   insertLineBelow,
   joinLines,
   selectLine,
+  selectWord,
   transformCase,
 } from './actions';
 import { CASE } from './constants';
@@ -74,6 +75,12 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) => duplicateLine(editor),
+    });
+
+    this.addCommand({
+      id: 'selectWord',
+      name: 'Select word',
+      editorCallback: (editor) => selectWord(editor),
     });
 
     this.addCommand({
