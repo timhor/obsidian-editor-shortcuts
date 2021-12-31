@@ -75,7 +75,7 @@ export const findPosOfNextCharacter = ({
   let matchedChar: string;
 
   if (searchDirection === DIRECTION.BACKWARD) {
-    while (line > 0) {
+    while (line >= 0) {
       // ch will initially be 0 if searching from start of line
       const char = lineContent.charAt(Math.max(ch - 1, 0));
       matchFound = checkCharacter(char);
@@ -84,10 +84,14 @@ export const findPosOfNextCharacter = ({
         break;
       }
       ch--;
+      // inclusive because (ch - 1) means the first character will already
+      // have been checked
       if (ch <= 0) {
         line--;
-        lineContent = editor.getLine(line);
-        ch = lineContent.length;
+        if (line >= 0) {
+          lineContent = editor.getLine(line);
+          ch = lineContent.length;
+        }
       }
     }
   } else {
