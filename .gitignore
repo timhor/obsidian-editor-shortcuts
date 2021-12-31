@@ -1,10 +1,10 @@
-# Intellij
+# IDE
 *.iml
 .idea
+.vscode
 
 # npm
 node_modules
-package-lock.json
 
 # build
 main.js
