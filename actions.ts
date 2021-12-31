@@ -1,4 +1,4 @@
-import { App, Editor, Vault } from 'obsidian';
+import { App, Editor } from 'obsidian';
 import {
   CASE,
   DIRECTION,
@@ -162,7 +162,7 @@ export const transformCase = (editor: Editor, caseType: CASE) => {
   }
 };
 
-export const expandSelection = ({
+const expandSelection = ({
   editor,
   openingCharacterCheck,
   matchingCharacterMap,
