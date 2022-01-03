@@ -109,10 +109,13 @@ export const selectLine = (editor: Editor) => {
 };
 
 export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
-  const { line } = editor.getCursor('from');
-  editor.setSelection(
-    boundary === 'start' ? getLineStartPos(line) : getLineEndPos(line, editor),
-  );
+  if (boundary === 'start') {
+    const { line } = editor.getCursor('from');
+    editor.setSelection(getLineStartPos(line));
+  } else {
+    const { line } = editor.getCursor('to');
+    editor.setSelection(getLineEndPos(line, editor));
+  }
 };
 
 export const transformCase = (editor: Editor, caseType: CASE) => {
