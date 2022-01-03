@@ -276,4 +276,190 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(selectedText).toEqual('');
     });
   });
+
+  describe('single range selection', () => {
+    beforeEach(() => {
+      editor.setValue(originalDoc);
+      editor.setSelection({ line: 0, ch: 6 }, { line: 1, ch: 5 });
+    });
+
+    it('should insert line above', () => {
+      insertLineAbove(editor as any);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\n\ndolor sit\namet');
+      expect(cursor.line).toEqual(1);
+    });
+
+    it('should insert line below', () => {
+      insertLineBelow(editor as any);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\n\namet');
+      expect(cursor.line).toEqual(2);
+    });
+
+    it('should delete selected lines', () => {
+      deleteSelectedLines(editor as any);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('amet');
+      expect(cursor.line).toEqual(0);
+    });
+
+    it('should join next line to current line', () => {
+      joinLines(editor as any);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit amet');
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(9);
+    });
+
+    it('should duplicate selected lines', () => {
+      duplicateLine(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(
+        'lorem ipsum\ndolor sit\nlorem ipsum\ndolor sit\namet',
+      );
+      expect(selections[0].anchor).toEqual(
+        expect.objectContaining({ line: 2, ch: 6 }),
+      );
+      expect(selections[0].head).toEqual(
+        expect.objectContaining({ line: 3, ch: 5 }),
+      );
+    });
+
+    it('should not select additional words', () => {
+      selectWord(editor as any);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selectedText).toEqual('ipsum\ndolor');
+    });
+
+    it('should select lines', () => {
+      selectLine(editor as any);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selectedText).toEqual('lorem ipsum\ndolor sit\n');
+    });
+
+    it('should go to line start', () => {
+      goToLineBoundary(editor as any, 'start');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should go to line end', () => {
+      goToLineBoundary(editor as any, 'end');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(9);
+    });
+
+    it('should transform to uppercase', () => {
+      transformCase(editor as any, CASE.UPPER);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem IPSUM\nDOLOR sit\namet');
+      expect(selectedText).toEqual('IPSUM\nDOLOR');
+    });
+
+    it('should transform to lowercase', () => {
+      editor.setValue('lorem ipsum\nDOLOR sit\namet');
+      editor.setSelection({ line: 0, ch: 6 }, { line: 1, ch: 5 });
+
+      transformCase(editor as any, CASE.LOWER);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\namet');
+      expect(selectedText).toEqual('ipsum\ndolor');
+    });
+
+    it('should transform to title case', () => {
+      transformCase(editor as any, CASE.TITLE);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem Ipsum\nDolor sit\namet');
+      expect(selectedText).toEqual('Ipsum\nDolor');
+    });
+
+    it("should not transform 'the', 'a' or 'an' to title case if not the first word", () => {
+      editor.setValue(
+        'AN EXAMPLE TO TEST THE OBSIDIAN PLUGIN AND A CASE CONVERSION FEATURE',
+      );
+      editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 68 });
+
+      transformCase(editor as any, CASE.TITLE);
+
+      const { doc } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(
+        'An Example To Test the Obsidian Plugin And a Case Conversion Feature',
+      );
+    });
+
+    it.each([
+      'lorem (ipsum\ndolor sit\nam)et',
+      'lorem [ipsum\ndolor sit\nam]et',
+      'lorem {ipsum\ndolor sit\nam}et',
+    ])(
+      'should expand selection to brackets if entire selection is inside',
+      (content) => {
+        editor.setValue(content);
+        editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 5 });
+
+        expandSelectionToBrackets(editor as any);
+
+        const { doc, selectedText } = getDocumentAndSelection(editor);
+        expect(doc).toEqual(content);
+        expect(selectedText).toEqual('ipsum\ndolor sit\nam');
+      },
+    );
+
+    it('should not expand selection to brackets if part of selection is outside', () => {
+      const content = '(lorem ipsum)\ndolor';
+      editor.setValue(content);
+      editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
+
+      expandSelectionToBrackets(editor as any);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(content);
+      expect(selectedText).toEqual('um)\ndo');
+    });
+
+    it.each(["lorem 'ipsum\ndolor'", 'lorem "ipsum\ndolor"'])(
+      'should expand selection to quotes if entire selection is inside',
+      (content) => {
+        editor.setValue(content);
+        editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
+
+        expandSelectionToQuotes(editor as any);
+
+        const { doc, selectedText } = getDocumentAndSelection(editor);
+        expect(doc).toEqual(content);
+        expect(selectedText).toEqual('ipsum\ndolor');
+      },
+    );
+
+    it('should not expand selection to quotes if part of selection is outside', () => {
+      const content = '"lorem ipsum"\ndolor';
+      editor.setValue(content);
+      editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
+
+      expandSelectionToQuotes(editor as any);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(content);
+      expect(selectedText).toEqual('um"\ndo');
+    });
+  });
 });
