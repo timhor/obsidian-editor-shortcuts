@@ -1,5 +1,6 @@
 import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
+import { getDocumentAndSelection } from './test-helpers';
 import {
   insertLineAbove,
   insertLineBelow,
@@ -27,15 +28,6 @@ document.createRange = () => {
   }));
 
   return range;
-};
-
-const getDocumentAndSelection = (editor: Editor) => {
-  return {
-    doc: editor.getValue(),
-    cursor: editor.getCursor(),
-    selectedText: editor.getSelection(),
-    selections: editor.listSelections(),
-  };
 };
 
 describe('Code Editor Shortcuts: actions', () => {

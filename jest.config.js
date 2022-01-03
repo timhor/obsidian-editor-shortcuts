@@ -10,6 +10,9 @@ module.exports = {
   // The glob patterns Jest uses to detect test files
   testMatch: ['**/__tests__/**/*.[jt]s?(x)'],
 
+  // If the test path matches any of the patterns, it will be skipped
+  testPathIgnorePatterns: ['/node_modules/', 'test-helpers.ts'],
+
   // A map from regular expressions to paths to transformers
   transform: {
     '^.+\\.[t|j]sx?$': 'babel-jest',
