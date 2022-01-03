@@ -139,9 +139,9 @@ export const transformCase = (editor: Editor, caseType: CASE) => {
           if (
             index > 0 &&
             index < allWords.length - 1 &&
-            LOWERCASE_ARTICLES.includes(word)
+            LOWERCASE_ARTICLES.includes(word.toLowerCase())
           ) {
-            return word;
+            return word.toLowerCase();
           }
           return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
         })
