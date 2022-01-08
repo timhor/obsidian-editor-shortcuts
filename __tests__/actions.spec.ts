@@ -192,19 +192,22 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it.each([
-      '(lorem ipsum) dolor',
-      'dolor [lorem ipsum]',
-      'dolor {lorem ipsum} sit amet',
-    ])('should expand selection to brackets if cursor is inside', (content) => {
-      editor.setValue(content);
-      editor.setCursor({ line: 0, ch: 8 });
+      ['()', '(lorem ipsum) dolor'],
+      ['[]', 'dolor [lorem ipsum]'],
+      ['{}', 'dolor {lorem ipsum} sit amet'],
+    ])(
+      'should expand selection to %s brackets if cursor is inside',
+      (_scenario, content) => {
+        editor.setValue(content);
+        editor.setCursor({ line: 0, ch: 8 });
 
-      expandSelectionToBrackets(editor as any);
+        expandSelectionToBrackets(editor as any);
 
-      const { doc, selectedText } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(content);
-      expect(selectedText).toEqual('lorem ipsum');
-    });
+        const { doc, selectedText } = getDocumentAndSelection(editor);
+        expect(doc).toEqual(content);
+        expect(selectedText).toEqual('lorem ipsum');
+      },
+    );
 
     it('should not expand selection to brackets if cursor is outside', () => {
       const content = '(lorem ipsum) dolor';
@@ -230,9 +233,12 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(selectedText).toEqual('');
     });
 
-    it.each(["'lorem ipsum' dolor", 'dolor "lorem ipsum"'])(
-      'should expand selection to quotes if cursor is inside',
-      (content) => {
+    it.each([
+      ['single', "'lorem ipsum' dolor"],
+      ['double', 'dolor "lorem ipsum"'],
+    ])(
+      'should expand selection to %s quotes if cursor is inside',
+      (_scenario, content) => {
         editor.setValue(content);
         editor.setCursor({ line: 0, ch: 8 });
 
@@ -399,12 +405,12 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it.each([
-      'lorem (ipsum\ndolor sit\nam)et',
-      'lorem [ipsum\ndolor sit\nam]et',
-      'lorem {ipsum\ndolor sit\nam}et',
+      ['()', 'lorem (ipsum\ndolor sit\nam)et'],
+      ['[]', 'lorem [ipsum\ndolor sit\nam]et'],
+      ['{}', 'lorem {ipsum\ndolor sit\nam}et'],
     ])(
-      'should expand selection to brackets if entire selection is inside',
-      (content) => {
+      'should expand selection to %s brackets if entire selection is inside',
+      (_scenario, content) => {
         editor.setValue(content);
         editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 5 });
 
@@ -428,9 +434,12 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(selectedText).toEqual('um)\ndo');
     });
 
-    it.each(["lorem 'ipsum\ndolor'", 'lorem "ipsum\ndolor"'])(
-      'should expand selection to quotes if entire selection is inside',
-      (content) => {
+    it.each([
+      ['single', "lorem 'ipsum\ndolor'"],
+      ['double', 'lorem "ipsum\ndolor"'],
+    ])(
+      'should expand selection to %s quotes if entire selection is inside',
+      (_scenario, content) => {
         editor.setValue(content);
         editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
 
