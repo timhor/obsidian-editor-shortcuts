@@ -7,11 +7,13 @@ on:
     branches: [master]
 
 jobs:
-  test:
+  lint-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: yarn install
+      - name: Lint
+        run: yarn lint
       - name: Test
         run: yarn test

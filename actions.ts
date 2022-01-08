@@ -206,7 +206,7 @@ const expandSelection = ({
 export const expandSelectionToBrackets = (editor: Editor) =>
   expandSelection({
     editor,
-    openingCharacterCheck: (char: string) => /[\(\[\{]/.test(char),
+    openingCharacterCheck: (char: string) => /[([{]/.test(char),
     matchingCharacterMap: MATCHING_BRACKETS,
   });
 

@@ -32,7 +32,7 @@ document.createRange = () => {
 
 describe('Code Editor Shortcuts: actions', () => {
   let editor: Editor;
-  let originalDoc = 'lorem ipsum\ndolor sit\namet';
+  const originalDoc = 'lorem ipsum\ndolor sit\namet';
 
   beforeAll(() => {
     editor = CodeMirror(document.body);

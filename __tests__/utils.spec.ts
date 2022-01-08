@@ -1,6 +1,5 @@
 import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
-import { getDocumentAndSelection } from './test-helpers';
 import {
   getLineStartPos,
   getLineEndPos,
@@ -27,7 +26,7 @@ document.createRange = () => {
 
 describe('Code Editor Shortcuts: utils', () => {
   let editor: Editor;
-  let originalDoc = 'lorem ipsum';
+  const originalDoc = 'lorem ipsum';
 
   beforeAll(() => {
     editor = CodeMirror(document.body);
