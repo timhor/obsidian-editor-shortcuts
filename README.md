@@ -31,7 +31,7 @@ _Note: these shortcuts currently do not work with [multiple cursors](https://hel
 
 ## Installing the plugin
 
-Refer to the official installation instructions for third-party plugins [here](https://help.obsidian.md/Advanced+topics/Third-party+plugins#For+users).
+Refer to the official installation instructions for third-party plugins [here](https://help.obsidian.md/Advanced+topics/Community+plugins).
 
 ## Configuring settings
 
