@@ -4,9 +4,9 @@
   "description": "Add keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code (vscode) or Sublime Text",
   "main": "main.js",
   "scripts": {
-    "start": "rollup --config rollup.config.js -w",
-    "build": "rollup --config rollup.config.js --environment BUILD:production",
-    "lint": "eslint .",
+    "start": "esbuild src/main.ts --bundle --external:obsidian --outdir=.  --target=es2016 --format=cjs --sourcemap=inline --watch",
+    "build": "esbuild src/main.ts --bundle --external:obsidian --outdir=.  --target=es2016 --format=cjs",
+    "lint": "eslint src",
     "test": "jest",
     "prepare": "husky install"
   },
@@ -16,24 +16,21 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
-    "@rollup/plugin-commonjs": "^18.0.0",
-    "@rollup/plugin-node-resolve": "^11.2.1",
-    "@rollup/plugin-typescript": "^8.2.1",
     "@types/jest": "^27.4.0",
-    "@types/node": "^14.14.37",
+    "@types/node": "^16.11.1",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
     "babel-jest": "^27.4.5",
     "codemirror": "^5.65.0",
+    "esbuild": "0.13.8",
     "eslint": "^8.6.0",
     "husky": "^7.0.2",
     "jest": "^27.4.5",
     "lint-staged": "^11.1.2",
-    "obsidian": "^0.12.0",
-    "prettier": "^2.4.1",
-    "rollup": "^2.32.1",
-    "tslib": "^2.2.0",
-    "typescript": "^4.2.4"
+    "obsidian": "^0.12.17",
+    "prettier": "^2.5.0",
+    "tslib": "2.3.1",
+    "typescript": "4.4.4"
   },
   "lint-staged": {
     "**/*.{ts,tsx,html,css,md,json}": [
