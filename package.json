@@ -6,7 +6,7 @@
   "scripts": {
     "start": "esbuild src/main.ts --bundle --external:obsidian --outdir=.  --target=es2016 --format=cjs --sourcemap=inline --watch",
     "build": "esbuild src/main.ts --bundle --external:obsidian --outdir=.  --target=es2016 --format=cjs",
-    "lint": "eslint src",
+    "lint": "eslint src --max-warnings=0",
     "test": "jest",
     "prepare": "husky install"
   },
@@ -37,7 +37,7 @@
       "prettier --write"
     ],
     "**/*.{ts,tsx,html,css}": [
-      "eslint --fix"
+      "eslint --fix --max-warnings=0"
     ]
   }
 }
