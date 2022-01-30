@@ -69,7 +69,19 @@ export const joinLines = (editor: Editor) => {
   editor.setSelection(endOfCurrentLine);
 };
 
-export const duplicateLine = (editor: Editor) => {
+export const copyLineUp = (editor: Editor) => {
+  const selections = editor.listSelections();
+  if (selections.length === 0) {
+    return;
+  }
+  const { from, to } = getSelectionBoundaries(selections[0]);
+  const fromLineStart = getLineStartPos(from.line);
+  const toLineEnd = getLineEndPos(to.line, editor);
+  const contentsOfSelectedLines = editor.getRange(fromLineStart, toLineEnd);
+  editor.replaceRange('\n' + contentsOfSelectedLines, toLineEnd);
+};
+
+export const copyLineDown = (editor: Editor) => {
   const selections = editor.listSelections();
   if (selections.length === 0) {
     return;

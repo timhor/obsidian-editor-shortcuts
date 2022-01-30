@@ -6,7 +6,8 @@ import {
   insertLineBelow,
   deleteSelectedLines,
   joinLines,
-  duplicateLine,
+  copyLineUp,
+  copyLineDown,
   selectWord,
   selectLine,
   goToLineBoundary,
@@ -119,12 +120,24 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.ch).toEqual(9);
     });
 
-    it('should duplicate current line', () => {
-      duplicateLine(editor as any);
+    it('should copy current line up', () => {
+      copyLineUp(editor as any);
+      editor.setCursor({ line: 1, ch: 3 });
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(3);
+    });
+
+    it('should copy current line down', () => {
+      editor.setCursor({ line: 1, ch: 3 });
+      copyLineDown(editor as any);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
       expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(3);
     });
 
     it('should select word', () => {
@@ -312,21 +325,6 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(doc).toEqual('lorem ipsum\ndolor sit amet');
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(9);
-    });
-
-    it('should duplicate selected lines', () => {
-      duplicateLine(editor as any);
-
-      const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(
-        'lorem ipsum\ndolor sit\nlorem ipsum\ndolor sit\namet',
-      );
-      expect(selections[0].anchor).toEqual(
-        expect.objectContaining({ line: 2, ch: 6 }),
-      );
-      expect(selections[0].head).toEqual(
-        expect.objectContaining({ line: 3, ch: 5 }),
-      );
     });
 
     it('should not select additional words', () => {
