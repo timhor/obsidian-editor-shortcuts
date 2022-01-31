@@ -79,6 +79,7 @@ export const copyLineUp = (editor: Editor) => {
   const toLineEnd = getLineEndPos(to.line, editor);
   const contentsOfSelectedLines = editor.getRange(fromLineStart, toLineEnd);
   editor.replaceRange('\n' + contentsOfSelectedLines, toLineEnd);
+  editor.setSelections(selections);
 };
 
 export const copyLineDown = (editor: Editor) => {

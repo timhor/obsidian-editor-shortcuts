@@ -121,8 +121,9 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it('should copy current line up', () => {
-      copyLineUp(editor as any);
       editor.setCursor({ line: 1, ch: 3 });
+
+      copyLineUp(editor as any);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
@@ -130,8 +131,20 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.ch).toEqual(3);
     });
 
+    it('should copy current line up from the end of a line', () => {
+      editor.setCursor({ line: 1, ch: 9 });
+
+      copyLineUp(editor as any);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(9);
+    });
+
     it('should copy current line down', () => {
       editor.setCursor({ line: 1, ch: 3 });
+
       copyLineDown(editor as any);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
