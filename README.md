@@ -8,6 +8,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Insert line above                                | `Ctrl` + `Shift` + `Enter` |
 | Delete line                                      | `Ctrl` + `Shift` + `K`     |
 | Duplicate line                                   | `Ctrl` + `Shift` + `D`     |
+| Copy line up                                     | `Alt` + `Shift` + `Up`     |
+| Copy line down                                   | `Alt` + `Shift` + `Down`   |
 | Join line below to current line                  | `Ctrl` + `J`               |
 | Select line (repeat to keep expanding selection) | `Ctrl` + `L`               |
 | Select word                                      | Not set                    |
@@ -21,9 +23,11 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Go to next heading                               | Not set                    |
 | Go to previous heading                           | Not set                    |
 
-\* On macOS, replace `Ctrl` with `Cmd`
+\* On macOS, replace `Ctrl` with `Cmd` and `Alt` with `Opt`
 
 \*\* This may conflict with the default shortcut for _Toggle checklist status_; changing/removing one of the bindings is recommended
+
+If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Swap line up" and "Swap line down".
 
 ---
 

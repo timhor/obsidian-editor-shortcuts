@@ -6,7 +6,7 @@ import {
   insertLineBelow,
   deleteSelectedLines,
   joinLines,
-  duplicateLine,
+  copyLine,
   selectWord,
   selectLine,
   goToLineBoundary,
@@ -119,12 +119,37 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.ch).toEqual(9);
     });
 
-    it('should duplicate current line', () => {
-      duplicateLine(editor as any);
+    it('should copy current line up', () => {
+      editor.setCursor({ line: 1, ch: 3 });
+
+      copyLine(editor as any, 'up');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(3);
+    });
+
+    it('should copy current line up from the end of a line', () => {
+      editor.setCursor({ line: 1, ch: 9 });
+
+      copyLine(editor as any, 'up');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(9);
+    });
+
+    it('should copy current line down', () => {
+      editor.setCursor({ line: 1, ch: 3 });
+
+      copyLine(editor as any, 'down');
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
       expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(3);
     });
 
     it('should select word', () => {
@@ -314,18 +339,33 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.ch).toEqual(9);
     });
 
-    it('should duplicate selected lines', () => {
-      duplicateLine(editor as any);
+    it('should copy selected lines up', () => {
+      copyLine(editor as any, 'up');
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(
         'lorem ipsum\ndolor sit\nlorem ipsum\ndolor sit\namet',
       );
-      expect(selections[0].anchor).toEqual(
-        expect.objectContaining({ line: 2, ch: 6 }),
+      expect(selections[0]).toEqual(
+        expect.objectContaining({
+          anchor: expect.objectContaining({ line: 0, ch: 6 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        }),
       );
-      expect(selections[0].head).toEqual(
-        expect.objectContaining({ line: 3, ch: 5 }),
+    });
+
+    it('should copy selected lines down', () => {
+      copyLine(editor as any, 'down');
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(
+        'lorem ipsum\ndolor sit\nlorem ipsum\ndolor sit\namet',
+      );
+      expect(selections[0]).toEqual(
+        expect.objectContaining({
+          anchor: expect.objectContaining({ line: 2, ch: 6 }),
+          head: expect.objectContaining({ line: 3, ch: 5 }),
+        }),
       );
     });
 

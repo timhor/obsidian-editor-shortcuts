@@ -1,7 +1,7 @@
 import { Plugin } from 'obsidian';
 import {
+  copyLine,
   deleteSelectedLines,
-  duplicateLine,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
   goToHeading,
@@ -74,7 +74,31 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'D',
         },
       ],
-      editorCallback: (editor) => duplicateLine(editor),
+      editorCallback: (editor) => copyLine(editor, 'down'),
+    });
+
+    this.addCommand({
+      id: 'copyLineUp',
+      name: 'Copy line up',
+      hotkeys: [
+        {
+          modifiers: ['Alt', 'Shift'],
+          key: 'ArrowUp',
+        },
+      ],
+      editorCallback: (editor) => copyLine(editor, 'up'),
+    });
+
+    this.addCommand({
+      id: 'copyLineDown',
+      name: 'Copy line down',
+      hotkeys: [
+        {
+          modifiers: ['Alt', 'Shift'],
+          key: 'ArrowDown',
+        },
+      ],
+      editorCallback: (editor) => copyLine(editor, 'down'),
     });
 
     this.addCommand({
