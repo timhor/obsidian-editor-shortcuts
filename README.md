@@ -23,7 +23,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Go to next heading                               | Not set                    |
 | Go to previous heading                           | Not set                    |
 
-\* On macOS, replace `Ctrl` with `Cmd`
+\* On macOS, replace `Ctrl` with `Cmd` and `Alt` with `Opt`
 
 \*\* This may conflict with the default shortcut for _Toggle checklist status_; changing/removing one of the bindings is recommended
 
