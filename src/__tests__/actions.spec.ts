@@ -6,8 +6,7 @@ import {
   insertLineBelow,
   deleteSelectedLines,
   joinLines,
-  copyLineUp,
-  copyLineDown,
+  copyLine,
   selectWord,
   selectLine,
   goToLineBoundary,
@@ -123,7 +122,7 @@ describe('Code Editor Shortcuts: actions', () => {
     it('should copy current line up', () => {
       editor.setCursor({ line: 1, ch: 3 });
 
-      copyLineUp(editor as any);
+      copyLine(editor as any, 'up');
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
@@ -134,7 +133,7 @@ describe('Code Editor Shortcuts: actions', () => {
     it('should copy current line up from the end of a line', () => {
       editor.setCursor({ line: 1, ch: 9 });
 
-      copyLineUp(editor as any);
+      copyLine(editor as any, 'up');
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
@@ -145,7 +144,7 @@ describe('Code Editor Shortcuts: actions', () => {
     it('should copy current line down', () => {
       editor.setCursor({ line: 1, ch: 3 });
 
-      copyLineDown(editor as any);
+      copyLine(editor as any, 'down');
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\ndolor sit\namet');
@@ -341,7 +340,7 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it('should copy selected lines up', () => {
-      copyLineUp(editor as any);
+      copyLine(editor as any, 'up');
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(
@@ -356,7 +355,7 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it('should copy selected lines down', () => {
-      copyLineDown(editor as any);
+      copyLine(editor as any, 'down');
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(

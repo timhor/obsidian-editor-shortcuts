@@ -69,7 +69,7 @@ export const joinLines = (editor: Editor) => {
   editor.setSelection(endOfCurrentLine);
 };
 
-export const copyLineUp = (editor: Editor) => {
+export const copyLine = (editor: Editor, direction: 'up' | 'down') => {
   const selections = editor.listSelections();
   if (selections.length === 0) {
     return;
@@ -78,20 +78,12 @@ export const copyLineUp = (editor: Editor) => {
   const fromLineStart = getLineStartPos(from.line);
   const toLineEnd = getLineEndPos(to.line, editor);
   const contentsOfSelectedLines = editor.getRange(fromLineStart, toLineEnd);
-  editor.replaceRange('\n' + contentsOfSelectedLines, toLineEnd);
-  editor.setSelections(selections);
-};
-
-export const copyLineDown = (editor: Editor) => {
-  const selections = editor.listSelections();
-  if (selections.length === 0) {
-    return;
+  if (direction === 'up') {
+    editor.replaceRange('\n' + contentsOfSelectedLines, toLineEnd);
+    editor.setSelections(selections);
+  } else {
+    editor.replaceRange(contentsOfSelectedLines + '\n', fromLineStart);
   }
-  const { from, to } = getSelectionBoundaries(selections[0]);
-  const fromLineStart = getLineStartPos(from.line);
-  const toLineEnd = getLineEndPos(to.line, editor);
-  const contentsOfSelectedLines = editor.getRange(fromLineStart, toLineEnd);
-  editor.replaceRange(contentsOfSelectedLines + '\n', fromLineStart);
 };
 
 export const selectWord = (editor: Editor) => {

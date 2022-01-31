@@ -1,7 +1,6 @@
 import { Plugin } from 'obsidian';
 import {
-  copyLineUp,
-  copyLineDown,
+  copyLine,
   deleteSelectedLines,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
@@ -75,7 +74,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'D',
         },
       ],
-      editorCallback: (editor) => copyLineDown(editor),
+      editorCallback: (editor) => copyLine(editor, 'down'),
     });
 
     this.addCommand({
@@ -87,7 +86,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'ArrowUp',
         },
       ],
-      editorCallback: (editor) => copyLineUp(editor),
+      editorCallback: (editor) => copyLine(editor, 'up'),
     });
 
     this.addCommand({
@@ -99,7 +98,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'ArrowDown',
         },
       ],
-      editorCallback: (editor) => copyLineDown(editor),
+      editorCallback: (editor) => copyLine(editor, 'down'),
     });
 
     this.addCommand({
