@@ -340,6 +340,36 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.ch).toEqual(9);
     });
 
+    it('should copy selected lines up', () => {
+      copyLineUp(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(
+        'lorem ipsum\ndolor sit\nlorem ipsum\ndolor sit\namet',
+      );
+      expect(selections[0]).toEqual(
+        expect.objectContaining({
+          anchor: expect.objectContaining({ line: 0, ch: 6 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        }),
+      );
+    });
+
+    it('should copy selected lines down', () => {
+      copyLineDown(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(
+        'lorem ipsum\ndolor sit\nlorem ipsum\ndolor sit\namet',
+      );
+      expect(selections[0]).toEqual(
+        expect.objectContaining({
+          anchor: expect.objectContaining({ line: 2, ch: 6 }),
+          head: expect.objectContaining({ line: 3, ch: 5 }),
+        }),
+      );
+    });
+
     it('should not select additional words', () => {
       selectWord(editor as any);
 
