@@ -9,12 +9,13 @@ import {
   insertLineAbove,
   insertLineBelow,
   joinLines,
+  moveCursor,
   navigateLine,
   selectLine,
   selectWord,
   transformCase,
 } from './actions';
-import { CASE } from './constants';
+import { CASE, DIRECTION } from './constants';
 
 export default class CodeEditorShortcuts extends Plugin {
   onload() {
@@ -142,6 +143,18 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToPrevLine',
       name: 'Go to previous line',
       editorCallback: (editor) => navigateLine(editor, 'up'),
+    });
+
+    this.addCommand({
+      id: 'goToNextChar',
+      name: 'Move cursor forward',
+      editorCallback: (editor) => moveCursor(editor, DIRECTION.FORWARD),
+    });
+
+    this.addCommand({
+      id: 'goToPrevChar',
+      name: 'Move cursor backward',
+      editorCallback: (editor) => moveCursor(editor, DIRECTION.BACKWARD),
     });
 
     this.addCommand({
