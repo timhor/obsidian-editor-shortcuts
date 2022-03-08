@@ -9,6 +9,7 @@ import {
   insertLineAbove,
   insertLineBelow,
   joinLines,
+  navigateLine,
   selectLine,
   selectWord,
   transformCase,
@@ -129,6 +130,18 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLineEnd',
       name: 'Go to end of line',
       editorCallback: (editor) => goToLineBoundary(editor, 'end'),
+    });
+
+    this.addCommand({
+      id: 'goToNextLine',
+      name: 'Go to next line',
+      editorCallback: (editor) => navigateLine(editor, 'down'),
+    });
+
+    this.addCommand({
+      id: 'goToPrevLine',
+      name: 'Go to previous line',
+      editorCallback: (editor) => navigateLine(editor, 'up'),
     });
 
     this.addCommand({
