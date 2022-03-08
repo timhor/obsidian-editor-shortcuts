@@ -11,6 +11,7 @@ import {
   selectLine,
   goToLineBoundary,
   navigateLine,
+  moveCursor,
   transformCase,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
@@ -225,6 +226,64 @@ describe('Code Editor Shortcuts: actions', () => {
       const { cursor } = getDocumentAndSelection(editor);
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(2);
+    });
+
+    it('should navigate the cursor backward', () => {
+      editor.setCursor({ line: 2, ch: 2 });
+      moveCursor(editor as any, 'backward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(1);
+    });
+
+    it('should navigate the cursor backward over a line boundary', () => {
+      moveCursor(editor as any, 'backward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(11);
+    });
+
+    it('should not attempt to navigate the cursor past start of document', () => {
+      editor.setCursor({ line: 0, ch: 0 });
+      moveCursor(editor as any, 'backward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should navigate the cursor forward', () => {
+      moveCursor(editor as any, 'forward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(1);
+    });
+
+    it('should navigate the cursor forward over a line boundary', () => {
+      editor.setCursor({ line: 1, ch: 9 });
+      moveCursor(editor as any, 'forward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should not attempt to navigate the cursor past end of document', () => {
+      editor.setCursor({ line: 2, ch: 4 });
+      moveCursor(editor as any, 'forward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(4);
     });
 
     it('should transform to uppercase', () => {

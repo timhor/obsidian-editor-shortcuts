@@ -140,6 +140,29 @@ export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
   editor.setSelection({ line, ch });
 };
 
+export const moveCursor = (editor: Editor, direction: DIRECTION) => {
+  const { line, ch } = editor.getCursor('to');
+
+  const movement = direction === DIRECTION.BACKWARD ? -1 : 1;
+  const lineLength = editor.getLine(line).length;
+  const newPos = { line, ch: ch + movement };
+
+  if (newPos.ch < 0 && newPos.line === 0) {
+    // Moving backward past start of doc, do nothing
+    newPos.ch = ch;
+  } else if (newPos.ch < 0) {
+    // Wrap backward over start of line
+    newPos.line = Math.max(newPos.line - 1, 0);
+    newPos.ch = editor.getLine(newPos.line).length;
+  } else if (newPos.ch > lineLength) {
+    // Wrap forward over end of line
+    newPos.line += 1;
+    newPos.ch = 0;
+  }
+
+  editor.setSelection(newPos);
+};
+
 export const transformCase = (editor: Editor, caseType: CASE) => {
   const originalSelections = editor.listSelections();
   let selectedText = editor.getSelection();
