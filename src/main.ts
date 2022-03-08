@@ -2,6 +2,7 @@ import { Plugin } from 'obsidian';
 import {
   copyLine,
   deleteSelectedLines,
+  deleteToEndOfLine,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
   goToHeading,
@@ -53,6 +54,12 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) => deleteSelectedLines(editor),
+    });
+
+    this.addCommand({
+      id: 'deleteToEndOfLine',
+      name: 'Delete to end of line',
+      editorCallback: (editor) => deleteToEndOfLine(editor),
     });
 
     this.addCommand({
