@@ -54,6 +54,19 @@ export const deleteSelectedLines = (editor: Editor) => {
   }
 };
 
+export const deleteToEndOfLine = (editor: Editor) => {
+  const pos = editor.getCursor();
+  const endPos = getLineEndPos(pos.line, editor);
+
+  if (pos.line === endPos.line && pos.ch === endPos.ch) {
+    // We're at the end of the line so delete just the newline
+    endPos.line = endPos.line + 1;
+    endPos.ch = 0;
+  }
+
+  editor.replaceRange('', pos, endPos);
+};
+
 export const joinLines = (editor: Editor) => {
   const { line } = editor.getCursor();
   const contentsOfNextLine = editor.getLine(line + 1).trimStart();
