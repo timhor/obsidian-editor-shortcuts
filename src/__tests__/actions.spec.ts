@@ -10,6 +10,7 @@ import {
   selectWord,
   selectLine,
   goToLineBoundary,
+  navigateLine,
   transformCase,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
@@ -184,6 +185,46 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(doc).toEqual(originalDoc);
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(9);
+    });
+
+    it('should navigate to the previous line', () => {
+      editor.setCursor({ line: 2, ch: 0 });
+      navigateLine(editor as any, 'up');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should not navigate past the start of the document', () => {
+      editor.setCursor({ line: 0, ch: 0 });
+      navigateLine(editor as any, 'up');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should navigate to the next line', () => {
+      navigateLine(editor as any, 'down');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should snap to the end of the line', () => {
+      editor.setValue('line zero\nzz\nline two');
+      editor.setCursor({ line: 0, ch: 5 });
+
+      navigateLine(editor as any, 'down');
+
+      const { cursor } = getDocumentAndSelection(editor);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(2);
     });
 
     it('should transform to uppercase', () => {

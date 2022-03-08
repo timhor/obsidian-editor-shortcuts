@@ -123,6 +123,23 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
   }
 };
 
+export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
+  let pos, line;
+
+  if (direction === 'up') {
+    pos = editor.getCursor('from');
+    line = Math.max(pos.line - 1, 0);
+  } else {
+    pos = editor.getCursor('to');
+    line = pos.line + 1;
+  }
+
+  const endOfLine = getLineEndPos(line, editor);
+  const ch = Math.min(pos.ch, endOfLine.ch);
+
+  editor.setSelection({ line, ch });
+};
+
 export const transformCase = (editor: Editor, caseType: CASE) => {
   const originalSelections = editor.listSelections();
   let selectedText = editor.getSelection();
