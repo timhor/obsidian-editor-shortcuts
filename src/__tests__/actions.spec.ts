@@ -455,6 +455,13 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.line).toEqual(0);
     });
 
+    it('should delete to the end of the line', () => {
+      deleteToEndOfLine(editor as any);
+
+      const { doc } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor\namet');
+    });
+
     it('should join next line to current line', () => {
       joinLines(editor as any);
 
@@ -526,6 +533,42 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(doc).toEqual(originalDoc);
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(9);
+    });
+
+    it('should navigate to the previous line', () => {
+      navigateLine(editor as any, 'up');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(5);
+    });
+
+    it('should navigate to the next line', () => {
+      navigateLine(editor as any, 'down');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(4);
+    });
+
+    it('should navigate the cursor backward', () => {
+      moveCursor(editor as any, 'backward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(4);
+    });
+
+    it('should navigate the cursor forward', () => {
+      moveCursor(editor as any, 'forward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(6);
     });
 
     it('should transform to uppercase', () => {

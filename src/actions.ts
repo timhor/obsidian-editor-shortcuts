@@ -137,13 +137,12 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
 };
 
 export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
-  let pos, line;
+  const pos = editor.getCursor();
+  let line;
 
   if (direction === 'up') {
-    pos = editor.getCursor('from');
     line = Math.max(pos.line - 1, 0);
   } else {
-    pos = editor.getCursor('to');
     line = pos.line + 1;
   }
 
@@ -154,7 +153,7 @@ export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
 };
 
 export const moveCursor = (editor: Editor, direction: DIRECTION) => {
-  const { line, ch } = editor.getCursor('to');
+  const { line, ch } = editor.getCursor();
 
   const movement = direction === DIRECTION.BACKWARD ? -1 : 1;
   const lineLength = editor.getLine(line).length;
