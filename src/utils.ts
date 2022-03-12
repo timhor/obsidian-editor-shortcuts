@@ -1,5 +1,49 @@
-import { Editor, EditorPosition, EditorSelection } from 'obsidian';
+import {
+  Editor,
+  EditorPosition,
+  EditorSelection,
+  EditorSelectionOrCaret,
+} from 'obsidian';
 import { DIRECTION } from './constants';
+
+type EditorActionCallback = (
+  editor: Editor,
+  selection: EditorSelection,
+  ...options: string[]
+) => EditorSelectionOrCaret;
+
+export const withMultipleSelections = (
+  editor: Editor,
+  callback: EditorActionCallback,
+  ...options: string[]
+) => {
+  // @ts-expect-error: Obsidian's Editor interface does not explicitly
+  // include the CodeMirror cm object, but it is there when logged out
+  // (this may break in future versions of the Obsidian API)
+  const { cm } = editor;
+
+  const selections = editor.listSelections();
+  const newSelections: EditorSelectionOrCaret[] = [];
+
+  const applyCallbackOnSelections = () => {
+    for (let i = 0; i < selections.length; i++) {
+      // Can't reuse selections variable as positions may change on each iteration
+      const selection = editor.listSelections()[i];
+      const newSelection = callback(editor, selection, ...options);
+      newSelections.push(newSelection);
+    }
+    editor.setSelections(newSelections);
+  };
+
+  if (cm) {
+    // Group all the updates into one atomic operation (so undo/redo work as expected)
+    cm.operation(applyCallbackOnSelections);
+  } else {
+    // Safe fallback if cm doesn't exist (so undo/redo will step through each change)
+    console.error('cm object not found, operations will not be buffered');
+    applyCallbackOnSelections();
+  }
+};
 
 export const getLineStartPos = (line: number): EditorPosition => ({
   line,
