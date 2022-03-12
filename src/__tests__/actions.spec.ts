@@ -242,6 +242,16 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.ch).toEqual(0);
     });
 
+    it('should not navigate past the end of the document', () => {
+      editor.setCursor({ line: 2, ch: 4 });
+      navigateLine(editor as any, 'down');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(4);
+    });
+
     it('should snap to the end of the line', () => {
       editor.setValue('line zero\nzz\nline two');
       editor.setCursor({ line: 0, ch: 5 });

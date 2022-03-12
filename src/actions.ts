@@ -143,7 +143,7 @@ export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
   if (direction === 'up') {
     line = Math.max(pos.line - 1, 0);
   } else {
-    line = pos.line + 1;
+    line = Math.min(pos.line + 1, editor.lineCount() - 1);
   }
 
   const endOfLine = getLineEndPos(line, editor);
