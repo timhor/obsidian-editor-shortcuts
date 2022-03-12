@@ -138,7 +138,7 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
 
 export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
   const pos = editor.getCursor();
-  let line;
+  let line: number;
 
   if (direction === 'up') {
     line = Math.max(pos.line - 1, 0);
