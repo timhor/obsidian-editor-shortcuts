@@ -1,20 +1,25 @@
 # Code Editor Shortcuts
 
-This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code or Sublime Text.
+This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code, Sublime Text, Emacs or Vim.
 
 | Command                                          | Shortcut \*                |
 | ------------------------------------------------ | -------------------------- |
 | Insert line below                                | `Ctrl` + `Enter` \*\*      |
 | Insert line above                                | `Ctrl` + `Shift` + `Enter` |
 | Delete line                                      | `Ctrl` + `Shift` + `K`     |
+| Delete to end of line                            | Not set                    |
 | Duplicate line                                   | `Ctrl` + `Shift` + `D`     |
 | Copy line up                                     | `Alt` + `Shift` + `Up`     |
 | Copy line down                                   | `Alt` + `Shift` + `Down`   |
 | Join line below to current line                  | `Ctrl` + `J`               |
 | Select line (repeat to keep expanding selection) | `Ctrl` + `L`               |
 | Select word                                      | Not set                    |
+| Move cursor left                                 | Not set                    |
+| Move cursor right                                | Not set                    |
 | Go to start of line                              | Not set                    |
 | Go to end of line                                | Not set                    |
+| Go to previous line                              | Not set                    |
+| Go to next line                                  | Not set                    |
 | Transform selection to uppercase                 | Not set                    |
 | Transform selection to lowercase                 | Not set                    |
 | Transform selection to title case                | Not set                    |
