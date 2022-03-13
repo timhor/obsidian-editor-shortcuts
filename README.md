@@ -1,13 +1,12 @@
 # Code Editor Shortcuts
 
-This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code, Sublime Text, Emacs or Vim.
+This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code or Sublime Text.
 
 | Command                                          | Shortcut \*                |
 | ------------------------------------------------ | -------------------------- |
 | Insert line below                                | `Ctrl` + `Enter` \*\*      |
 | Insert line above                                | `Ctrl` + `Shift` + `Enter` |
 | Delete line                                      | `Ctrl` + `Shift` + `K`     |
-| Delete to end of line                            | Not set                    |
 | Duplicate line                                   | `Ctrl` + `Shift` + `D`     |
 | Copy line up                                     | `Alt` + `Shift` + `Up`     |
 | Copy line down                                   | `Alt` + `Shift` + `Down`   |
@@ -20,6 +19,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Go to end of line                                | Not set                    |
 | Go to previous line                              | Not set                    |
 | Go to next line                                  | Not set                    |
+| Delete to end of line                            | Not set                    |
 | Transform selection to uppercase                 | Not set                    |
 | Transform selection to lowercase                 | Not set                    |
 | Transform selection to title case                | Not set                    |
