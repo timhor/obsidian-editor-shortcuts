@@ -27,7 +27,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 
 \*\* This may conflict with the default shortcut for _Toggle checklist status_; changing/removing one of the bindings is recommended
 
-If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Swap line up" and "Swap line down".
+If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Move line up" and "Move line down".
 
 ---
 
