@@ -17,7 +17,7 @@ import {
   expandSelectionToBrackets,
   expandSelectionToQuotes,
 } from '../actions';
-import { CASE } from '../constants';
+import { CASE, DIRECTION } from '../constants';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
 document.createRange = () => {
@@ -265,7 +265,7 @@ describe('Code Editor Shortcuts: actions', () => {
 
     it('should navigate the cursor backward', () => {
       editor.setCursor({ line: 2, ch: 2 });
-      moveCursor(editor as any, 'backward');
+      moveCursor(editor as any, DIRECTION.BACKWARD);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -274,7 +274,7 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it('should navigate the cursor backward over a line boundary', () => {
-      moveCursor(editor as any, 'backward');
+      moveCursor(editor as any, DIRECTION.BACKWARD);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -284,7 +284,7 @@ describe('Code Editor Shortcuts: actions', () => {
 
     it('should not attempt to navigate the cursor past start of document', () => {
       editor.setCursor({ line: 0, ch: 0 });
-      moveCursor(editor as any, 'backward');
+      moveCursor(editor as any, DIRECTION.BACKWARD);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -293,7 +293,7 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it('should navigate the cursor forward', () => {
-      moveCursor(editor as any, 'forward');
+      moveCursor(editor as any, DIRECTION.FORWARD);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -303,7 +303,7 @@ describe('Code Editor Shortcuts: actions', () => {
 
     it('should navigate the cursor forward over a line boundary', () => {
       editor.setCursor({ line: 1, ch: 9 });
-      moveCursor(editor as any, 'forward');
+      moveCursor(editor as any, DIRECTION.FORWARD);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -313,7 +313,7 @@ describe('Code Editor Shortcuts: actions', () => {
 
     it('should not attempt to navigate the cursor past end of document', () => {
       editor.setCursor({ line: 2, ch: 4 });
-      moveCursor(editor as any, 'forward');
+      moveCursor(editor as any, DIRECTION.FORWARD);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -564,7 +564,7 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it('should navigate the cursor backward', () => {
-      moveCursor(editor as any, 'backward');
+      moveCursor(editor as any, DIRECTION.BACKWARD);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -573,7 +573,7 @@ describe('Code Editor Shortcuts: actions', () => {
     });
 
     it('should navigate the cursor forward', () => {
-      moveCursor(editor as any, 'forward');
+      moveCursor(editor as any, DIRECTION.FORWARD);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
