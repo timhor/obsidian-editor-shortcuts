@@ -5,11 +5,14 @@ import {
   insertLineAbove,
   insertLineBelow,
   deleteSelectedLines,
+  deleteToEndOfLine,
   joinLines,
   copyLine,
   selectWord,
   selectLine,
   goToLineBoundary,
+  navigateLine,
+  moveCursor,
   transformCase,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
@@ -110,6 +113,30 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.line).toEqual(1);
     });
 
+    it('should delete to the end of the line', () => {
+      editor.setCursor({ line: 1, ch: 1 });
+      deleteToEndOfLine(editor as any);
+
+      const { doc } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\nd\namet');
+    });
+
+    it('should delete the newline when at the end of the line', () => {
+      editor.setCursor({ line: 1, ch: 9 });
+      deleteToEndOfLine(editor as any);
+
+      const { doc } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sitamet');
+    });
+
+    it('should delete nothing when at the end of the document', () => {
+      editor.setCursor({ line: 2, ch: 4 });
+      deleteToEndOfLine(editor as any);
+
+      const { doc } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\namet');
+    });
+
     it('should join next line to current line', () => {
       joinLines(editor as any);
 
@@ -184,6 +211,114 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(doc).toEqual(originalDoc);
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(9);
+    });
+
+    it('should navigate to the previous line', () => {
+      editor.setCursor({ line: 2, ch: 0 });
+      navigateLine(editor as any, 'up');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should not navigate past the start of the document', () => {
+      editor.setCursor({ line: 0, ch: 0 });
+      navigateLine(editor as any, 'up');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should navigate to the next line', () => {
+      navigateLine(editor as any, 'down');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should not navigate past the end of the document', () => {
+      editor.setCursor({ line: 2, ch: 4 });
+      navigateLine(editor as any, 'down');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(4);
+    });
+
+    it('should snap to the end of the line', () => {
+      editor.setValue('line zero\nzz\nline two');
+      editor.setCursor({ line: 0, ch: 5 });
+
+      navigateLine(editor as any, 'down');
+
+      const { cursor } = getDocumentAndSelection(editor);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(2);
+    });
+
+    it('should navigate the cursor backward', () => {
+      editor.setCursor({ line: 2, ch: 2 });
+      moveCursor(editor as any, 'backward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(1);
+    });
+
+    it('should navigate the cursor backward over a line boundary', () => {
+      moveCursor(editor as any, 'backward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(11);
+    });
+
+    it('should not attempt to navigate the cursor past start of document', () => {
+      editor.setCursor({ line: 0, ch: 0 });
+      moveCursor(editor as any, 'backward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should navigate the cursor forward', () => {
+      moveCursor(editor as any, 'forward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(1);
+    });
+
+    it('should navigate the cursor forward over a line boundary', () => {
+      editor.setCursor({ line: 1, ch: 9 });
+      moveCursor(editor as any, 'forward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(0);
+    });
+
+    it('should not attempt to navigate the cursor past end of document', () => {
+      editor.setCursor({ line: 2, ch: 4 });
+      moveCursor(editor as any, 'forward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(4);
     });
 
     it('should transform to uppercase', () => {
@@ -330,6 +465,13 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(cursor.line).toEqual(0);
     });
 
+    it('should delete to the end of the line', () => {
+      deleteToEndOfLine(editor as any);
+
+      const { doc } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor\namet');
+    });
+
     it('should join next line to current line', () => {
       joinLines(editor as any);
 
@@ -401,6 +543,42 @@ describe('Code Editor Shortcuts: actions', () => {
       expect(doc).toEqual(originalDoc);
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(9);
+    });
+
+    it('should navigate to the previous line', () => {
+      navigateLine(editor as any, 'up');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(5);
+    });
+
+    it('should navigate to the next line', () => {
+      navigateLine(editor as any, 'down');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(4);
+    });
+
+    it('should navigate the cursor backward', () => {
+      moveCursor(editor as any, 'backward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(4);
+    });
+
+    it('should navigate the cursor forward', () => {
+      moveCursor(editor as any, 'forward');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(6);
     });
 
     it('should transform to uppercase', () => {

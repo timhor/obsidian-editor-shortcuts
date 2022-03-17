@@ -2,6 +2,7 @@ import { Plugin } from 'obsidian';
 import {
   copyLine,
   deleteSelectedLines,
+  deleteToEndOfLine,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
   goToHeading,
@@ -9,11 +10,13 @@ import {
   insertLineAbove,
   insertLineBelow,
   joinLines,
+  moveCursor,
+  navigateLine,
   selectLine,
   selectWord,
   transformCase,
 } from './actions';
-import { CASE } from './constants';
+import { CASE, DIRECTION } from './constants';
 
 export default class CodeEditorShortcuts extends Plugin {
   onload() {
@@ -51,6 +54,12 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) => deleteSelectedLines(editor),
+    });
+
+    this.addCommand({
+      id: 'deleteToEndOfLine',
+      name: 'Delete to end of line',
+      editorCallback: (editor) => deleteToEndOfLine(editor),
     });
 
     this.addCommand({
@@ -129,6 +138,30 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLineEnd',
       name: 'Go to end of line',
       editorCallback: (editor) => goToLineBoundary(editor, 'end'),
+    });
+
+    this.addCommand({
+      id: 'goToNextLine',
+      name: 'Go to next line',
+      editorCallback: (editor) => navigateLine(editor, 'down'),
+    });
+
+    this.addCommand({
+      id: 'goToPrevLine',
+      name: 'Go to previous line',
+      editorCallback: (editor) => navigateLine(editor, 'up'),
+    });
+
+    this.addCommand({
+      id: 'goToNextChar',
+      name: 'Move cursor forward',
+      editorCallback: (editor) => moveCursor(editor, DIRECTION.FORWARD),
+    });
+
+    this.addCommand({
+      id: 'goToPrevChar',
+      name: 'Move cursor backward',
+      editorCallback: (editor) => moveCursor(editor, DIRECTION.BACKWARD),
     });
 
     this.addCommand({

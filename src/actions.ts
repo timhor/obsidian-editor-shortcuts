@@ -54,6 +54,19 @@ export const deleteSelectedLines = (editor: Editor) => {
   }
 };
 
+export const deleteToEndOfLine = (editor: Editor) => {
+  const pos = editor.getCursor();
+  const endPos = getLineEndPos(pos.line, editor);
+
+  if (pos.line === endPos.line && pos.ch === endPos.ch) {
+    // We're at the end of the line so delete just the newline
+    endPos.line = endPos.line + 1;
+    endPos.ch = 0;
+  }
+
+  editor.replaceRange('', pos, endPos);
+};
+
 export const joinLines = (editor: Editor) => {
   const { line } = editor.getCursor();
   const contentsOfNextLine = editor.getLine(line + 1).trimStart();
@@ -121,6 +134,45 @@ export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
     const { line } = editor.getCursor('to');
     editor.setSelection(getLineEndPos(line, editor));
   }
+};
+
+export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
+  const pos = editor.getCursor();
+  let line: number;
+
+  if (direction === 'up') {
+    line = Math.max(pos.line - 1, 0);
+  } else {
+    line = Math.min(pos.line + 1, editor.lineCount() - 1);
+  }
+
+  const endOfLine = getLineEndPos(line, editor);
+  const ch = Math.min(pos.ch, endOfLine.ch);
+
+  editor.setSelection({ line, ch });
+};
+
+export const moveCursor = (editor: Editor, direction: DIRECTION) => {
+  const { line, ch } = editor.getCursor();
+
+  const movement = direction === DIRECTION.BACKWARD ? -1 : 1;
+  const lineLength = editor.getLine(line).length;
+  const newPos = { line, ch: ch + movement };
+
+  if (newPos.ch < 0 && newPos.line === 0) {
+    // Moving backward past start of doc, do nothing
+    newPos.ch = ch;
+  } else if (newPos.ch < 0) {
+    // Wrap backward over start of line
+    newPos.line = Math.max(newPos.line - 1, 0);
+    newPos.ch = editor.getLine(newPos.line).length;
+  } else if (newPos.ch > lineLength) {
+    // Wrap forward over end of line
+    newPos.line += 1;
+    newPos.ch = 0;
+  }
+
+  editor.setSelection(newPos);
 };
 
 export const transformCase = (editor: Editor, caseType: CASE) => {
