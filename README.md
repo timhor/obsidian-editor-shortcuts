@@ -36,7 +36,7 @@ If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Cod
 
 ---
 
-_Note: these shortcuts currently do not work with [multiple cursors](https://help.obsidian.md/How+to/Working+with+multiple+cursors)_
+_Note: these shortcuts also work with [multiple cursors](https://help.obsidian.md/How+to/Working+with+multiple+cursors)_, with the exception of "Go to next/previous heading".
 
 ## Installing the plugin
 
