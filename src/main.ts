@@ -47,6 +47,7 @@ export default class CodeEditorShortcuts extends Plugin {
       editorCallback: (editor) =>
         withMultipleSelections(editor, insertLineBelow, {
           customSelectionHandler: insertLineBelowHandler,
+          repeatSameLineActions: true,
         }),
     });
 

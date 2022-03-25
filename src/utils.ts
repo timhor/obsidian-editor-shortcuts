@@ -14,35 +14,54 @@ type EditorActionCallback = (
 ) => EditorSelectionOrCaret;
 
 type MultipleSelectionOptions = {
+  // Additional information to be passed to the EditorActionCallback
   args?: string;
+
+  // Perform further processing of new selections before they are set
   customSelectionHandler?: CustomSelectionHandler;
+
+  // Whether the action should be repeated for cursors on the same line
+  repeatSameLineActions?: boolean;
 };
 
 export const withMultipleSelections = (
   editor: Editor,
   callback: EditorActionCallback,
-  options?: MultipleSelectionOptions,
+  options: MultipleSelectionOptions = { repeatSameLineActions: true },
 ) => {
   // @ts-expect-error: Obsidian's Editor interface does not explicitly
   // include the CodeMirror cm object, but it is there when logged out
   // (this may break in future versions of the Obsidian API)
   const { cm } = editor;
 
-  const selections = editor.listSelections();
+  let selections = editor.listSelections();
   let newSelections: EditorSelectionOrCaret[] = [];
+
+  if (!options.repeatSameLineActions) {
+    const seenLines: number[] = [];
+    selections = selections.filter((selection) => {
+      const currentLine = selection.head.line;
+      if (!seenLines.includes(currentLine)) {
+        seenLines.push(currentLine);
+        return true;
+      }
+      return false;
+    });
+  }
 
   const applyCallbackOnSelections = () => {
     for (let i = 0; i < selections.length; i++) {
       // Can't reuse selections variable as positions may change on each iteration
       const selection = editor.listSelections()[i];
+
       // Selections may disappear (e.g. running delete line for two cursors on the same line)
       if (selection) {
-        const newSelection = callback(editor, selection, options?.args);
+        const newSelection = callback(editor, selection, options.args);
         newSelections.push(newSelection);
       }
     }
 
-    if (options?.customSelectionHandler) {
+    if (options.customSelectionHandler) {
       newSelections = options.customSelectionHandler(newSelections);
     }
     editor.setSelections(newSelections);
