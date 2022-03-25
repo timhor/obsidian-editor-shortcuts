@@ -89,7 +89,9 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, copyLine, 'down'),
+        withMultipleSelections(editor, copyLine, {
+          args: 'down',
+        }),
     });
 
     this.addCommand({
@@ -102,7 +104,9 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, copyLine, 'up'),
+        withMultipleSelections(editor, copyLine, {
+          args: 'up',
+        }),
     });
 
     this.addCommand({
@@ -115,7 +119,9 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, copyLine, 'down'),
+        withMultipleSelections(editor, copyLine, {
+          args: 'down',
+        }),
     });
 
     this.addCommand({
@@ -140,63 +146,81 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLineStart',
       name: 'Go to start of line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, goToLineBoundary, 'start'),
+        withMultipleSelections(editor, goToLineBoundary, {
+          args: 'start',
+        }),
     });
 
     this.addCommand({
       id: 'goToLineEnd',
       name: 'Go to end of line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, goToLineBoundary, 'end'),
+        withMultipleSelections(editor, goToLineBoundary, {
+          args: 'end',
+        }),
     });
 
     this.addCommand({
       id: 'goToNextLine',
       name: 'Go to next line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, navigateLine, 'down'),
+        withMultipleSelections(editor, navigateLine, {
+          args: 'down',
+        }),
     });
 
     this.addCommand({
       id: 'goToPrevLine',
       name: 'Go to previous line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, navigateLine, 'up'),
+        withMultipleSelections(editor, navigateLine, {
+          args: 'up',
+        }),
     });
 
     this.addCommand({
       id: 'goToNextChar',
       name: 'Move cursor forward',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, moveCursor, DIRECTION.FORWARD),
+        withMultipleSelections(editor, moveCursor, {
+          args: DIRECTION.FORWARD,
+        }),
     });
 
     this.addCommand({
       id: 'goToPrevChar',
       name: 'Move cursor backward',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, moveCursor, DIRECTION.BACKWARD),
+        withMultipleSelections(editor, moveCursor, {
+          args: DIRECTION.BACKWARD,
+        }),
     });
 
     this.addCommand({
       id: 'transformToUppercase',
       name: 'Transform selection to uppercase',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, transformCase, CASE.UPPER),
+        withMultipleSelections(editor, transformCase, {
+          args: CASE.UPPER,
+        }),
     });
 
     this.addCommand({
       id: 'transformToLowercase',
       name: 'Transform selection to lowercase',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, transformCase, CASE.LOWER),
+        withMultipleSelections(editor, transformCase, {
+          args: CASE.LOWER,
+        }),
     });
 
     this.addCommand({
       id: 'transformToTitlecase',
       name: 'Transform selection to title case',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, transformCase, CASE.TITLE),
+        withMultipleSelections(editor, transformCase, {
+          args: CASE.TITLE,
+        }),
     });
 
     this.addCommand({

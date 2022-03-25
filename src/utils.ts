@@ -5,17 +5,23 @@ import {
   EditorSelectionOrCaret,
 } from 'obsidian';
 import { DIRECTION } from './constants';
+import { CustomSelectionHandler } from './custom-selection-handlers';
 
 type EditorActionCallback = (
   editor: Editor,
   selection: EditorSelection,
-  ...options: string[]
+  args: string,
 ) => EditorSelectionOrCaret;
+
+type MultipleSelectionOptions = {
+  args?: string;
+  customSelectionHandler?: CustomSelectionHandler;
+};
 
 export const withMultipleSelections = (
   editor: Editor,
   callback: EditorActionCallback,
-  ...options: string[]
+  options?: MultipleSelectionOptions,
 ) => {
   // @ts-expect-error: Obsidian's Editor interface does not explicitly
   // include the CodeMirror cm object, but it is there when logged out
@@ -23,14 +29,21 @@ export const withMultipleSelections = (
   const { cm } = editor;
 
   const selections = editor.listSelections();
-  const newSelections: EditorSelectionOrCaret[] = [];
+  let newSelections: EditorSelectionOrCaret[] = [];
 
   const applyCallbackOnSelections = () => {
     for (let i = 0; i < selections.length; i++) {
       // Can't reuse selections variable as positions may change on each iteration
       const selection = editor.listSelections()[i];
-      const newSelection = callback(editor, selection, ...options);
-      newSelections.push(newSelection);
+      // Selections may disappear (e.g. running delete line for two cursors on the same line)
+      if (selection) {
+        const newSelection = callback(editor, selection, options?.args);
+        newSelections.push(newSelection);
+      }
+    }
+
+    if (options?.customSelectionHandler) {
+      newSelections = options.customSelectionHandler(newSelections);
     }
     editor.setSelections(newSelections);
   };
