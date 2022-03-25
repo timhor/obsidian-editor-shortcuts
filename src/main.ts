@@ -18,6 +18,7 @@ import {
 } from './actions';
 import { withMultipleSelections } from './utils';
 import { CASE, DIRECTION } from './constants';
+import { insertLineBelowHandler } from './custom-selection-handlers';
 
 export default class CodeEditorShortcuts extends Plugin {
   onload() {
@@ -44,7 +45,9 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, insertLineBelow),
+        withMultipleSelections(editor, insertLineBelow, {
+          customSelectionHandler: insertLineBelowHandler,
+        }),
     });
 
     this.addCommand({
