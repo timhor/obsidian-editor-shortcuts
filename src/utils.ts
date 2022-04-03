@@ -24,10 +24,12 @@ type MultipleSelectionOptions = {
   repeatSameLineActions?: boolean;
 };
 
+export const defaultMultipleSelectionOptions = { repeatSameLineActions: true };
+
 export const withMultipleSelections = (
   editor: Editor,
   callback: EditorActionCallback,
-  options: MultipleSelectionOptions = { repeatSameLineActions: true },
+  options: MultipleSelectionOptions = defaultMultipleSelectionOptions,
 ) => {
   // @ts-expect-error: Obsidian's Editor interface does not explicitly
   // include the CodeMirror cm object, but it is there when logged out
