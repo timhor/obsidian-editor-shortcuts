@@ -1,5 +1,83 @@
-import { Editor, EditorPosition, EditorSelection } from 'obsidian';
+import {
+  Editor,
+  EditorPosition,
+  EditorSelection,
+  EditorSelectionOrCaret,
+} from 'obsidian';
 import { DIRECTION } from './constants';
+import { CustomSelectionHandler } from './custom-selection-handlers';
+
+type EditorActionCallback = (
+  editor: Editor,
+  selection: EditorSelection,
+  args: string,
+) => EditorSelectionOrCaret;
+
+type MultipleSelectionOptions = {
+  // Additional information to be passed to the EditorActionCallback
+  args?: string;
+
+  // Perform further processing of new selections before they are set
+  customSelectionHandler?: CustomSelectionHandler;
+
+  // Whether the action should be repeated for cursors on the same line
+  repeatSameLineActions?: boolean;
+};
+
+export const defaultMultipleSelectionOptions = { repeatSameLineActions: true };
+
+export const withMultipleSelections = (
+  editor: Editor,
+  callback: EditorActionCallback,
+  options: MultipleSelectionOptions = defaultMultipleSelectionOptions,
+) => {
+  // @ts-expect-error: Obsidian's Editor interface does not explicitly
+  // include the CodeMirror cm object, but it is there when logged out
+  // (this may break in future versions of the Obsidian API)
+  const { cm } = editor;
+
+  let selections = editor.listSelections();
+  let newSelections: EditorSelectionOrCaret[] = [];
+
+  if (!options.repeatSameLineActions) {
+    const seenLines: number[] = [];
+    selections = selections.filter((selection) => {
+      const currentLine = selection.head.line;
+      if (!seenLines.includes(currentLine)) {
+        seenLines.push(currentLine);
+        return true;
+      }
+      return false;
+    });
+  }
+
+  const applyCallbackOnSelections = () => {
+    for (let i = 0; i < selections.length; i++) {
+      // Can't reuse selections variable as positions may change on each iteration
+      const selection = editor.listSelections()[i];
+
+      // Selections may disappear (e.g. running delete line for two cursors on the same line)
+      if (selection) {
+        const newSelection = callback(editor, selection, options.args);
+        newSelections.push(newSelection);
+      }
+    }
+
+    if (options.customSelectionHandler) {
+      newSelections = options.customSelectionHandler(newSelections);
+    }
+    editor.setSelections(newSelections);
+  };
+
+  if (cm) {
+    // Group all the updates into one atomic operation (so undo/redo work as expected)
+    cm.operation(applyCallbackOnSelections);
+  } else {
+    // Safe fallback if cm doesn't exist (so undo/redo will step through each change)
+    console.error('cm object not found, operations will not be buffered');
+    applyCallbackOnSelections();
+  }
+};
 
 export const getLineStartPos = (line: number): EditorPosition => ({
   line,

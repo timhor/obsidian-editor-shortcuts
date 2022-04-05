@@ -1,4 +1,4 @@
-import { App, Editor } from 'obsidian';
+import { App, Editor, EditorSelection } from 'obsidian';
 import {
   CASE,
   DIRECTION,
@@ -17,29 +17,28 @@ import {
   wordRangeAtPos,
 } from './utils';
 
-export const insertLineAbove = (editor: Editor) => {
-  const { line } = editor.getCursor();
+export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
+  const { line } = selection.head;
   const startOfCurrentLine = getLineStartPos(line);
   editor.replaceRange('\n', startOfCurrentLine);
-  editor.setSelection(startOfCurrentLine);
+  return { anchor: startOfCurrentLine };
 };
 
-export const insertLineBelow = (editor: Editor) => {
-  const { line } = editor.getCursor();
+export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
+  const { line } = selection.head;
   const endOfCurrentLine = getLineEndPos(line, editor);
   const indentation = getLeadingWhitespace(editor.getLine(line));
   editor.replaceRange('\n' + indentation, endOfCurrentLine);
-  editor.setSelection({ line: line + 1, ch: indentation.length });
+  return { anchor: { line: line + 1, ch: indentation.length } };
 };
 
-export const deleteSelectedLines = (editor: Editor) => {
-  const selections = editor.listSelections();
-  if (selections.length === 0) {
-    return;
-  }
-  const { from, to } = getSelectionBoundaries(selections[0]);
+export const deleteSelectedLines = (
+  editor: Editor,
+  selection: EditorSelection,
+) => {
+  const { from, to } = getSelectionBoundaries(selection);
   if (to.line === editor.lastLine()) {
-    // there is no 'next line' when cursor is on the last line
+    // There is no 'next line' when cursor is on the last line
     editor.replaceRange(
       '',
       getLineEndPos(from.line - 1, editor),
@@ -52,10 +51,14 @@ export const deleteSelectedLines = (editor: Editor) => {
       getLineStartPos(to.line + 1),
     );
   }
+  return { anchor: { line: from.line, ch: selection.head.ch } };
 };
 
-export const deleteToEndOfLine = (editor: Editor) => {
-  const pos = editor.getCursor();
+export const deleteToEndOfLine = (
+  editor: Editor,
+  selection: EditorSelection,
+) => {
+  const pos = selection.head;
   const endPos = getLineEndPos(pos.line, editor);
 
   if (pos.line === endPos.line && pos.ch === endPos.ch) {
@@ -65,10 +68,11 @@ export const deleteToEndOfLine = (editor: Editor) => {
   }
 
   editor.replaceRange('', pos, endPos);
+  return selection;
 };
 
-export const joinLines = (editor: Editor) => {
-  const { line } = editor.getCursor();
+export const joinLines = (editor: Editor, selection: EditorSelection) => {
+  const { line } = selection.head;
   const contentsOfNextLine = editor.getLine(line + 1).trimStart();
   const endOfCurrentLine = getLineEndPos(line, editor);
   const endOfNextLine = getLineEndPos(line + 1, editor);
@@ -79,65 +83,69 @@ export const joinLines = (editor: Editor) => {
     endOfCurrentLine,
     endOfNextLine,
   );
-  editor.setSelection(endOfCurrentLine);
+  return { anchor: endOfCurrentLine };
 };
 
-export const copyLine = (editor: Editor, direction: 'up' | 'down') => {
-  const selections = editor.listSelections();
-  if (selections.length === 0) {
-    return;
-  }
-  const { from, to } = getSelectionBoundaries(selections[0]);
+export const copyLine = (
+  editor: Editor,
+  selection: EditorSelection,
+  direction: 'up' | 'down',
+) => {
+  const { from, to } = getSelectionBoundaries(selection);
   const fromLineStart = getLineStartPos(from.line);
   const toLineEnd = getLineEndPos(to.line, editor);
   const contentsOfSelectedLines = editor.getRange(fromLineStart, toLineEnd);
   if (direction === 'up') {
     editor.replaceRange('\n' + contentsOfSelectedLines, toLineEnd);
-    editor.setSelections(selections);
+    return selection;
   } else {
     editor.replaceRange(contentsOfSelectedLines + '\n', fromLineStart);
+    const linesSelected = to.line - from.line + 1;
+    return {
+      anchor: { line: to.line + 1, ch: from.ch },
+      head: { line: to.line + linesSelected, ch: to.ch },
+    };
   }
 };
 
-export const selectWord = (editor: Editor) => {
-  const selections = editor.listSelections();
-  const newSelections = selections.map((selection) => {
-    const { from, to } = getSelectionBoundaries(selection);
-    const selectedText = editor.getRange(from, to);
-    // Do not modify selection if something is selected
-    if (selectedText.length !== 0) {
-      return selection;
-    } else {
-      return wordRangeAtPos(from, editor.getLine(from.line));
-    }
-  });
-  editor.setSelections(newSelections);
+export const selectWord = (editor: Editor, selection: EditorSelection) => {
+  const { from, to } = getSelectionBoundaries(selection);
+  const selectedText = editor.getRange(from, to);
+  // Do not modify selection if something is selected
+  if (selectedText.length !== 0) {
+    return selection;
+  } else {
+    return wordRangeAtPos(from, editor.getLine(from.line));
+  }
 };
 
-export const selectLine = (editor: Editor) => {
-  const selections = editor.listSelections();
-  if (selections.length === 0) {
-    return;
-  }
-  const { from, to } = getSelectionBoundaries(selections[0]);
+export const selectLine = (_editor: Editor, selection: EditorSelection) => {
+  const { from, to } = getSelectionBoundaries(selection);
   const startOfCurrentLine = getLineStartPos(from.line);
   // if a line is already selected, expand the selection to the next line
   const startOfNextLine = getLineStartPos(to.line + 1);
-  editor.setSelection(startOfCurrentLine, startOfNextLine);
+  return { anchor: startOfCurrentLine, head: startOfNextLine };
 };
 
-export const goToLineBoundary = (editor: Editor, boundary: 'start' | 'end') => {
+export const goToLineBoundary = (
+  editor: Editor,
+  selection: EditorSelection,
+  boundary: 'start' | 'end',
+) => {
+  const { from, to } = getSelectionBoundaries(selection);
   if (boundary === 'start') {
-    const { line } = editor.getCursor('from');
-    editor.setSelection(getLineStartPos(line));
+    return { anchor: getLineStartPos(from.line) };
   } else {
-    const { line } = editor.getCursor('to');
-    editor.setSelection(getLineEndPos(line, editor));
+    return { anchor: getLineEndPos(to.line, editor) };
   }
 };
 
-export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
-  const pos = editor.getCursor();
+export const navigateLine = (
+  editor: Editor,
+  selection: EditorSelection,
+  direction: 'up' | 'down',
+) => {
+  const pos = selection.head;
   let line: number;
 
   if (direction === 'up') {
@@ -149,11 +157,15 @@ export const navigateLine = (editor: Editor, direction: 'up' | 'down') => {
   const endOfLine = getLineEndPos(line, editor);
   const ch = Math.min(pos.ch, endOfLine.ch);
 
-  editor.setSelection({ line, ch });
+  return { anchor: { line, ch } };
 };
 
-export const moveCursor = (editor: Editor, direction: DIRECTION) => {
-  const { line, ch } = editor.getCursor();
+export const moveCursor = (
+  editor: Editor,
+  selection: EditorSelection,
+  direction: DIRECTION,
+) => {
+  const { line, ch } = selection.head;
 
   const movement = direction === DIRECTION.BACKWARD ? -1 : 1;
   const lineLength = editor.getLine(line).length;
@@ -172,23 +184,27 @@ export const moveCursor = (editor: Editor, direction: DIRECTION) => {
     newPos.ch = 0;
   }
 
-  editor.setSelection(newPos);
+  return { anchor: newPos };
 };
 
-export const transformCase = (editor: Editor, caseType: CASE) => {
-  const originalSelections = editor.listSelections();
-  let selectedText = editor.getSelection();
+export const transformCase = (
+  editor: Editor,
+  selection: EditorSelection,
+  caseType: CASE,
+) => {
+  let { from, to } = getSelectionBoundaries(selection);
+  let selectedText = editor.getRange(from, to);
 
   // apply transform on word at cursor if nothing is selected
   if (selectedText.length === 0) {
-    const pos = editor.getCursor('from');
+    const pos = selection.head;
     const { anchor, head } = wordRangeAtPos(pos, editor.getLine(pos.line));
-    editor.setSelection(anchor, head);
+    [from, to] = [anchor, head];
     selectedText = editor.getRange(anchor, head);
   }
 
   if (caseType === CASE.TITLE) {
-    editor.replaceSelection(
+    editor.replaceRange(
       // use capture group to join with the same separator used to split
       selectedText
         .split(/(\s+)/)
@@ -203,33 +219,34 @@ export const transformCase = (editor: Editor, caseType: CASE) => {
           return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
         })
         .join(''),
+      from,
+      to,
     );
   } else {
-    editor.replaceSelection(
+    editor.replaceRange(
       caseType === CASE.UPPER
         ? selectedText.toUpperCase()
         : selectedText.toLowerCase(),
+      from,
+      to,
     );
   }
 
-  // restore original selection after replacing content
-  if (originalSelections.length > 0) {
-    const { anchor, head } = originalSelections[0];
-    editor.setSelection(anchor, head);
-  }
+  return selection;
 };
 
 const expandSelection = ({
   editor,
+  selection,
   openingCharacterCheck,
   matchingCharacterMap,
 }: {
   editor: Editor;
+  selection: EditorSelection;
   openingCharacterCheck: CheckCharacter;
   matchingCharacterMap: MatchingCharacterMap;
 }) => {
-  let anchor = editor.getCursor('anchor');
-  let head = editor.getCursor('head');
+  let { anchor, head } = selection;
 
   // in case user selects upwards
   if (anchor.line >= head.line && anchor.ch > anchor.ch) {
@@ -243,7 +260,7 @@ const expandSelection = ({
     searchDirection: DIRECTION.BACKWARD,
   });
   if (!newAnchor) {
-    return;
+    return selection;
   }
 
   const newHead = findPosOfNextCharacter({
@@ -254,22 +271,30 @@ const expandSelection = ({
     searchDirection: DIRECTION.FORWARD,
   });
   if (!newHead) {
-    return;
+    return selection;
   }
 
-  editor.setSelection(newAnchor.pos, newHead.pos);
+  return { anchor: newAnchor.pos, head: newHead.pos };
 };
 
-export const expandSelectionToBrackets = (editor: Editor) =>
+export const expandSelectionToBrackets = (
+  editor: Editor,
+  selection: EditorSelection,
+) =>
   expandSelection({
     editor,
+    selection,
     openingCharacterCheck: (char: string) => /[([{]/.test(char),
     matchingCharacterMap: MATCHING_BRACKETS,
   });
 
-export const expandSelectionToQuotes = (editor: Editor) =>
+export const expandSelectionToQuotes = (
+  editor: Editor,
+  selection: EditorSelection,
+) =>
   expandSelection({
     editor,
+    selection,
     openingCharacterCheck: (char: string) => /['"`]/.test(char),
     matchingCharacterMap: MATCHING_QUOTES,
   });

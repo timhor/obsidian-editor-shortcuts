@@ -16,7 +16,12 @@ import {
   selectWord,
   transformCase,
 } from './actions';
+import {
+  defaultMultipleSelectionOptions,
+  withMultipleSelections,
+} from './utils';
 import { CASE, DIRECTION } from './constants';
+import { insertLineBelowHandler } from './custom-selection-handlers';
 
 export default class CodeEditorShortcuts extends Plugin {
   onload() {
@@ -29,7 +34,8 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'Enter',
         },
       ],
-      editorCallback: (editor) => insertLineAbove(editor),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, insertLineAbove),
     });
 
     this.addCommand({
@@ -41,7 +47,11 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'Enter',
         },
       ],
-      editorCallback: (editor) => insertLineBelow(editor),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, insertLineBelow, {
+          ...defaultMultipleSelectionOptions,
+          customSelectionHandler: insertLineBelowHandler,
+        }),
     });
 
     this.addCommand({
@@ -53,13 +63,15 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'K',
         },
       ],
-      editorCallback: (editor) => deleteSelectedLines(editor),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, deleteSelectedLines),
     });
 
     this.addCommand({
       id: 'deleteToEndOfLine',
       name: 'Delete to end of line',
-      editorCallback: (editor) => deleteToEndOfLine(editor),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, deleteToEndOfLine),
     });
 
     this.addCommand({
@@ -71,7 +83,11 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'J',
         },
       ],
-      editorCallback: (editor) => joinLines(editor),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, joinLines, {
+          ...defaultMultipleSelectionOptions,
+          repeatSameLineActions: false,
+        }),
     });
 
     this.addCommand({
@@ -83,7 +99,11 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'D',
         },
       ],
-      editorCallback: (editor) => copyLine(editor, 'down'),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, copyLine, {
+          ...defaultMultipleSelectionOptions,
+          args: 'down',
+        }),
     });
 
     this.addCommand({
@@ -95,7 +115,11 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'ArrowUp',
         },
       ],
-      editorCallback: (editor) => copyLine(editor, 'up'),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, copyLine, {
+          ...defaultMultipleSelectionOptions,
+          args: 'up',
+        }),
     });
 
     this.addCommand({
@@ -107,13 +131,17 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'ArrowDown',
         },
       ],
-      editorCallback: (editor) => copyLine(editor, 'down'),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, copyLine, {
+          ...defaultMultipleSelectionOptions,
+          args: 'down',
+        }),
     });
 
     this.addCommand({
       id: 'selectWord',
       name: 'Select word',
-      editorCallback: (editor) => selectWord(editor),
+      editorCallback: (editor) => withMultipleSelections(editor, selectWord),
     });
 
     this.addCommand({
@@ -125,73 +153,111 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'L',
         },
       ],
-      editorCallback: (editor) => selectLine(editor),
+      editorCallback: (editor) => withMultipleSelections(editor, selectLine),
     });
 
     this.addCommand({
       id: 'goToLineStart',
       name: 'Go to start of line',
-      editorCallback: (editor) => goToLineBoundary(editor, 'start'),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, goToLineBoundary, {
+          ...defaultMultipleSelectionOptions,
+          args: 'start',
+        }),
     });
 
     this.addCommand({
       id: 'goToLineEnd',
       name: 'Go to end of line',
-      editorCallback: (editor) => goToLineBoundary(editor, 'end'),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, goToLineBoundary, {
+          ...defaultMultipleSelectionOptions,
+          args: 'end',
+        }),
     });
 
     this.addCommand({
       id: 'goToNextLine',
       name: 'Go to next line',
-      editorCallback: (editor) => navigateLine(editor, 'down'),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, navigateLine, {
+          ...defaultMultipleSelectionOptions,
+          args: 'down',
+        }),
     });
 
     this.addCommand({
       id: 'goToPrevLine',
       name: 'Go to previous line',
-      editorCallback: (editor) => navigateLine(editor, 'up'),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, navigateLine, {
+          ...defaultMultipleSelectionOptions,
+          args: 'up',
+        }),
     });
 
     this.addCommand({
       id: 'goToNextChar',
       name: 'Move cursor forward',
-      editorCallback: (editor) => moveCursor(editor, DIRECTION.FORWARD),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, moveCursor, {
+          ...defaultMultipleSelectionOptions,
+          args: DIRECTION.FORWARD,
+        }),
     });
 
     this.addCommand({
       id: 'goToPrevChar',
       name: 'Move cursor backward',
-      editorCallback: (editor) => moveCursor(editor, DIRECTION.BACKWARD),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, moveCursor, {
+          ...defaultMultipleSelectionOptions,
+          args: DIRECTION.BACKWARD,
+        }),
     });
 
     this.addCommand({
       id: 'transformToUppercase',
       name: 'Transform selection to uppercase',
-      editorCallback: (editor) => transformCase(editor, CASE.UPPER),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, transformCase, {
+          ...defaultMultipleSelectionOptions,
+          args: CASE.UPPER,
+        }),
     });
 
     this.addCommand({
       id: 'transformToLowercase',
       name: 'Transform selection to lowercase',
-      editorCallback: (editor) => transformCase(editor, CASE.LOWER),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, transformCase, {
+          ...defaultMultipleSelectionOptions,
+          args: CASE.LOWER,
+        }),
     });
 
     this.addCommand({
       id: 'transformToTitlecase',
       name: 'Transform selection to title case',
-      editorCallback: (editor) => transformCase(editor, CASE.TITLE),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, transformCase, {
+          ...defaultMultipleSelectionOptions,
+          args: CASE.TITLE,
+        }),
     });
 
     this.addCommand({
       id: 'expandSelectionToBrackets',
       name: 'Expand selection to brackets',
-      editorCallback: (editor) => expandSelectionToBrackets(editor),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, expandSelectionToBrackets),
     });
 
     this.addCommand({
       id: 'expandSelectionToQuotes',
       name: 'Expand selection to quotes',
-      editorCallback: (editor) => expandSelectionToQuotes(editor),
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, expandSelectionToQuotes),
     });
 
     this.addCommand({
