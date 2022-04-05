@@ -56,3 +56,9 @@ To get started:
 - Install dependencies: `yarn install`
 - Run the extension: `yarn start`
 - Run tests: `yarn test` (use `--watch` for watch mode)
+
+## Support
+
+This plugin is completely free to use, but if you'd like to say thanks, consider buying me a coffee! 😄
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C59A43G)
