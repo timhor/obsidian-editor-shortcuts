@@ -1,5 +1,5 @@
 import CodeMirror from 'codemirror';
-import type { Editor } from 'codemirror';
+import type { Editor, Range } from 'codemirror';
 import { getDocumentAndSelection } from './test-helpers';
 import {
   insertLineAbove,
@@ -587,6 +587,46 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
           }),
         },
       ]);
+    });
+  });
+
+  describe('undo: sanity check', () => {
+    it('should group changes as a single transaction', () => {
+      let doc: string;
+      let selections: any;
+      const expectedDoc =
+        `\nlorem ipsum\ndolor sit\n\namet\n\n\n\n` +
+        `consectetur "adipiscing" 'elit'\n(donec [mattis])\ntincidunt metus`;
+      const expectedSelectionRanges = [
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 0 }),
+          head: expect.objectContaining({ line: 3, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 0 }),
+          head: expect.objectContaining({ line: 6, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 7, ch: 0 }),
+          head: expect.objectContaining({ line: 7, ch: 0 }),
+        },
+      ];
+
+      withMultipleSelections(editor as any, insertLineAbove);
+
+      ({ doc, selections } = getDocumentAndSelection(editor));
+      expect(doc).toEqual(expectedDoc);
+      expect(selections).toEqual(expectedSelectionRanges);
+
+      editor.undo();
+
+      ({ doc, selections } = getDocumentAndSelection(editor));
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual(originalSelectionRanges);
     });
   });
 });
