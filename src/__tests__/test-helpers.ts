@@ -5,6 +5,7 @@ export const getDocumentAndSelection = (editor: Editor) => {
     doc: editor.getValue(),
     cursor: editor.getCursor(),
     selectedText: editor.getSelection(),
+    selectedTextMultiple: editor.getSelections(),
     selections: editor.listSelections(),
   };
 };
