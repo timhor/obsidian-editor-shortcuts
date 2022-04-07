@@ -5,6 +5,7 @@ import {
   LOWERCASE_ARTICLES,
   MATCHING_BRACKETS,
   MATCHING_QUOTES,
+  MATCHING_QUOTES_BRACKETS,
   MatchingCharacterMap,
 } from './constants';
 import {
@@ -297,6 +298,17 @@ export const expandSelectionToQuotes = (
     selection,
     openingCharacterCheck: (char: string) => /['"`]/.test(char),
     matchingCharacterMap: MATCHING_QUOTES,
+  });
+
+export const expandSelectionToQuotesOrBrackets = (
+  editor: Editor,
+  selection: EditorSelection,
+) =>
+  expandSelection({
+    editor,
+    selection,
+    openingCharacterCheck: (char: string) => /['"`([{]/.test(char),
+    matchingCharacterMap: MATCHING_QUOTES_BRACKETS,
   });
 
 export const goToHeading = (

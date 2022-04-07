@@ -25,6 +25,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Transform selection to title case                | Not set                    |
 | Expand selection to brackets                     | Not set                    |
 | Expand selection to quotes                       | Not set                    |
+| Expand selection to quotes or brackets           | Not set                    |
 | Go to next heading                               | Not set                    |
 | Go to previous heading                           | Not set                    |
 

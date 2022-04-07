@@ -24,3 +24,12 @@ export const MATCHING_QUOTES: MatchingCharacterMap = {
   '"': '"',
   '`': '`',
 };
+
+export const MATCHING_QUOTES_BRACKETS: MatchingCharacterMap = {
+  "'": "'",
+  '"': '"',
+  '`': '`',
+  '[': ']',
+  '(': ')',
+  '{': '}',
+};
