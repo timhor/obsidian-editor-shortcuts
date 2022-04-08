@@ -76,7 +76,7 @@ export const joinLines = (editor: Editor, selection: EditorSelection) => {
   const { line } = selection.head;
   const contentsOfNextLine = editor
     .getLine(line + 1)
-    .replace(/^\s*(?:- )?/, '');
+    .replace(/^\s*((-|\+|\*|\d+\.) )?/, '');
   const endOfCurrentLine = getLineEndPos(line, editor);
   const endOfNextLine = getLineEndPos(line + 1, editor);
   editor.replaceRange(
