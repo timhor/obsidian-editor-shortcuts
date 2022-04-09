@@ -16,6 +16,7 @@ import {
   transformCase,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
+  expandSelectionToQuotesOrBrackets,
 } from '../actions';
 import { CASE, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
@@ -505,6 +506,22 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
       expect(selectedText).toEqual('');
+    });
+  });
+
+  describe('expandSelectionToQuotesOrBrackets', () => {
+    it.each([
+      ['quotes', '("lorem ipsum" dolor)'],
+      ['brackets', '"(lorem ipsum) dolor"'],
+    ])('should expand selection to %s', (_scenario, content) => {
+      editor.setValue(content);
+      editor.setCursor({ line: 0, ch: 7 });
+
+      withMultipleSelections(editor as any, expandSelectionToQuotesOrBrackets);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(content);
+      expect(selectedText).toEqual('lorem ipsum');
     });
   });
 });
