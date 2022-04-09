@@ -98,6 +98,21 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(9);
     });
+
+    it('should remove markdown list characters', () => {
+      const content = '- aaa\n- bbb\n- ccc';
+      editor.setValue(content);
+      editor.setSelection({ line: 1, ch: 4 }, { line: 0, ch: 3 });
+
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('- aaa bbb\n- ccc');
+      expect(selections[0]).toEqual({
+        anchor: expect.objectContaining({ line: 0, ch: 5 }),
+        head: expect.objectContaining({ line: 0, ch: 5 }),
+      });
+    });
   });
 
   describe('copyLine', () => {

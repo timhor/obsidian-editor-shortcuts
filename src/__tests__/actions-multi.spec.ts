@@ -215,6 +215,30 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         },
       ]);
     });
+
+    it('should remove markdown list characters', () => {
+      const content = '- aaa\n- bbb\n- ccc\n- ddd';
+      editor.setValue(content);
+      editor.setSelections([
+        { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 2, ch: 4 }, head: { line: 2, ch: 4 } },
+      ]);
+
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('- aaa bbb\n- ccc ddd');
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 5 }),
+          head: expect.objectContaining({ line: 0, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 5 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        },
+      ]);
+    });
   });
 
   describe('copyLine', () => {

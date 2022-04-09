@@ -157,6 +157,21 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(9);
     });
+
+    it('should remove markdown list characters', () => {
+      const content = '- aaa\n* bbb\n+ ccc\n~ ddd';
+      editor.setValue(content);
+      editor.setCursor({ line: 0, ch: 0 });
+
+      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('- aaa bbb ccc ~ ddd');
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(13);
+    });
   });
 
   describe('copyLine', () => {
