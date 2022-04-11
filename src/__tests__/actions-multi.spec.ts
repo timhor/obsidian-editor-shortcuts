@@ -321,6 +321,20 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         'elit',
       ]);
     });
+
+    it('should select words containing accented characters', () => {
+      editor.setValue('café e açúcar');
+      editor.setSelections([
+        { anchor: { line: 0, ch: 2 }, head: { line: 0, ch: 2 } },
+        { anchor: { line: 0, ch: 8 }, head: { line: 0, ch: 8 } },
+      ]);
+
+      withMultipleSelections(editor as any, selectWord);
+
+      const { selectedTextMultiple } = getDocumentAndSelection(editor);
+      expect(selectedTextMultiple[0]).toEqual('café');
+      expect(selectedTextMultiple[1]).toEqual('açúcar');
+    });
   });
 
   describe('selectLine', () => {

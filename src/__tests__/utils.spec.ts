@@ -48,17 +48,17 @@ describe('Code Editor Shortcuts: utils', () => {
   });
 
   it('should get selection boundaries', () => {
-    const anchor = { line: 0, ch: 6 };
-    const head = { line: 0, ch: 5 };
-    const pos = getSelectionBoundaries({ anchor, head });
-    expect(pos).toEqual({ from: anchor, to: head });
-  });
-
-  it('should get the same selection boundaries if user selects upwards', () => {
     const anchor = { line: 0, ch: 5 };
     const head = { line: 0, ch: 6 };
     const pos = getSelectionBoundaries({ anchor, head });
     expect(pos).toEqual({ from: anchor, to: head });
+  });
+
+  it('should swap selection boundaries if user selects upwards', () => {
+    const anchor = { line: 1, ch: 5 };
+    const head = { line: 0, ch: 6 };
+    const pos = getSelectionBoundaries({ anchor, head });
+    expect(pos).toEqual({ from: head, to: anchor });
   });
 
   it('should get leading whitespace', () => {

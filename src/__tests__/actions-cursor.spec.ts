@@ -224,6 +224,16 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(doc).toEqual(originalDoc);
       expect(selectedText).toEqual('dolor');
     });
+
+    it('should select word containing accented characters', () => {
+      editor.setValue('café');
+      editor.setCursor({ line: 0, ch: 2 });
+
+      withMultipleSelections(editor as any, selectWord);
+
+      const { selectedText } = getDocumentAndSelection(editor);
+      expect(selectedText).toEqual('café');
+    });
   });
 
   describe('selectLine', () => {

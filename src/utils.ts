@@ -100,6 +100,11 @@ export const getSelectionBoundaries = (selection: EditorSelection) => {
     [from, to] = [to, from];
   }
 
+  // in case user selects backwards on the same line
+  if (from.line === to.line && from.ch > to.ch) {
+    [from, to] = [to, from];
+  }
+
   return { from, to };
 };
 
@@ -108,7 +113,8 @@ export const getLeadingWhitespace = (lineContent: string) => {
   return indentation ? indentation[0] : '';
 };
 
-const isWordCharacter = (char: string) => /\w/.test(char);
+// Match any character from any language: https://www.regular-expressions.info/unicode.html
+const isLetterCharacter = (char: string) => /\p{L}\p{M}*/u.test(char);
 
 export const wordRangeAtPos = (
   pos: EditorPosition,
@@ -116,10 +122,13 @@ export const wordRangeAtPos = (
 ): { anchor: EditorPosition; head: EditorPosition } => {
   let start = pos.ch;
   let end = pos.ch;
-  while (start > 0 && isWordCharacter(lineContent.charAt(start - 1))) {
+  while (start > 0 && isLetterCharacter(lineContent.charAt(start - 1))) {
     start--;
   }
-  while (end < lineContent.length && isWordCharacter(lineContent.charAt(end))) {
+  while (
+    end < lineContent.length &&
+    isLetterCharacter(lineContent.charAt(end))
+  ) {
     end++;
   }
   return {
