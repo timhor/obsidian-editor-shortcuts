@@ -37,50 +37,67 @@ describe('Code Editor Shortcuts: utils', () => {
     editor.setCursor({ line: 0, ch: 0 });
   });
 
-  it('should get line start position', () => {
-    const pos = getLineStartPos(0);
-    expect(pos).toEqual({ line: 0, ch: 0 });
-  });
-
-  it('should get line end position', () => {
-    const pos = getLineEndPos(0, editor as any);
-    expect(pos).toEqual({ line: 0, ch: 11 });
-  });
-
-  it('should get selection boundaries', () => {
-    const anchor = { line: 0, ch: 5 };
-    const head = { line: 0, ch: 6 };
-    const pos = getSelectionBoundaries({ anchor, head });
-    expect(pos).toEqual({ from: anchor, to: head });
-  });
-
-  it('should swap selection boundaries if user selects upwards', () => {
-    const anchor = { line: 1, ch: 5 };
-    const head = { line: 0, ch: 6 };
-    const pos = getSelectionBoundaries({ anchor, head });
-    expect(pos).toEqual({ from: head, to: anchor });
-  });
-
-  it('should get leading whitespace', () => {
-    const whitespace = getLeadingWhitespace('  hello');
-    expect(whitespace.length).toEqual(2);
-  });
-
-  it('should get boundaries of word at given position', () => {
-    const range = wordRangeAtPos({ line: 0, ch: 8 }, editor.getLine(0));
-    expect(range).toEqual({
-      anchor: {
-        line: 0,
-        ch: 6,
-      },
-      head: {
-        line: 0,
-        ch: 11,
-      },
+  describe('getLineStartPos', () => {
+    it('should get line start position', () => {
+      const pos = getLineStartPos(0);
+      expect(pos).toEqual({ line: 0, ch: 0 });
     });
   });
 
-  describe('finding position of next occurrence of a given character', () => {
+  describe('getLineEndPos', () => {
+    it('should get line end position', () => {
+      const pos = getLineEndPos(0, editor as any);
+      expect(pos).toEqual({ line: 0, ch: 11 });
+    });
+  });
+
+  describe('getSelectionBoundaries', () => {
+    it('should get selection boundaries', () => {
+      const anchor = { line: 0, ch: 5 };
+      const head = { line: 0, ch: 6 };
+      const pos = getSelectionBoundaries({ anchor, head });
+      expect(pos).toEqual({ from: anchor, to: head });
+    });
+
+    it('should swap selection boundaries if user selects upwards', () => {
+      const anchor = { line: 1, ch: 5 };
+      const head = { line: 0, ch: 6 };
+      const pos = getSelectionBoundaries({ anchor, head });
+      expect(pos).toEqual({ from: head, to: anchor });
+    });
+
+    it('should swap selection boundaries if user selects backwards on the same line', () => {
+      const anchor = { line: 0, ch: 8 };
+      const head = { line: 0, ch: 4 };
+      const pos = getSelectionBoundaries({ anchor, head });
+      expect(pos).toEqual({ from: head, to: anchor });
+    });
+  });
+
+  describe('getLeadingWhitespace', () => {
+    it('should get leading whitespace', () => {
+      const whitespace = getLeadingWhitespace('  hello');
+      expect(whitespace.length).toEqual(2);
+    });
+  });
+
+  describe('wordRangeAtPos', () => {
+    it('should get boundaries of word at given position', () => {
+      const range = wordRangeAtPos({ line: 0, ch: 8 }, editor.getLine(0));
+      expect(range).toEqual({
+        anchor: {
+          line: 0,
+          ch: 6,
+        },
+        head: {
+          line: 0,
+          ch: 11,
+        },
+      });
+    });
+  });
+
+  describe('findPosOfNextCharacter', () => {
     it('should search forwards', () => {
       const pos = findPosOfNextCharacter({
         editor: editor as any,
