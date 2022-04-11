@@ -354,7 +354,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue(content);
       editor.setSelection({ line: 0, ch: 8 }, { line: 0, ch: 13 });
 
-      withMultipleSelections(editor as any, expandSelectionToQuotesOrBrackets);
+      expandSelectionToQuotesOrBrackets(editor as any);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);

@@ -264,8 +264,7 @@ export default class CodeEditorShortcuts extends Plugin {
     this.addCommand({
       id: 'expandSelectionToQuotesOrBrackets',
       name: 'Expand selection to quotes or brackets',
-      editorCallback: (editor) =>
-        withMultipleSelections(editor, expandSelectionToQuotesOrBrackets),
+      editorCallback: (editor) => expandSelectionToQuotesOrBrackets(editor),
     });
 
     this.addCommand({

@@ -302,16 +302,16 @@ export const expandSelectionToQuotes = (
     matchingCharacterMap: MATCHING_QUOTES,
   });
 
-export const expandSelectionToQuotesOrBrackets = (
-  editor: Editor,
-  selection: EditorSelection,
-) =>
-  expandSelection({
+export const expandSelectionToQuotesOrBrackets = (editor: Editor) => {
+  const selections = editor.listSelections();
+  const newSelection = expandSelection({
     editor,
-    selection,
+    selection: selections[0],
     openingCharacterCheck: (char: string) => /['"`([{]/.test(char),
     matchingCharacterMap: MATCHING_QUOTES_BRACKETS,
   });
+  editor.setSelections([...selections, newSelection]);
+};
 
 export const goToHeading = (
   app: App,

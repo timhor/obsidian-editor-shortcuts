@@ -517,7 +517,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 7 });
 
-      withMultipleSelections(editor as any, expandSelectionToQuotesOrBrackets);
+      expandSelectionToQuotesOrBrackets(editor as any);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
