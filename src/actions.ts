@@ -5,6 +5,7 @@ import {
   LOWERCASE_ARTICLES,
   MATCHING_BRACKETS,
   MATCHING_QUOTES,
+  MATCHING_QUOTES_BRACKETS,
   MatchingCharacterMap,
 } from './constants';
 import {
@@ -73,7 +74,9 @@ export const deleteToEndOfLine = (
 
 export const joinLines = (editor: Editor, selection: EditorSelection) => {
   const { line } = selection.head;
-  const contentsOfNextLine = editor.getLine(line + 1).trimStart();
+  const contentsOfNextLine = editor
+    .getLine(line + 1)
+    .replace(/^\s*((-|\+|\*|\d+\.) )?/, '');
   const endOfCurrentLine = getLineEndPos(line, editor);
   const endOfNextLine = getLineEndPos(line + 1, editor);
   editor.replaceRange(
@@ -298,6 +301,17 @@ export const expandSelectionToQuotes = (
     openingCharacterCheck: (char: string) => /['"`]/.test(char),
     matchingCharacterMap: MATCHING_QUOTES,
   });
+
+export const expandSelectionToQuotesOrBrackets = (editor: Editor) => {
+  const selections = editor.listSelections();
+  const newSelection = expandSelection({
+    editor,
+    selection: selections[0],
+    openingCharacterCheck: (char: string) => /['"`([{]/.test(char),
+    matchingCharacterMap: MATCHING_QUOTES_BRACKETS,
+  });
+  editor.setSelections([...selections, newSelection]);
+};
 
 export const goToHeading = (
   app: App,

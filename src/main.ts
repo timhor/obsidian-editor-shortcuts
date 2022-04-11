@@ -5,6 +5,7 @@ import {
   deleteToEndOfLine,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
+  expandSelectionToQuotesOrBrackets,
   goToHeading,
   goToLineBoundary,
   insertLineAbove,
@@ -258,6 +259,12 @@ export default class CodeEditorShortcuts extends Plugin {
       name: 'Expand selection to quotes',
       editorCallback: (editor) =>
         withMultipleSelections(editor, expandSelectionToQuotes),
+    });
+
+    this.addCommand({
+      id: 'expandSelectionToQuotesOrBrackets',
+      name: 'Expand selection to quotes or brackets',
+      editorCallback: (editor) => expandSelectionToQuotesOrBrackets(editor),
     });
 
     this.addCommand({

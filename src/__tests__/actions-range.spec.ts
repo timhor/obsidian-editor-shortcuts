@@ -16,6 +16,7 @@ import {
   transformCase,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
+  expandSelectionToQuotesOrBrackets,
 } from '../actions';
 import { CASE, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
@@ -97,6 +98,21 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       expect(doc).toEqual('lorem ipsum\ndolor sit amet');
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(9);
+    });
+
+    it('should remove markdown list characters', () => {
+      const content = '- aaa\n- bbb\n- ccc';
+      editor.setValue(content);
+      editor.setSelection({ line: 1, ch: 4 }, { line: 0, ch: 3 });
+
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('- aaa bbb\n- ccc');
+      expect(selections[0]).toEqual({
+        anchor: expect.objectContaining({ line: 0, ch: 5 }),
+        head: expect.objectContaining({ line: 0, ch: 5 }),
+      });
     });
   });
 
@@ -327,6 +343,22 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
       expect(selectedText).toEqual('um"\ndo');
+    });
+  });
+
+  describe('expandSelectionToQuotesOrBrackets', () => {
+    it.each([
+      ['quotes', '("lorem ipsum" dolor)'],
+      ['brackets', '"(lorem ipsum) dolor"'],
+    ])('should expand selection to %s', (_scenario, content) => {
+      editor.setValue(content);
+      editor.setSelection({ line: 0, ch: 8 }, { line: 0, ch: 13 });
+
+      expandSelectionToQuotesOrBrackets(editor as any);
+
+      const { doc, selectedText } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(content);
+      expect(selectedText).toEqual('lorem ipsum');
     });
   });
 });

@@ -25,6 +25,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Transform selection to title case                | Not set                    |
 | Expand selection to brackets                     | Not set                    |
 | Expand selection to quotes                       | Not set                    |
+| Expand selection to quotes or brackets           | Not set                    |
 | Go to next heading                               | Not set                    |
 | Go to previous heading                           | Not set                    |
 
@@ -32,11 +33,12 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 
 \*\* This may conflict with the default shortcut for _Toggle checklist status_; changing/removing one of the bindings is recommended
 
-If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Move line up" and "Move line down".
+These shortcuts also work with [multiple cursors](https://help.obsidian.md/How+to/Working+with+multiple+cursors), with the exception of:
 
----
+- Expand selection to quotes or brackets
+- Go to next/previous heading
 
-_Note: these shortcuts also work with [multiple cursors](https://help.obsidian.md/How+to/Working+with+multiple+cursors)_, with the exception of "Go to next/previous heading".
+_Note:_ If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Move line up" and "Move line down".
 
 ## Installing the plugin
 

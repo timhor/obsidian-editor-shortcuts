@@ -1,5 +1,5 @@
 import CodeMirror from 'codemirror';
-import type { Editor, Range } from 'codemirror';
+import type { Editor } from 'codemirror';
 import { getDocumentAndSelection } from './test-helpers';
 import {
   insertLineAbove,
@@ -16,6 +16,7 @@ import {
   transformCase,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
+  expandSelectionToQuotesOrBrackets,
 } from '../actions';
 import { CASE, DIRECTION } from '../constants';
 import {
@@ -212,6 +213,30 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         {
           anchor: expect.objectContaining({ line: 2, ch: 31 }),
           head: expect.objectContaining({ line: 2, ch: 31 }),
+        },
+      ]);
+    });
+
+    it('should remove markdown list characters', () => {
+      const content = '- aaa\n- bbb\n- ccc\n- ddd';
+      editor.setValue(content);
+      editor.setSelections([
+        { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 2, ch: 4 }, head: { line: 2, ch: 4 } },
+      ]);
+
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('- aaa bbb\n- ccc ddd');
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 5 }),
+          head: expect.objectContaining({ line: 0, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 5 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
         },
       ]);
     });
@@ -628,5 +653,41 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       expect(doc).toEqual(originalDoc);
       expect(selections).toEqual(originalSelectionRanges);
     });
+  });
+
+  describe('expandSelectionToQuotesOrBrackets', () => {
+    it.each([
+      ['quotes', '("lorem ipsum" dolor)'],
+      ['brackets', '"(lorem ipsum) dolor"'],
+    ])(
+      'should only expand the first selection to %s and leave the others untouched',
+      (_scenario, content) => {
+        editor.setValue(content);
+        editor.setSelections([
+          { anchor: { line: 0, ch: 5 }, head: { line: 0, ch: 11 } },
+          { anchor: { line: 0, ch: 18 }, head: { line: 0, ch: 18 } },
+        ]);
+
+        expandSelectionToQuotesOrBrackets(editor as any);
+
+        const { doc, selections, selectedTextMultiple } =
+          getDocumentAndSelection(editor);
+        expect(doc).toEqual(content);
+        expect(selections).toEqual([
+          {
+            anchor: expect.objectContaining({
+              line: 0,
+              ch: 2,
+            }),
+            head: expect.objectContaining({
+              line: 0,
+              ch: 13,
+            }),
+          },
+          { anchor: { line: 0, ch: 18 }, head: { line: 0, ch: 18 } },
+        ]);
+        expect(selectedTextMultiple[0]).toEqual('lorem ipsum');
+      },
+    );
   });
 });
