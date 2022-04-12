@@ -1,6 +1,7 @@
 import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
 import {
+  withMultipleSelections,
   getLineStartPos,
   getLineEndPos,
   getSelectionBoundaries,
@@ -35,6 +36,81 @@ describe('Code Editor Shortcuts: utils', () => {
   beforeEach(() => {
     editor.setValue(originalDoc);
     editor.setCursor({ line: 0, ch: 0 });
+  });
+
+  describe('withMultipleSelections', () => {
+    const emptySelection = {
+      anchor: { line: 0, ch: 0 },
+      head: { line: 0, ch: 0 },
+    };
+    const firstWordSelection = {
+      anchor: { line: 0, ch: 2 },
+      head: { line: 0, ch: 2 },
+    };
+    const secondWordSelection = {
+      anchor: { line: 0, ch: 8 },
+      head: { line: 0, ch: 11 },
+    };
+    let mockCallback: jest.Mock;
+
+    beforeEach(() => {
+      // expect error to be thrown due to cm object not existing in the test editor
+      jest.spyOn(console, 'error').mockImplementation(() => jest.fn());
+
+      editor.setSelections([firstWordSelection, secondWordSelection]);
+      mockCallback = jest.fn().mockReturnValue(emptySelection);
+    });
+
+    it('should execute callback for each editor selection', () => {
+      withMultipleSelections(editor as any, mockCallback);
+      expect(mockCallback).toHaveBeenCalled();
+    });
+
+    it('should forward any arguments to the callback', () => {
+      withMultipleSelections(editor as any, mockCallback, {
+        args: 'foobar',
+      });
+      expect(mockCallback).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        'foobar',
+      );
+    });
+
+    it('should post-process new selections if customSelectionHandler is provided', () => {
+      const customSelectionHandler = jest.fn().mockReturnValue([
+        {
+          anchor: { line: 0, ch: 3 },
+          head: { line: 0, ch: 7 },
+        },
+      ]);
+      withMultipleSelections(editor as any, mockCallback, {
+        customSelectionHandler,
+      });
+      expect(customSelectionHandler).toHaveBeenCalledWith([emptySelection]);
+      expect(editor.listSelections()).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 3 }),
+          head: expect.objectContaining({ line: 0, ch: 7 }),
+        },
+      ]);
+    });
+
+    it('should filter out subsequent selections on the same line if repeatSameLineActions is false', () => {
+      withMultipleSelections(editor as any, mockCallback, {
+        repeatSameLineActions: false,
+      });
+      expect(mockCallback).toHaveBeenCalledWith(
+        expect.anything(),
+        firstWordSelection,
+        undefined,
+      );
+      expect(mockCallback).not.toHaveBeenCalledWith(
+        expect.anything(),
+        secondWordSelection,
+        undefined,
+      );
+    });
   });
 
   describe('getLineStartPos', () => {
