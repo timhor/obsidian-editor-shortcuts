@@ -12,6 +12,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Copy line down                                   | `Alt` + `Shift` + `Down`   |
 | Join line below to current line                  | `Ctrl` + `J`               |
 | Select line (repeat to keep expanding selection) | `Ctrl` + `L`               |
+| Add cursors to selection ends                    | `Alt` + `Shift` + `I`      |
 | Select word                                      | Not set                    |
 | Move cursor left                                 | Not set                    |
 | Move cursor right                                | Not set                    |

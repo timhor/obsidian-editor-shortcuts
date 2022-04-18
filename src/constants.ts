@@ -29,3 +29,8 @@ export const MATCHING_QUOTES_BRACKETS: MatchingCharacterMap = {
   ...MATCHING_QUOTES,
   ...MATCHING_BRACKETS,
 };
+
+export enum CODE_EDITOR {
+  SUBLIME = 'sublime',
+  VSCODE = 'vscode',
+}

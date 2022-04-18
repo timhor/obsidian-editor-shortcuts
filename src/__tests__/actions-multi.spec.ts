@@ -17,8 +17,9 @@ import {
   expandSelectionToBrackets,
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
+  addCursorsToSelectionEnds,
 } from '../actions';
-import { CASE, DIRECTION } from '../constants';
+import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import {
   withMultipleSelections,
   defaultMultipleSelectionOptions,
@@ -382,6 +383,16 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       expect(selectedText).toEqual(
         `lorem ipsum\ndolor sit\namet\n\nconsectetur "adipiscing" 'elit'\n`,
       );
+    });
+  });
+
+  describe('addCursorsToSelectionEnds', () => {
+    it('should not add cursors to selection ends', () => {
+      addCursorsToSelectionEnds(editor as any, CODE_EDITOR.VSCODE);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual(originalSelectionRanges);
     });
   });
 

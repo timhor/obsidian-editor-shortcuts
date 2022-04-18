@@ -17,8 +17,9 @@ import {
   expandSelectionToBrackets,
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
+  addCursorsToSelectionEnds,
 } from '../actions';
-import { CASE, DIRECTION } from '../constants';
+import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
@@ -254,6 +255,17 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
       expect(selectedText).toEqual('dolor sit\n');
+    });
+  });
+
+  describe('addCursorsToSelectionEnds', () => {
+    it('should not add cursors to selection ends', () => {
+      addCursorsToSelectionEnds(editor as any, CODE_EDITOR.VSCODE);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(0);
     });
   });
 

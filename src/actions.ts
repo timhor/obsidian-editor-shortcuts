@@ -1,4 +1,4 @@
-import { App, Editor, EditorSelection } from 'obsidian';
+import type { App, Editor, EditorPosition, EditorSelection } from 'obsidian';
 import {
   CASE,
   DIRECTION,
@@ -7,6 +7,7 @@ import {
   MATCHING_QUOTES,
   MATCHING_QUOTES_BRACKETS,
   MatchingCharacterMap,
+  CODE_EDITOR,
 } from './constants';
 import {
   CheckCharacter,
@@ -130,6 +131,33 @@ export const selectLine = (_editor: Editor, selection: EditorSelection) => {
   // if a line is already selected, expand the selection to the next line
   const startOfNextLine = getLineStartPos(to.line + 1);
   return { anchor: startOfCurrentLine, head: startOfNextLine };
+};
+
+export const addCursorsToSelectionEnds = (
+  editor: Editor,
+  emulate: CODE_EDITOR = CODE_EDITOR.VSCODE,
+) => {
+  // Only apply the action if there is exactly one selection
+  if (editor.listSelections().length !== 1) {
+    return;
+  }
+  const selection = editor.listSelections()[0];
+  const { from, to } = getSelectionBoundaries(selection);
+  const newSelections = [];
+  for (let line = from.line; line <= to.line; line++) {
+    const head = line === to.line ? to : getLineEndPos(line, editor);
+    let anchor: EditorPosition;
+    if (emulate === CODE_EDITOR.VSCODE) {
+      anchor = head;
+    } else {
+      anchor = line === from.line ? from : getLineStartPos(line);
+    }
+    newSelections.push({
+      anchor,
+      head,
+    });
+  }
+  editor.setSelections(newSelections);
 };
 
 export const goToLineBoundary = (

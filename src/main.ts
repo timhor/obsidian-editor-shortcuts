@@ -1,5 +1,6 @@
 import { Plugin } from 'obsidian';
 import {
+  addCursorsToSelectionEnds,
   copyLine,
   deleteSelectedLines,
   deleteToEndOfLine,
@@ -155,6 +156,18 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) => withMultipleSelections(editor, selectLine),
+    });
+
+    this.addCommand({
+      id: 'addCursorsToSelectionEnds',
+      name: 'Add cursors to selection ends',
+      hotkeys: [
+        {
+          modifiers: ['Alt', 'Shift'],
+          key: 'I',
+        },
+      ],
+      editorCallback: (editor) => addCursorsToSelectionEnds(editor),
     });
 
     this.addCommand({

@@ -17,8 +17,9 @@ import {
   expandSelectionToBrackets,
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
+  addCursorsToSelectionEnds,
 } from '../actions';
-import { CASE, DIRECTION } from '../constants';
+import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
@@ -172,6 +173,42 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
       expect(selectedText).toEqual('lorem ipsum\ndolor sit\n');
+    });
+  });
+
+  describe('addCursorsToSelectionEnds', () => {
+    it('should add cursors to selection ends when emulating VS Code', () => {
+      addCursorsToSelectionEnds(editor as any, CODE_EDITOR.VSCODE);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 11 }),
+          head: expect.objectContaining({ line: 0, ch: 11 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 5 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        },
+      ]);
+    });
+
+    it('should add cursors to selection ends when emulating Sublime Text', () => {
+      addCursorsToSelectionEnds(editor as any, CODE_EDITOR.SUBLIME);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 6 }),
+          head: expect.objectContaining({ line: 0, ch: 11 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 0 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        },
+      ]);
     });
   });
 
