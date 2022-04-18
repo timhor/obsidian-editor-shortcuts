@@ -36,23 +36,32 @@ export const withMultipleSelections = (
   // (this may break in future versions of the Obsidian API)
   const { cm } = editor;
 
-  let selections = editor.listSelections();
+  const selections = editor.listSelections();
+  let selectionIndexesToProcess: number[];
   let newSelections: EditorSelectionOrCaret[] = [];
 
   if (!options.repeatSameLineActions) {
     const seenLines: number[] = [];
-    selections = selections.filter((selection) => {
-      const currentLine = selection.head.line;
-      if (!seenLines.includes(currentLine)) {
-        seenLines.push(currentLine);
-        return true;
-      }
-      return false;
-    });
+    selectionIndexesToProcess = selections.reduce(
+      (indexes, currSelection, currIndex) => {
+        const currentLine = currSelection.head.line;
+        if (!seenLines.includes(currentLine)) {
+          seenLines.push(currentLine);
+          indexes.push(currIndex);
+        }
+        return indexes;
+      },
+      [],
+    );
   }
 
   const applyCallbackOnSelections = () => {
     for (let i = 0; i < selections.length; i++) {
+      // Controlled by repeatSameLineActions
+      if (selectionIndexesToProcess && !selectionIndexesToProcess.includes(i)) {
+        continue;
+      }
+
       // Can't reuse selections variable as positions may change on each iteration
       const selection = editor.listSelections()[i];
 
