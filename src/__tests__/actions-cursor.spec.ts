@@ -159,6 +159,17 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(cursor.ch).toEqual(9);
     });
 
+    it('should not join next line when at the end of the document', () => {
+      editor.setCursor({ line: 2, ch: 2 });
+
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(cursor.line).toEqual(2);
+      expect(cursor.ch).toEqual(4);
+    });
+
     it('should remove markdown list characters', () => {
       const content = '- aaa\n* bbb\n+ ccc\n~ ddd';
       editor.setValue(content);

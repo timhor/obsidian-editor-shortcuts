@@ -74,18 +74,20 @@ export const deleteToEndOfLine = (
 
 export const joinLines = (editor: Editor, selection: EditorSelection) => {
   const { line } = selection.head;
-  const contentsOfNextLine = editor
-    .getLine(line + 1)
-    .replace(/^\s*((-|\+|\*|\d+\.) )?/, '');
   const endOfCurrentLine = getLineEndPos(line, editor);
-  const endOfNextLine = getLineEndPos(line + 1, editor);
-  editor.replaceRange(
-    contentsOfNextLine.length > 0
-      ? ' ' + contentsOfNextLine
-      : contentsOfNextLine,
-    endOfCurrentLine,
-    endOfNextLine,
-  );
+  if (line < editor.lineCount() - 1) {
+    const endOfNextLine = getLineEndPos(line + 1, editor);
+    const contentsOfNextLine = editor
+      .getLine(line + 1)
+      .replace(/^\s*((-|\+|\*|\d+\.) )?/, '');
+    editor.replaceRange(
+      contentsOfNextLine.length > 0
+        ? ' ' + contentsOfNextLine
+        : contentsOfNextLine,
+      endOfCurrentLine,
+      endOfNextLine,
+    );
+  }
   return { anchor: endOfCurrentLine };
 };
 

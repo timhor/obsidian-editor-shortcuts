@@ -217,6 +217,42 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       ]);
     });
 
+    it('should not join the next line after the end of the document', () => {
+      editor.setSelections([
+        ...editor.listSelections(),
+        { anchor: { line: 6, ch: 6 }, head: { line: 6, ch: 6 } }, // tincid{<>}unt
+      ]);
+
+      withMultipleSelections(editor as any, joinLines, {
+        ...defaultMultipleSelectionOptions,
+        repeatSameLineActions: false,
+      });
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(
+        `lorem ipsum dolor sit\namet\nconsectetur "adipiscing" 'elit' ` +
+          `(donec [mattis])\ntincidunt metus`,
+      );
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 11 }),
+          head: expect.objectContaining({ line: 0, ch: 11 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 4 }),
+          head: expect.objectContaining({ line: 1, ch: 4 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 2, ch: 31 }),
+          head: expect.objectContaining({ line: 2, ch: 31 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 15 }),
+          head: expect.objectContaining({ line: 3, ch: 15 }),
+        },
+      ]);
+    });
+
     it('should remove markdown list characters', () => {
       const content = '- aaa\n- bbb\n- ccc\n- ddd';
       editor.setValue(content);
