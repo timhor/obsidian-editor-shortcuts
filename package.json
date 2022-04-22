@@ -39,5 +39,6 @@
     "**/*.{ts,tsx,html,css}": [
       "eslint --fix --max-warnings=0"
     ]
-  }
+  },
+  "packageManager": "yarn@3.2.0"
 }
