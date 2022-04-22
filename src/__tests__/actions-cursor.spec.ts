@@ -8,7 +8,7 @@ import {
   deleteToEndOfLine,
   joinLines,
   copyLine,
-  selectWord,
+  selectWordOrNextOccurrence,
   selectLine,
   goToLineBoundary,
   navigateLine,
@@ -228,9 +228,9 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
   });
 
-  describe('selectWord', () => {
+  describe('selectWordOrNextOccurrence', () => {
     it('should select word', () => {
-      withMultipleSelections(editor as any, selectWord);
+      selectWordOrNextOccurrence(editor as any);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -241,7 +241,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue('café');
       editor.setCursor({ line: 0, ch: 2 });
 
-      withMultipleSelections(editor as any, selectWord);
+      selectWordOrNextOccurrence(editor as any);
 
       const { selectedText } = getDocumentAndSelection(editor);
       expect(selectedText).toEqual('café');

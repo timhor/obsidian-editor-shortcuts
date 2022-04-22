@@ -11,11 +11,13 @@ import {
 } from './constants';
 import {
   CheckCharacter,
+  findNextMatch,
   findPosOfNextCharacter,
   getLeadingWhitespace,
   getLineEndPos,
   getLineStartPos,
   getSelectionBoundaries,
+  hasSameSelectionContent,
   wordRangeAtPos,
 } from './utils';
 
@@ -114,14 +116,42 @@ export const copyLine = (
   }
 };
 
-export const selectWord = (editor: Editor, selection: EditorSelection) => {
-  const { from, to } = getSelectionBoundaries(selection);
-  const selectedText = editor.getRange(from, to);
-  // Do not modify selection if something is selected
-  if (selectedText.length !== 0) {
-    return selection;
+export const selectWordOrNextOccurrence = (editor: Editor) => {
+  const allSelections = editor.listSelections();
+
+  // Don't search if multiple selection contents are not identical
+  const singleSearchText = hasSameSelectionContent(editor, allSelections);
+
+  const firstSelection = allSelections[0];
+  const { from, to } = getSelectionBoundaries(firstSelection);
+  const searchText = editor.getRange(from, to);
+  if (searchText.length > 0 && singleSearchText) {
+    const { from: latestMatchPos } = getSelectionBoundaries(
+      allSelections[allSelections.length - 1],
+    );
+    const nextMatch = findNextMatch({
+      editor,
+      latestMatchPos,
+      searchText,
+      searchWithinWords: false,
+      documentContent: editor.getValue(),
+    });
+    const newSelections = nextMatch
+      ? allSelections.concat(nextMatch)
+      : allSelections;
+    editor.setSelections(newSelections);
   } else {
-    return wordRangeAtPos(from, editor.getLine(from.line));
+    const newSelections = [];
+    for (const selection of allSelections) {
+      const { from, to } = getSelectionBoundaries(selection);
+      // Don't modify existing range selections
+      if (from.line !== to.line || from.ch !== to.ch) {
+        newSelections.push(selection);
+      } else {
+        newSelections.push(wordRangeAtPos(from, editor.getLine(from.line)));
+      }
+    }
+    editor.setSelections(newSelections);
   }
 };
 

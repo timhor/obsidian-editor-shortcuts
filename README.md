@@ -13,7 +13,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Join line below to current line                  | `Ctrl` + `J`               |
 | Select line (repeat to keep expanding selection) | `Ctrl` + `L`               |
 | Add cursors to selection ends                    | `Alt` + `Shift` + `I`      |
-| Select word                                      | Not set                    |
+| Select word or next occurrence of selection      | `Ctrl` + `D`               |
 | Move cursor left                                 | Not set                    |
 | Move cursor right                                | Not set                    |
 | Go to start of line                              | Not set                    |

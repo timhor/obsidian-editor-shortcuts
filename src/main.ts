@@ -15,7 +15,7 @@ import {
   moveCursor,
   navigateLine,
   selectLine,
-  selectWord,
+  selectWordOrNextOccurrence,
   transformCase,
 } from './actions';
 import {
@@ -141,9 +141,15 @@ export default class CodeEditorShortcuts extends Plugin {
     });
 
     this.addCommand({
-      id: 'selectWord',
-      name: 'Select word',
-      editorCallback: (editor) => withMultipleSelections(editor, selectWord),
+      id: 'selectWordOrNextOccurrence',
+      name: 'Select word or next occurrence',
+      hotkeys: [
+        {
+          modifiers: ['Mod'],
+          key: 'D',
+        },
+      ],
+      editorCallback: (editor) => selectWordOrNextOccurrence(editor),
     });
 
     this.addCommand({

@@ -217,3 +217,64 @@ export const findPosOfNextCharacter = ({
       }
     : null;
 };
+
+export const hasSameSelectionContent = (
+  editor: Editor,
+  selections: EditorSelection[],
+) =>
+  new Set(
+    selections.map((selection) => {
+      const { from, to } = getSelectionBoundaries(selection);
+      return editor.getRange(from, to);
+    }),
+  ).size === 1;
+
+export const findNextMatch = ({
+  editor,
+  latestMatchPos,
+  searchText,
+  searchWithinWords,
+  documentContent,
+}: {
+  editor: Editor;
+  latestMatchPos: EditorPosition;
+  searchText: string;
+  searchWithinWords: boolean;
+  documentContent: string;
+}) => {
+  const latestMatchOffset = editor.posToOffset(latestMatchPos);
+  const searchExpression = new RegExp(
+    searchWithinWords ? searchText : `\\b${searchText}\\b`,
+    'g',
+  );
+
+  let nextMatch: EditorSelection | null = null;
+  const matches = Array.from(documentContent.matchAll(searchExpression));
+  const selectionIndexes = editor.listSelections().map((selection) => {
+    const { from } = getSelectionBoundaries(selection);
+    return editor.posToOffset(from);
+  });
+  for (const match of matches) {
+    if (match.index > latestMatchOffset) {
+      nextMatch = {
+        anchor: editor.offsetToPos(match.index),
+        head: editor.offsetToPos(match.index + searchText.length),
+      };
+      break;
+    }
+  }
+  // Circle back to search from the top
+  if (!nextMatch) {
+    for (const match of matches) {
+      if (!selectionIndexes.includes(match.index)) {
+        nextMatch = {
+          anchor: editor.offsetToPos(match.index),
+          head: editor.offsetToPos(match.index + searchText.length),
+        };
+        break;
+      }
+    }
+  }
+
+  return nextMatch;
+};

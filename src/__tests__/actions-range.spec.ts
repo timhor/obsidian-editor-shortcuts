@@ -8,7 +8,7 @@ import {
   deleteToEndOfLine,
   joinLines,
   copyLine,
-  selectWord,
+  selectWordOrNextOccurrence,
   selectLine,
   goToLineBoundary,
   navigateLine,
@@ -42,9 +42,14 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   beforeAll(() => {
     editor = CodeMirror(document.body);
+
     // To make cm.operation() work, since editor here already refers to the
     // CodeMirror object
     (editor as any).cm = editor;
+
+    // Assign the CodeMirror equivalents of posToOffset and offsetToPos
+    (editor as any).posToOffset = editor.indexFromPos;
+    (editor as any).offsetToPos = editor.posFromIndex;
   });
 
   beforeEach(() => {
@@ -156,13 +161,107 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
   });
 
-  describe('selectWord', () => {
+  describe('selectWordOrNextOccurrence', () => {
+    const originalDocRepeated = `${originalDoc}\n${originalDoc}\n${originalDoc}`;
+
     it('should not select additional words', () => {
-      withMultipleSelections(editor as any, selectWord);
+      selectWordOrNextOccurrence(editor as any);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
       expect(selectedText).toEqual('ipsum\ndolor');
+    });
+
+    it('should select next occurrence of selection', () => {
+      editor.setValue(originalDocRepeated);
+      editor.setSelection({ line: 1, ch: 6 }, { line: 1, ch: 9 });
+
+      selectWordOrNextOccurrence(editor as any);
+      selectWordOrNextOccurrence(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDocRepeated);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 6 }),
+          head: expect.objectContaining({ line: 1, ch: 9 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 4, ch: 6 }),
+          head: expect.objectContaining({ line: 4, ch: 9 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 7, ch: 6 }),
+          head: expect.objectContaining({ line: 7, ch: 9 }),
+        },
+      ]);
+    });
+
+    it('should select next occurrence of selection across newlines', () => {
+      editor.setValue(originalDocRepeated);
+      editor.setSelection({ line: 1, ch: 5 }, { line: 0, ch: 6 });
+
+      selectWordOrNextOccurrence(editor as any);
+      selectWordOrNextOccurrence(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDocRepeated);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 5 }),
+          head: expect.objectContaining({ line: 0, ch: 6 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 6 }),
+          head: expect.objectContaining({ line: 4, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 6 }),
+          head: expect.objectContaining({ line: 7, ch: 5 }),
+        },
+      ]);
+    });
+
+    it('should only select whole words', () => {
+      editor.setValue(originalDocRepeated);
+      editor.setSelection({ line: 1, ch: 2 }, { line: 1, ch: 7 });
+
+      selectWordOrNextOccurrence(editor as any);
+      selectWordOrNextOccurrence(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDocRepeated);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 2 }),
+          head: expect.objectContaining({ line: 1, ch: 7 }),
+        },
+      ]);
+    });
+
+    it('should loop around to beginning when selecting next occurrence', () => {
+      editor.setValue(originalDocRepeated);
+      editor.setSelection({ line: 4, ch: 0 }, { line: 4, ch: 5 });
+
+      selectWordOrNextOccurrence(editor as any);
+      selectWordOrNextOccurrence(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDocRepeated);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 0 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 4, ch: 0 }),
+          head: expect.objectContaining({ line: 4, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 7, ch: 0 }),
+          head: expect.objectContaining({ line: 7, ch: 5 }),
+        },
+      ]);
     });
   });
 

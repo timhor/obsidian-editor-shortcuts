@@ -8,7 +8,7 @@ import {
   deleteToEndOfLine,
   joinLines,
   copyLine,
-  selectWord,
+  selectWordOrNextOccurrence,
   selectLine,
   goToLineBoundary,
   navigateLine,
@@ -51,6 +51,10 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     // To make cm.operation() work, since editor here already refers to the
     // CodeMirror object
     (editor as any).cm = editor;
+
+    // Assign the CodeMirror equivalents of posToOffset and offsetToPos
+    (editor as any).posToOffset = editor.indexFromPos;
+    (editor as any).offsetToPos = editor.posFromIndex;
   });
 
   const originalSelectionRanges = [
@@ -345,9 +349,23 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
   });
 
-  describe('selectWord', () => {
+  describe('selectWordOrNextOccurrence', () => {
     it('should select words', () => {
-      withMultipleSelections(editor as any, selectWord);
+      selectWordOrNextOccurrence(editor as any);
+
+      const { doc, selectedTextMultiple } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selectedTextMultiple).toEqual([
+        'ipsum\ndolor',
+        'amet',
+        'dip',
+        'elit',
+      ]);
+    });
+
+    it('should not select next occurrence if multiple selection contents are not identical', () => {
+      selectWordOrNextOccurrence(editor as any);
+      selectWordOrNextOccurrence(editor as any);
 
       const { doc, selectedTextMultiple } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -366,7 +384,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 0, ch: 8 }, head: { line: 0, ch: 8 } },
       ]);
 
-      withMultipleSelections(editor as any, selectWord);
+      selectWordOrNextOccurrence(editor as any);
 
       const { selectedTextMultiple } = getDocumentAndSelection(editor);
       expect(selectedTextMultiple[0]).toEqual('café');
