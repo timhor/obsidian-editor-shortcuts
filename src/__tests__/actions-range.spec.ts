@@ -9,6 +9,7 @@ import {
   joinLines,
   copyLine,
   selectWordOrNextOccurrence,
+  selectAllOccurrences,
   selectLine,
   goToLineBoundary,
   navigateLine,
@@ -260,6 +261,74 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         {
           anchor: expect.objectContaining({ line: 7, ch: 0 }),
           head: expect.objectContaining({ line: 7, ch: 5 }),
+        },
+      ]);
+    });
+  });
+
+  describe('selectAllOccurrences', () => {
+    const originalDocRepeated = `${originalDoc}\n${originalDoc}\n${originalDoc}`;
+
+    it('should select all occurrences of selection', () => {
+      editor.setValue(originalDocRepeated);
+      editor.setSelection({ line: 0, ch: 6 }, { line: 0, ch: 11 });
+
+      selectAllOccurrences(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDocRepeated);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 6 }),
+          head: expect.objectContaining({ line: 0, ch: 11 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 6 }),
+          head: expect.objectContaining({ line: 3, ch: 11 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 6 }),
+          head: expect.objectContaining({ line: 6, ch: 11 }),
+        },
+      ]);
+    });
+
+    it('should select all occurrences of selection across newlines', () => {
+      editor.setValue(originalDocRepeated);
+      editor.setSelection({ line: 4, ch: 5 }, { line: 3, ch: 6 });
+
+      selectAllOccurrences(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDocRepeated);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 6 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 6 }),
+          head: expect.objectContaining({ line: 4, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 6 }),
+          head: expect.objectContaining({ line: 7, ch: 5 }),
+        },
+      ]);
+    });
+
+    it('should only select whole words', () => {
+      editor.setValue(originalDocRepeated);
+      editor.setSelection({ line: 1, ch: 2 }, { line: 1, ch: 7 });
+
+      selectAllOccurrences(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDocRepeated);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 2 }),
+          head: expect.objectContaining({ line: 1, ch: 7 }),
         },
       ]);
     });

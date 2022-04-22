@@ -14,6 +14,7 @@ import {
   joinLines,
   moveCursor,
   navigateLine,
+  selectAllOccurrences,
   selectLine,
   selectWordOrNextOccurrence,
   transformCase,
@@ -150,6 +151,18 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) => selectWordOrNextOccurrence(editor),
+    });
+
+    this.addCommand({
+      id: 'selectAllOccurrences',
+      name: 'Select all occurrences',
+      hotkeys: [
+        {
+          modifiers: ['Mod', 'Shift'],
+          key: 'L',
+        },
+      ],
+      editorCallback: (editor) => selectAllOccurrences(editor),
     });
 
     this.addCommand({

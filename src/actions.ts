@@ -11,13 +11,14 @@ import {
 } from './constants';
 import {
   CheckCharacter,
-  findNextMatch,
+  findAllMatchPositions,
+  findNextMatchPosition,
   findPosOfNextCharacter,
   getLeadingWhitespace,
   getLineEndPos,
   getLineStartPos,
+  getSearchText,
   getSelectionBoundaries,
-  hasSameSelectionContent,
   wordRangeAtPos,
 } from './utils';
 
@@ -118,18 +119,17 @@ export const copyLine = (
 
 export const selectWordOrNextOccurrence = (editor: Editor) => {
   const allSelections = editor.listSelections();
+  const { searchText, singleSearchText } = getSearchText({
+    editor,
+    allSelections,
+    autoExpand: false,
+  });
 
-  // Don't search if multiple selection contents are not identical
-  const singleSearchText = hasSameSelectionContent(editor, allSelections);
-
-  const firstSelection = allSelections[0];
-  const { from, to } = getSelectionBoundaries(firstSelection);
-  const searchText = editor.getRange(from, to);
   if (searchText.length > 0 && singleSearchText) {
     const { from: latestMatchPos } = getSelectionBoundaries(
       allSelections[allSelections.length - 1],
     );
-    const nextMatch = findNextMatch({
+    const nextMatch = findNextMatchPosition({
       editor,
       latestMatchPos,
       searchText,
@@ -153,6 +153,25 @@ export const selectWordOrNextOccurrence = (editor: Editor) => {
     }
     editor.setSelections(newSelections);
   }
+};
+
+export const selectAllOccurrences = (editor: Editor) => {
+  const allSelections = editor.listSelections();
+  const { searchText, singleSearchText } = getSearchText({
+    editor,
+    allSelections,
+    autoExpand: true,
+  });
+  if (!singleSearchText) {
+    return;
+  }
+  const matches = findAllMatchPositions({
+    editor,
+    searchText,
+    searchWithinWords: false,
+    documentContent: editor.getValue(),
+  });
+  editor.setSelections(matches);
 };
 
 export const selectLine = (_editor: Editor, selection: EditorSelection) => {

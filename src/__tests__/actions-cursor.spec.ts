@@ -9,6 +9,7 @@ import {
   joinLines,
   copyLine,
   selectWordOrNextOccurrence,
+  selectAllOccurrences,
   selectLine,
   goToLineBoundary,
   navigateLine,
@@ -45,6 +46,10 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     // To make cm.operation() work, since editor here already refers to the
     // CodeMirror object
     (editor as any).cm = editor;
+
+    // Assign the CodeMirror equivalents of posToOffset and offsetToPos
+    (editor as any).posToOffset = editor.indexFromPos;
+    (editor as any).offsetToPos = editor.posFromIndex;
   });
 
   beforeEach(() => {
@@ -245,6 +250,34 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
       const { selectedText } = getDocumentAndSelection(editor);
       expect(selectedText).toEqual('café');
+    });
+  });
+
+  describe('selectAllOccurrences', () => {
+    const originalDocRepeated = `${originalDoc}\n${originalDoc}\n${originalDoc}`;
+
+    it('should select all occurrences of selection', () => {
+      editor.setValue(originalDocRepeated);
+      editor.setCursor({ line: 7, ch: 2 });
+
+      selectAllOccurrences(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDocRepeated);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 0 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 4, ch: 0 }),
+          head: expect.objectContaining({ line: 4, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 7, ch: 0 }),
+          head: expect.objectContaining({ line: 7, ch: 5 }),
+        },
+      ]);
     });
   });
 

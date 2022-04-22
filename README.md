@@ -14,6 +14,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Select line (repeat to keep expanding selection) | `Ctrl` + `L`               |
 | Add cursors to selection ends                    | `Alt` + `Shift` + `I`      |
 | Select word or next occurrence of selection      | `Ctrl` + `D`               |
+| Select all occurrences of selection              | `Ctrl` + `Shift` + `L`     |
 | Move cursor left                                 | Not set                    |
 | Move cursor right                                | Not set                    |
 | Go to start of line                              | Not set                    |

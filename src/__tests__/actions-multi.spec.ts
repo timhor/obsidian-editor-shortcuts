@@ -9,6 +9,7 @@ import {
   joinLines,
   copyLine,
   selectWordOrNextOccurrence,
+  selectAllOccurrences,
   selectLine,
   goToLineBoundary,
   navigateLine,
@@ -389,6 +390,16 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       const { selectedTextMultiple } = getDocumentAndSelection(editor);
       expect(selectedTextMultiple[0]).toEqual('café');
       expect(selectedTextMultiple[1]).toEqual('açúcar');
+    });
+  });
+
+  describe('selectAllOccurrences', () => {
+    it('should not select all occurrences if multiple selection contents are not identical', () => {
+      selectAllOccurrences(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual(originalSelectionRanges);
     });
   });
 

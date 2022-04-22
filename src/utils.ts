@@ -229,7 +229,47 @@ export const hasSameSelectionContent = (
     }),
   ).size === 1;
 
-export const findNextMatch = ({
+export const getSearchText = ({
+  editor,
+  allSelections,
+  autoExpand,
+}: {
+  editor: Editor;
+  allSelections: EditorSelection[];
+  autoExpand: boolean;
+}) => {
+  // Don't search if multiple selection contents are not identical
+  const singleSearchText = hasSameSelectionContent(editor, allSelections);
+  const firstSelection = allSelections[0];
+  const { from, to } = getSelectionBoundaries(firstSelection);
+  let searchText = editor.getRange(from, to);
+  if (searchText.length === 0 && autoExpand) {
+    const wordRange = wordRangeAtPos(from, editor.getLine(from.line));
+    searchText = editor.getRange(wordRange.anchor, wordRange.head);
+  }
+  return {
+    searchText,
+    singleSearchText,
+  };
+};
+
+export const findAllMatches = ({
+  searchText,
+  searchWithinWords,
+  documentContent,
+}: {
+  searchText: string;
+  searchWithinWords: boolean;
+  documentContent: string;
+}) => {
+  const searchExpression = new RegExp(
+    searchWithinWords ? searchText : `\\b${searchText}\\b`,
+    'g',
+  );
+  return Array.from(documentContent.matchAll(searchExpression));
+};
+
+export const findNextMatchPosition = ({
   editor,
   latestMatchPos,
   searchText,
@@ -243,17 +283,13 @@ export const findNextMatch = ({
   documentContent: string;
 }) => {
   const latestMatchOffset = editor.posToOffset(latestMatchPos);
-  const searchExpression = new RegExp(
-    searchWithinWords ? searchText : `\\b${searchText}\\b`,
-    'g',
-  );
-
-  let nextMatch: EditorSelection | null = null;
-  const matches = Array.from(documentContent.matchAll(searchExpression));
-  const selectionIndexes = editor.listSelections().map((selection) => {
-    const { from } = getSelectionBoundaries(selection);
-    return editor.posToOffset(from);
+  const matches = findAllMatches({
+    searchText,
+    searchWithinWords,
+    documentContent,
   });
+  let nextMatch: EditorSelection | null = null;
+
   for (const match of matches) {
     if (match.index > latestMatchOffset) {
       nextMatch = {
@@ -265,6 +301,10 @@ export const findNextMatch = ({
   }
   // Circle back to search from the top
   if (!nextMatch) {
+    const selectionIndexes = editor.listSelections().map((selection) => {
+      const { from } = getSelectionBoundaries(selection);
+      return editor.posToOffset(from);
+    });
     for (const match of matches) {
       if (!selectionIndexes.includes(match.index)) {
         nextMatch = {
@@ -277,4 +317,30 @@ export const findNextMatch = ({
   }
 
   return nextMatch;
+};
+
+export const findAllMatchPositions = ({
+  editor,
+  searchText,
+  searchWithinWords,
+  documentContent,
+}: {
+  editor: Editor;
+  searchText: string;
+  searchWithinWords: boolean;
+  documentContent: string;
+}) => {
+  const matches = findAllMatches({
+    searchText,
+    searchWithinWords,
+    documentContent,
+  });
+  const matchPositions = [];
+  for (const match of matches) {
+    matchPositions.push({
+      anchor: editor.offsetToPos(match.index),
+      head: editor.offsetToPos(match.index + searchText.length),
+    });
+  }
+  return matchPositions;
 };
