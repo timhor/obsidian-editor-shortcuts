@@ -32,8 +32,8 @@ export const withMultipleSelections = (
   options: MultipleSelectionOptions = defaultMultipleSelectionOptions,
 ) => {
   // @ts-expect-error: Obsidian's Editor interface does not explicitly
-  // include the CodeMirror cm object, but it is there when logged out
-  // (this may break in future versions of the Obsidian API)
+  // include the CodeMirror cm object, but it is there when using the
+  // legacy editor
   const { cm } = editor;
 
   const selections = editor.listSelections();
@@ -78,12 +78,12 @@ export const withMultipleSelections = (
     editor.setSelections(newSelections);
   };
 
-  if (cm) {
+  if (cm && cm.operation) {
     // Group all the updates into one atomic operation (so undo/redo work as expected)
     cm.operation(applyCallbackOnSelections);
   } else {
     // Safe fallback if cm doesn't exist (so undo/redo will step through each change)
-    console.error('cm object not found, operations will not be buffered');
+    console.debug('cm object not found, operations will not be buffered');
     applyCallbackOnSelections();
   }
 };

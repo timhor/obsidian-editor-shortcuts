@@ -35,12 +35,16 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 
 \*\* This may conflict with the default shortcut for _Toggle checklist status_; changing/removing one of the bindings is recommended
 
+_Note:_ If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Move line up" and "Move line down".
+
+### Multiple Cursors
+
 These shortcuts also work with [multiple cursors](https://help.obsidian.md/How+to/Working+with+multiple+cursors), with the exception of:
 
 - Expand selection to quotes or brackets
 - Go to next/previous heading
 
-_Note:_ If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Move line up" and "Move line down".
+However, if you're using Live Preview, undo and redo will not work intuitively – actions will be handled individually for each cursor, rather than grouped together. If this becomes an issue for you, you can switch back to the legacy editor in Settings as a workaround.
 
 ## Installing the plugin
 
