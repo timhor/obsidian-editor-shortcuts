@@ -1,6 +1,6 @@
 {
   "name": "obsidian-editor-shortcuts",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Add keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code (vscode) or Sublime Text",
   "main": "main.js",
   "scripts": {
