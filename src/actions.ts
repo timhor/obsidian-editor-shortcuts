@@ -133,7 +133,7 @@ export const selectWordOrNextOccurrence = (editor: Editor) => {
       editor,
       latestMatchPos,
       searchText,
-      searchWithinWords: false,
+      searchWithinWords: true,
       documentContent: editor.getValue(),
     });
     const newSelections = nextMatch
@@ -170,7 +170,7 @@ export const selectAllOccurrences = (editor: Editor) => {
   const matches = findAllMatchPositions({
     editor,
     searchText,
-    searchWithinWords: false,
+    searchWithinWords: true,
     documentContent: editor.getValue(),
   });
   editor.setSelections(matches);
