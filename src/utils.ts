@@ -253,6 +253,11 @@ export const getSearchText = ({
   };
 };
 
+// From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+// $& means the whole matched string
+const escapeRegExp = (input: string) =>
+  input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export const findAllMatches = ({
   searchText,
   searchWithinWords,
@@ -262,8 +267,9 @@ export const findAllMatches = ({
   searchWithinWords: boolean;
   documentContent: string;
 }) => {
+  const escapedSearchText = escapeRegExp(searchText);
   const searchExpression = new RegExp(
-    searchWithinWords ? searchText : `\\b${searchText}\\b`,
+    searchWithinWords ? escapedSearchText : `\\b${escapedSearchText}\\b`,
     'g',
   );
   return Array.from(documentContent.matchAll(searchExpression));

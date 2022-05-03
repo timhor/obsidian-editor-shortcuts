@@ -242,6 +242,30 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       ]);
     });
 
+    it('should escape reserved regex characters when finding a match', () => {
+      editor.setValue('(hello)\n(hello)\n(hello)');
+      editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 7 });
+
+      selectWordOrNextOccurrence(editor as any);
+      selectWordOrNextOccurrence(editor as any);
+
+      const { selections } = getDocumentAndSelection(editor);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 7 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 0 }),
+          head: expect.objectContaining({ line: 1, ch: 7 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 2, ch: 0 }),
+          head: expect.objectContaining({ line: 2, ch: 7 }),
+        },
+      ]);
+    });
+
     it('should loop around to beginning when selecting next occurrence', () => {
       editor.setValue(originalDocRepeated);
       editor.setSelection({ line: 4, ch: 0 }, { line: 4, ch: 5 });
@@ -333,6 +357,29 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         {
           anchor: expect.objectContaining({ line: 1, ch: 2 }),
           head: expect.objectContaining({ line: 1, ch: 7 }),
+        },
+      ]);
+    });
+
+    it('should escape reserved regex characters when finding a match', () => {
+      editor.setValue('(hello)\n(hello)\n(hello)');
+      editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 7 });
+
+      selectAllOccurrences(editor as any);
+
+      const { selections } = getDocumentAndSelection(editor);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 7 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 0 }),
+          head: expect.objectContaining({ line: 1, ch: 7 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 2, ch: 0 }),
+          head: expect.objectContaining({ line: 2, ch: 7 }),
         },
       ]);
     });
