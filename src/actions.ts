@@ -140,6 +140,8 @@ export const selectWordOrNextOccurrence = (editor: Editor) => {
       ? allSelections.concat(nextMatch)
       : allSelections;
     editor.setSelections(newSelections);
+    const lastSelection = newSelections[newSelections.length - 1];
+    editor.scrollIntoView(getSelectionBoundaries(lastSelection));
   } else {
     const newSelections = [];
     for (const selection of allSelections) {
