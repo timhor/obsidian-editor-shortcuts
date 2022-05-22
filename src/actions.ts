@@ -117,7 +117,22 @@ export const copyLine = (
   }
 };
 
+/*
+Properties used to distinguish between selections that are programmatic
+(expanding from a cursor selection) vs. manual (using a mouse / Shift + arrow
+keys). This controls the match behaviour for selectWordOrNextOccurrence.
+*/
+let isManualSelection = true;
+export const setIsManualSelection = (value: boolean) => {
+  isManualSelection = value;
+};
+export let isProgrammaticSelectionChange = false;
+export const setIsProgrammaticSelectionChange = (value: boolean) => {
+  isProgrammaticSelectionChange = value;
+};
+
 export const selectWordOrNextOccurrence = (editor: Editor) => {
+  setIsProgrammaticSelectionChange(true);
   const allSelections = editor.listSelections();
   const { searchText, singleSearchText } = getSearchText({
     editor,
@@ -133,7 +148,7 @@ export const selectWordOrNextOccurrence = (editor: Editor) => {
       editor,
       latestMatchPos,
       searchText,
-      searchWithinWords: true,
+      searchWithinWords: isManualSelection,
       documentContent: editor.getValue(),
     });
     const newSelections = nextMatch
@@ -151,6 +166,7 @@ export const selectWordOrNextOccurrence = (editor: Editor) => {
         newSelections.push(selection);
       } else {
         newSelections.push(wordRangeAtPos(from, editor.getLine(from.line)));
+        setIsManualSelection(false);
       }
     }
     editor.setSelections(newSelections);

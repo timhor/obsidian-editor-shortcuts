@@ -14,9 +14,12 @@ import {
   joinLines,
   moveCursor,
   navigateLine,
+  isProgrammaticSelectionChange,
   selectAllOccurrences,
   selectLine,
   selectWordOrNextOccurrence,
+  setIsManualSelection,
+  setIsProgrammaticSelectionChange,
   transformCase,
 } from './actions';
 import {
@@ -309,6 +312,22 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToPrevHeading',
       name: 'Go to previous heading',
       editorCallback: (editor) => goToHeading(this.app, editor, 'prev'),
+    });
+
+    this.registerSelectionChangeListeners();
+  }
+
+  private registerSelectionChangeListeners() {
+    this.app.workspace.onLayoutReady(() => {
+      this.app.workspace.iterateCodeMirrors((cm) => {
+        // Change handler for selectWordOrNextOccurrence
+        cm.on('beforeSelectionChange', () => {
+          if (!isProgrammaticSelectionChange) {
+            setIsManualSelection(true);
+          }
+          setIsProgrammaticSelectionChange(false);
+        });
+      });
     });
   }
 }

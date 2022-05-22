@@ -19,6 +19,7 @@ import {
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
   addCursorsToSelectionEnds,
+  setIsManualSelection,
 } from '../actions';
 import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
@@ -223,21 +224,60 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       ]);
     });
 
-    // TODO: restore this after implementing logic to distinguish between
-    // word selection and manual selection
-    it.skip('should only select whole words', () => {
-      editor.setValue(originalDocRepeated);
-      editor.setSelection({ line: 1, ch: 2 }, { line: 1, ch: 7 });
+    it('should only select whole words if initial selection was made programmatically', () => {
+      setIsManualSelection(false);
+      editor.setValue('sit sit situation sit');
+      editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 3 });
 
+      selectWordOrNextOccurrence(editor as any);
       selectWordOrNextOccurrence(editor as any);
       selectWordOrNextOccurrence(editor as any);
 
       const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDocRepeated);
+      expect(doc).toEqual('sit sit situation sit');
       expect(selections).toEqual([
         {
-          anchor: expect.objectContaining({ line: 1, ch: 2 }),
-          head: expect.objectContaining({ line: 1, ch: 7 }),
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 3 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 4 }),
+          head: expect.objectContaining({ line: 0, ch: 7 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 18 }),
+          head: expect.objectContaining({ line: 0, ch: 21 }),
+        },
+      ]);
+    });
+
+    it('should select within words if initial selection was made manually', () => {
+      setIsManualSelection(true);
+      editor.setValue('sit sit situation sit');
+      editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 3 });
+
+      selectWordOrNextOccurrence(editor as any);
+      selectWordOrNextOccurrence(editor as any);
+      selectWordOrNextOccurrence(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('sit sit situation sit');
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 3 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 4 }),
+          head: expect.objectContaining({ line: 0, ch: 7 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 8 }),
+          head: expect.objectContaining({ line: 0, ch: 11 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 18 }),
+          head: expect.objectContaining({ line: 0, ch: 21 }),
         },
       ]);
     });
@@ -339,24 +379,6 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         {
           anchor: expect.objectContaining({ line: 6, ch: 6 }),
           head: expect.objectContaining({ line: 7, ch: 5 }),
-        },
-      ]);
-    });
-
-    // TODO: restore this after implementing logic to distinguish between
-    // word selection and manual selection
-    it.skip('should only select whole words', () => {
-      editor.setValue(originalDocRepeated);
-      editor.setSelection({ line: 1, ch: 2 }, { line: 1, ch: 7 });
-
-      selectAllOccurrences(editor as any);
-
-      const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDocRepeated);
-      expect(selections).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 1, ch: 2 }),
-          head: expect.objectContaining({ line: 1, ch: 7 }),
         },
       ]);
     });
