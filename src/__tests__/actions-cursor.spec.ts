@@ -5,6 +5,7 @@ import {
   insertLineAbove,
   insertLineBelow,
   deleteSelectedLines,
+  deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
   copyLine,
@@ -129,29 +130,91 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
   });
 
+  describe('deleteToStartOfLine', () => {
+    it('should delete to the start of the line', () => {
+      editor.setCursor({ line: 1, ch: 7 });
+      withMultipleSelections(editor as any, deleteToStartOfLine);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\nit\namet');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 1,
+          ch: 0,
+        }),
+      );
+    });
+
+    it('should delete the preceding newline when at the start of the line', () => {
+      editor.setCursor({ line: 1, ch: 0 });
+      withMultipleSelections(editor as any, deleteToStartOfLine);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsumdolor sit\namet');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 0,
+          ch: 11,
+        }),
+      );
+    });
+
+    it('should delete nothing when at the start of the document', () => {
+      editor.setCursor({ line: 0, ch: 0 });
+      withMultipleSelections(editor as any, deleteToStartOfLine);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\namet');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 0,
+          ch: 0,
+        }),
+      );
+    });
+  });
+
   describe('deleteToEndOfLine', () => {
     it('should delete to the end of the line', () => {
       editor.setCursor({ line: 1, ch: 1 });
       withMultipleSelections(editor as any, deleteToEndOfLine);
 
-      const { doc } = getDocumentAndSelection(editor);
+      const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\nd\namet');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 1,
+          ch: 1,
+        }),
+      );
     });
 
     it('should delete the newline when at the end of the line', () => {
       editor.setCursor({ line: 1, ch: 9 });
       withMultipleSelections(editor as any, deleteToEndOfLine);
 
-      const { doc } = getDocumentAndSelection(editor);
+      const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sitamet');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 1,
+          ch: 9,
+        }),
+      );
     });
 
     it('should delete nothing when at the end of the document', () => {
       editor.setCursor({ line: 2, ch: 4 });
       withMultipleSelections(editor as any, deleteToEndOfLine);
 
-      const { doc } = getDocumentAndSelection(editor);
+      const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\namet');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 2,
+          ch: 4,
+        }),
+      );
     });
   });
 

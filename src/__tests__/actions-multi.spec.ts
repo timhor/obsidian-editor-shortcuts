@@ -5,6 +5,7 @@ import {
   insertLineAbove,
   insertLineBelow,
   deleteSelectedLines,
+  deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
   copyLine,
@@ -169,6 +170,31 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
   });
 
+  describe('deleteToStartOfLine', () => {
+    it('should delete to the start of the lines', () => {
+      withMultipleSelections(editor as any, deleteToStartOfLine);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(
+        `ipsum\ndolor sit\net\n\n` + `elit'\n(donec [mattis])\ntincidunt metus`,
+      );
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 2, ch: 0 }),
+          head: expect.objectContaining({ line: 2, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 4, ch: 0 }),
+          head: expect.objectContaining({ line: 4, ch: 0 }),
+        },
+      ]);
+    });
+  });
+
   describe('deleteToEndOfLine', () => {
     it('should delete to the end of the lines', () => {
       withMultipleSelections(editor as any, deleteToEndOfLine);
@@ -180,7 +206,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       );
       expect(selections).toEqual([
         {
-          anchor: expect.objectContaining({ line: 1, ch: 5 }),
+          anchor: expect.objectContaining({ line: 0, ch: 6 }),
           head: expect.objectContaining({ line: 0, ch: 6 }),
         },
         {
@@ -188,7 +214,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
           head: expect.objectContaining({ line: 2, ch: 2 }),
         },
         {
-          anchor: expect.objectContaining({ line: 4, ch: 14 }),
+          anchor: expect.objectContaining({ line: 4, ch: 17 }),
           head: expect.objectContaining({ line: 4, ch: 17 }),
         },
       ]);

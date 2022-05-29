@@ -21,6 +21,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Go to end of line                                | Not set                    |
 | Go to previous line                              | Not set                    |
 | Go to next line                                  | Not set                    |
+| Delete to start of line                          | Not set                    |
 | Delete to end of line                            | Not set                    |
 | Transform selection to uppercase                 | Not set                    |
 | Transform selection to lowercase                 | Not set                    |
@@ -44,7 +45,7 @@ These shortcuts also work with [multiple cursors](https://help.obsidian.md/How+t
 - Expand selection to quotes or brackets
 - Go to next/previous heading
 
-However, if you're using Live Preview, undo and redo will not work intuitively – actions will be handled individually for each cursor, rather than grouped together. If this becomes an issue for you, you can switch back to the legacy editor in Settings as a workaround.
+However, if you're using Live Preview, undo and redo will not work intuitively – actions will be handled individually for each cursor, rather than grouped together. If this becomes an issue for you, you can switch back to the legacy editor in Settings as a workaround as actions will be grouped in that case.
 
 ## Installing the plugin
 

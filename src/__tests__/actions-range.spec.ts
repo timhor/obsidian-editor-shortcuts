@@ -5,6 +5,7 @@ import {
   insertLineAbove,
   insertLineBelow,
   deleteSelectedLines,
+  deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
   copyLine,
@@ -86,6 +87,15 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('amet');
       expect(cursor.line).toEqual(0);
+    });
+  });
+
+  describe('deleteToStartOfLine', () => {
+    it('should delete to the start of the line', () => {
+      withMultipleSelections(editor as any, deleteToStartOfLine);
+
+      const { doc } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\n sit\namet');
     });
   });
 

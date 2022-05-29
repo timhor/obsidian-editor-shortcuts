@@ -59,21 +59,45 @@ export const deleteSelectedLines = (
   return { anchor: { line: from.line, ch: selection.head.ch } };
 };
 
+export const deleteToStartOfLine = (
+  editor: Editor,
+  selection: EditorSelection,
+) => {
+  const pos = selection.head;
+  let startPos = getLineStartPos(pos.line);
+
+  if (pos.line === 0 && pos.ch === 0) {
+    // We're at the start of the document so do nothing
+    return selection;
+  }
+
+  if (pos.line === startPos.line && pos.ch === startPos.ch) {
+    // We're at the start of the line so delete the preceding newline
+    startPos = getLineEndPos(pos.line - 1, editor);
+  }
+
+  editor.replaceRange('', startPos, pos);
+  return {
+    anchor: startPos,
+  };
+};
+
 export const deleteToEndOfLine = (
   editor: Editor,
   selection: EditorSelection,
 ) => {
   const pos = selection.head;
-  const endPos = getLineEndPos(pos.line, editor);
+  let endPos = getLineEndPos(pos.line, editor);
 
   if (pos.line === endPos.line && pos.ch === endPos.ch) {
     // We're at the end of the line so delete just the newline
-    endPos.line = endPos.line + 1;
-    endPos.ch = 0;
+    endPos = getLineStartPos(pos.line + 1);
   }
 
   editor.replaceRange('', pos, endPos);
-  return selection;
+  return {
+    anchor: pos,
+  };
 };
 
 export const joinLines = (editor: Editor, selection: EditorSelection) => {

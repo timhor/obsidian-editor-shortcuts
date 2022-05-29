@@ -3,6 +3,7 @@ import {
   addCursorsToSelectionEnds,
   copyLine,
   deleteSelectedLines,
+  deleteToStartOfLine,
   deleteToEndOfLine,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
@@ -72,6 +73,13 @@ export default class CodeEditorShortcuts extends Plugin {
       ],
       editorCallback: (editor) =>
         withMultipleSelections(editor, deleteSelectedLines),
+    });
+
+    this.addCommand({
+      id: 'deleteToStartOfLine',
+      name: 'Delete to start of line',
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, deleteToStartOfLine),
     });
 
     this.addCommand({
