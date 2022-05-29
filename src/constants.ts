@@ -34,3 +34,12 @@ export enum CODE_EDITOR {
   SUBLIME = 'sublime',
   VSCODE = 'vscode',
 }
+
+export const MODIFIER_KEYS = [
+  'Control',
+  'Shift',
+  'Alt',
+  'Meta',
+  'CapsLock',
+  'Fn',
+];

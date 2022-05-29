@@ -24,9 +24,10 @@ import {
 } from './actions';
 import {
   defaultMultipleSelectionOptions,
+  iterateCodeMirrorDivs,
   withMultipleSelections,
 } from './utils';
-import { CASE, DIRECTION } from './constants';
+import { CASE, DIRECTION, MODIFIER_KEYS } from './constants';
 import { insertLineBelowHandler } from './custom-selection-handlers';
 
 export default class CodeEditorShortcuts extends Plugin {
@@ -319,14 +320,20 @@ export default class CodeEditorShortcuts extends Plugin {
 
   private registerSelectionChangeListeners() {
     this.app.workspace.onLayoutReady(() => {
-      this.app.workspace.iterateCodeMirrors((cm) => {
-        // Change handler for selectWordOrNextOccurrence
-        cm.on('beforeSelectionChange', () => {
-          if (!isProgrammaticSelectionChange) {
-            setIsManualSelection(true);
-          }
-          setIsProgrammaticSelectionChange(false);
-        });
+      // Change handler for selectWordOrNextOccurrence
+      const handleSelectionChange = (evt: Event) => {
+        if (evt instanceof KeyboardEvent && MODIFIER_KEYS.includes(evt.key)) {
+          return;
+        }
+        if (!isProgrammaticSelectionChange) {
+          setIsManualSelection(true);
+        }
+        setIsProgrammaticSelectionChange(false);
+      };
+      iterateCodeMirrorDivs((cm: HTMLElement) => {
+        this.registerDomEvent(cm, 'keydown', handleSelectionChange);
+        this.registerDomEvent(cm, 'click', handleSelectionChange);
+        this.registerDomEvent(cm, 'dblclick', handleSelectionChange);
       });
     });
   }

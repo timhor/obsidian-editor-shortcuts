@@ -88,6 +88,15 @@ export const withMultipleSelections = (
   }
 };
 
+export const iterateCodeMirrorDivs = (callback: (cm: HTMLElement) => any) => {
+  let codeMirrors: NodeListOf<HTMLElement>;
+  codeMirrors = document.querySelectorAll('.cm-content'); // CM6
+  if (codeMirrors.length === 0) {
+    codeMirrors = document.querySelectorAll('.CodeMirror'); // CM5
+  }
+  codeMirrors.forEach(callback);
+};
+
 export const getLineStartPos = (line: number): EditorPosition => ({
   line,
   ch: 0,
