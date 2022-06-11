@@ -88,6 +88,11 @@ export const withMultipleSelections = (
   }
 };
 
+/**
+ * Executes the supplied callback for each top-level CodeMirror div element in the
+ * DOM. This is an interim util made to work with both CM5 and CM6 as Obsidian's
+ * `iterateCodeMirrors` method only works with the CM5.
+ */
 export const iterateCodeMirrorDivs = (callback: (cm: HTMLElement) => any) => {
   let codeMirrors: NodeListOf<HTMLElement>;
   codeMirrors = document.querySelectorAll('.cm-content'); // CM6
@@ -262,10 +267,13 @@ export const getSearchText = ({
   };
 };
 
-// From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
-// $& means the whole matched string
-const escapeRegExp = (input: string) =>
-  input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/**
+ * Escapes any special regex characters in the given string.
+ *
+ * Adapted from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+ */
+const escapeRegex = (input: string) =>
+  input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 
 /**
  * Constructs a custom regex query with word boundaries because in `\b` in JS doesn't
@@ -284,7 +292,7 @@ export const findAllMatches = ({
   searchWithinWords: boolean;
   documentContent: string;
 }) => {
-  const escapedSearchText = escapeRegExp(searchText);
+  const escapedSearchText = escapeRegex(searchText);
   const searchExpression = new RegExp(
     searchWithinWords
       ? escapedSearchText
