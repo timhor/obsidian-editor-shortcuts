@@ -404,7 +404,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       ]);
     });
 
-    it('should select words containing accented characters', () => {
+    it('should select words containing unicode characters', () => {
       editor.setValue('café e açúcar');
       editor.setSelections([
         { anchor: { line: 0, ch: 2 }, head: { line: 0, ch: 2 } },

@@ -305,7 +305,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(selectedText).toEqual('dolor');
     });
 
-    it('should select word containing accented characters', () => {
+    it('should select word containing unicode characters', () => {
       editor.setValue('café');
       editor.setCursor({ line: 0, ch: 2 });
 

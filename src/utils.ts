@@ -267,6 +267,14 @@ export const getSearchText = ({
 const escapeRegExp = (input: string) =>
   input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+/**
+ * Constructs a custom regex query with word boundaries because in `\b` in JS doesn't
+ * match word boundaries for unicode characters, even with the unicode flag on.
+ *
+ * Adapted from https://shiba1014.medium.com/regex-word-boundaries-with-unicode-207794f6e7ed.
+ */
+const withWordBoundaries = (input: string) => `(?<=\\W|^)${input}(?=\\W|$)`;
+
 export const findAllMatches = ({
   searchText,
   searchWithinWords,
@@ -278,7 +286,9 @@ export const findAllMatches = ({
 }) => {
   const escapedSearchText = escapeRegExp(searchText);
   const searchExpression = new RegExp(
-    searchWithinWords ? escapedSearchText : `\\b${escapedSearchText}\\b`,
+    searchWithinWords
+      ? escapedSearchText
+      : withWordBoundaries(escapedSearchText),
     'g',
   );
   return Array.from(documentContent.matchAll(searchExpression));

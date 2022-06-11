@@ -340,6 +340,66 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         },
       ]);
     });
+
+    describe('with words containing unicode characters', () => {
+      it('should only select whole words if initial selection was made programmatically', () => {
+        setIsManualSelection(false);
+        editor.setValue('café café cafés café');
+        editor.setSelection({ line: 0, ch: 5 }, { line: 0, ch: 9 });
+
+        selectWordOrNextOccurrence(editor as any);
+        selectWordOrNextOccurrence(editor as any);
+        selectWordOrNextOccurrence(editor as any);
+
+        const { doc, selections } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('café café cafés café');
+        expect(selections).toEqual([
+          {
+            anchor: expect.objectContaining({ line: 0, ch: 0 }),
+            head: expect.objectContaining({ line: 0, ch: 4 }),
+          },
+          {
+            anchor: expect.objectContaining({ line: 0, ch: 5 }),
+            head: expect.objectContaining({ line: 0, ch: 9 }),
+          },
+          {
+            anchor: expect.objectContaining({ line: 0, ch: 16 }),
+            head: expect.objectContaining({ line: 0, ch: 20 }),
+          },
+        ]);
+      });
+
+      it('should select within words if initial selection was made manually', () => {
+        setIsManualSelection(true);
+        editor.setValue('café café cafés café');
+        editor.setSelection({ line: 0, ch: 5 }, { line: 0, ch: 9 });
+
+        selectWordOrNextOccurrence(editor as any);
+        selectWordOrNextOccurrence(editor as any);
+        selectWordOrNextOccurrence(editor as any);
+
+        const { doc, selections } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('café café cafés café');
+        expect(selections).toEqual([
+          {
+            anchor: expect.objectContaining({ line: 0, ch: 0 }),
+            head: expect.objectContaining({ line: 0, ch: 4 }),
+          },
+          {
+            anchor: expect.objectContaining({ line: 0, ch: 5 }),
+            head: expect.objectContaining({ line: 0, ch: 9 }),
+          },
+          {
+            anchor: expect.objectContaining({ line: 0, ch: 10 }),
+            head: expect.objectContaining({ line: 0, ch: 14 }),
+          },
+          {
+            anchor: expect.objectContaining({ line: 0, ch: 16 }),
+            head: expect.objectContaining({ line: 0, ch: 20 }),
+          },
+        ]);
+      });
+    });
   });
 
   describe('selectAllOccurrences', () => {
@@ -389,6 +449,30 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         {
           anchor: expect.objectContaining({ line: 6, ch: 6 }),
           head: expect.objectContaining({ line: 7, ch: 5 }),
+        },
+      ]);
+    });
+
+    it('should select all occurrences of selection containing unicode characters', () => {
+      editor.setValue('ああ ああ ああ');
+      editor.setSelection({ line: 0, ch: 6 }, { line: 0, ch: 8 });
+
+      selectAllOccurrences(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('ああ ああ ああ');
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 2 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 3 }),
+          head: expect.objectContaining({ line: 0, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 6 }),
+          head: expect.objectContaining({ line: 0, ch: 8 }),
         },
       ]);
     });
