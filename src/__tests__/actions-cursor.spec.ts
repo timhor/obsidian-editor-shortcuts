@@ -253,6 +253,19 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(cursor.line).toEqual(0);
       expect(cursor.ch).toEqual(13);
     });
+
+    it('should remove markdown quote characters', () => {
+      const content = '> aaa\n> bbb\n> ccc';
+      editor.setValue(content);
+      editor.setCursor({ line: 0, ch: 0 });
+
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('> aaa bbb\n> ccc');
+      expect(cursor.line).toEqual(0);
+      expect(cursor.ch).toEqual(5);
+    });
   });
 
   describe('copyLine', () => {
