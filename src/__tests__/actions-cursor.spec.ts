@@ -266,6 +266,19 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(cursor.line).toEqual(0);
       expect(cursor.ch).toEqual(5);
     });
+
+    it('should not add a space after the current line if one already exists', () => {
+      const content = 'lorem ipsum\ndolor sit \namet';
+      editor.setValue(content);
+      editor.setCursor({ line: 1, ch: 0 });
+
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\ndolor sit amet');
+      expect(cursor.line).toEqual(1);
+      expect(cursor.ch).toEqual(10);
+    });
   });
 
   describe('copyLine', () => {

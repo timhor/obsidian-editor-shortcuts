@@ -116,6 +116,7 @@ export const joinLines = (editor: Editor, selection: EditorSelection) => {
     }
     endOfCurrentLine = getLineEndPos(line, editor);
     const endOfNextLine = getLineEndPos(line + 1, editor);
+    const contentsOfCurrentLine = editor.getLine(line);
     const contentsOfNextLine = editor.getLine(line + 1);
 
     const charsToTrim = contentsOfNextLine.match(JOIN_LINE_TRIM_REGEX) ?? [];
@@ -125,13 +126,22 @@ export const joinLines = (editor: Editor, selection: EditorSelection) => {
       JOIN_LINE_TRIM_REGEX,
       '',
     );
-    editor.replaceRange(
-      newContentsOfNextLine.length > 0
-        ? ' ' + newContentsOfNextLine
-        : newContentsOfNextLine,
-      endOfCurrentLine,
-      endOfNextLine,
-    );
+    if (
+      newContentsOfNextLine.length > 0 &&
+      contentsOfCurrentLine.charAt(endOfCurrentLine.ch - 1) !== ' '
+    ) {
+      editor.replaceRange(
+        ' ' + newContentsOfNextLine,
+        endOfCurrentLine,
+        endOfNextLine,
+      );
+    } else {
+      editor.replaceRange(
+        newContentsOfNextLine,
+        endOfCurrentLine,
+        endOfNextLine,
+      );
+    }
   }
 
   if (selectionLength === 0) {
