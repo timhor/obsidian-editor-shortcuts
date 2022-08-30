@@ -109,38 +109,55 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
   });
 
   describe('joinLines', () => {
-    it('should join next line to current line', () => {
+    it('should join multiple selected lines', () => {
       withMultipleSelections(editor as any, joinLines);
 
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('lorem ipsum\ndolor sit amet');
-      expect(cursor.line).toEqual(1);
-      expect(cursor.ch).toEqual(9);
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum dolor sit\namet');
+      expect(selections[0]).toEqual({
+        anchor: expect.objectContaining({ line: 0, ch: 6 }),
+        head: expect.objectContaining({ line: 0, ch: 17 }),
+      });
+    });
+
+    it('should join the same text from either direction', () => {
+      editor.setSelection({ line: 1, ch: 5 }, { line: 0, ch: 6 });
+
+      withMultipleSelections(editor as any, joinLines);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum dolor sit\namet');
+      expect(selections[0]).toEqual({
+        anchor: expect.objectContaining({ line: 0, ch: 6 }),
+        head: expect.objectContaining({ line: 0, ch: 17 }),
+      });
     });
 
     it('should not join next line when at the end of the document', () => {
-      editor.setSelection({ line: 1, ch: 6 }, { line: 2, ch: 2 });
+      editor.setSelection({ line: 2, ch: 4 }, { line: 2, ch: 0 });
 
       withMultipleSelections(editor as any, joinLines);
 
-      const { doc, cursor } = getDocumentAndSelection(editor);
+      const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(2);
-      expect(cursor.ch).toEqual(4);
+      expect(selections[0]).toEqual({
+        anchor: expect.objectContaining({ line: 2, ch: 0 }),
+        head: expect.objectContaining({ line: 2, ch: 4 }),
+      });
     });
 
     it('should remove markdown list characters', () => {
       const content = '- aaa\n- bbb\n- ccc';
       editor.setValue(content);
-      editor.setSelection({ line: 1, ch: 4 }, { line: 0, ch: 3 });
+      editor.setSelection({ line: 2, ch: 4 }, { line: 0, ch: 3 });
 
       withMultipleSelections(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('- aaa bbb\n- ccc');
+      expect(doc).toEqual('- aaa bbb ccc');
       expect(selections[0]).toEqual({
-        anchor: expect.objectContaining({ line: 0, ch: 5 }),
-        head: expect.objectContaining({ line: 0, ch: 5 }),
+        anchor: expect.objectContaining({ line: 0, ch: 3 }),
+        head: expect.objectContaining({ line: 0, ch: 12 }),
       });
     });
   });

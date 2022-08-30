@@ -43,3 +43,5 @@ export const MODIFIER_KEYS = [
   'CapsLock',
   'Fn',
 ];
+
+export const JOIN_LINE_TRIM_REGEX = /^\s*((-|\+|\*|\d+\.) )?/;

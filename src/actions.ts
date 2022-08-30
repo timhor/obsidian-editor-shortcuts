@@ -8,6 +8,7 @@ import {
   MATCHING_QUOTES_BRACKETS,
   MatchingCharacterMap,
   CODE_EDITOR,
+  JOIN_LINE_TRIM_REGEX,
 } from './constants';
 import {
   CheckCharacter,
@@ -101,22 +102,50 @@ export const deleteToEndOfLine = (
 };
 
 export const joinLines = (editor: Editor, selection: EditorSelection) => {
-  const { line } = selection.head;
-  const endOfCurrentLine = getLineEndPos(line, editor);
-  if (line < editor.lineCount() - 1) {
+  const { from, to } = getSelectionBoundaries(selection);
+  const { line } = from;
+
+  let endOfCurrentLine = getLineEndPos(line, editor);
+  const joinRangeLimit = Math.max(to.line - line, 1);
+  const selectionLength = editor.posToOffset(to) - editor.posToOffset(from);
+  let trimmedChars = '';
+
+  for (let i = 0; i < joinRangeLimit; i++) {
+    if (line === editor.lineCount() - 1) {
+      break;
+    }
+    endOfCurrentLine = getLineEndPos(line, editor);
     const endOfNextLine = getLineEndPos(line + 1, editor);
-    const contentsOfNextLine = editor
-      .getLine(line + 1)
-      .replace(/^\s*((-|\+|\*|\d+\.) )?/, '');
+    const contentsOfNextLine = editor.getLine(line + 1);
+
+    const charsToTrim = contentsOfNextLine.match(JOIN_LINE_TRIM_REGEX) ?? [];
+    trimmedChars += charsToTrim[0] ?? '';
+
+    const newContentsOfNextLine = contentsOfNextLine.replace(
+      JOIN_LINE_TRIM_REGEX,
+      '',
+    );
     editor.replaceRange(
-      contentsOfNextLine.length > 0
-        ? ' ' + contentsOfNextLine
-        : contentsOfNextLine,
+      newContentsOfNextLine.length > 0
+        ? ' ' + newContentsOfNextLine
+        : newContentsOfNextLine,
       endOfCurrentLine,
       endOfNextLine,
     );
   }
-  return { anchor: endOfCurrentLine };
+
+  if (selectionLength === 0) {
+    return {
+      anchor: endOfCurrentLine,
+    };
+  }
+  return {
+    anchor: from,
+    head: {
+      line: from.line,
+      ch: from.ch + selectionLength - trimmedChars.length,
+    },
+  };
 };
 
 export const copyLine = (
