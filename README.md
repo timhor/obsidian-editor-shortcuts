@@ -4,7 +4,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 
 | Command                                          | Shortcut \*                |
 | ------------------------------------------------ | -------------------------- |
-| Insert line below                                | `Ctrl` + `Enter` \*\*      |
+| Insert line below                                | `Ctrl` + `Enter`           |
 | Insert line above                                | `Ctrl` + `Shift` + `Enter` |
 | Delete line                                      | `Ctrl` + `Shift` + `K`     |
 | Duplicate line                                   | `Ctrl` + `Shift` + `D`     |
@@ -36,7 +36,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 
 ### Important notes
 
-- `Ctrl` + `Enter` for 'Insert line below' may conflict with the default shortcut for _Toggle checklist status_; changing/removing one of the bindings is recommended.
+- `Ctrl` + `Enter` for 'Insert line below' may conflict with the default shortcut for _Open link under cursor in new tab_; changing/removing one of the bindings is recommended.
+- `Ctrl` + `L` for 'Select line' may conflict with the default shortcut for _Toggle checkbox status_; changing/removing one of the bindings is recommended.
 - `Ctrl` + `D` for 'Select word or next occurrence of selection' will behave differently depending on how the initial selection was made. If it was also done via `Ctrl` + `D`, the command will only look for the entire word in subsequent matches. However, if the selection was done by hand, it will search within words as well.
 - If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Move line up" and "Move line down".
 
