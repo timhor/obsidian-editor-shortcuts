@@ -48,4 +48,34 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     view.setState(initialState);
     view.dispatch({ selection: EditorSelection.create(initialSelections) });
   });
+
+  describe('insertLineAbove', () => {
+    it('should insert line above', () => {
+      withMultipleSelectionsNew(view as any, insertLineAbove);
+
+      const { doc, selections } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual(
+        `\nlorem ipsum\ndolor sit\n\namet\n\n\n\n` +
+          `consectetur "adipiscing" 'elit'\n(donec [mattis])\ntincidunt metus`,
+      );
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 0 }),
+          head: expect.objectContaining({ line: 3, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 0 }),
+          head: expect.objectContaining({ line: 6, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 7, ch: 0 }),
+          head: expect.objectContaining({ line: 7, ch: 0 }),
+        },
+      ]);
+    });
+  });
 });

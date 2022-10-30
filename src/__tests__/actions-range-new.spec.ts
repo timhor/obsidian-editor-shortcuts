@@ -38,4 +38,14 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     view.setState(initialState);
     view.dispatch({ selection: EditorSelection.create([initialSelection]) });
   });
+
+  describe('insertLineAbove', () => {
+    it('should insert line above', () => {
+      withMultipleSelectionsNew(view as any, insertLineAbove);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('lorem ipsum\n\ndolor sit\namet');
+      expect(cursor.line).toEqual(1);
+    });
+  });
 });

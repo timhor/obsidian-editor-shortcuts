@@ -19,6 +19,8 @@ export const getDocumentAndSelection = (editor: Editor) => {
 
 export interface EditorViewWithLegacyMethods extends EditorView {
   getValue?: () => string;
+  getLine?: (n: number) => string;
+  lastLine?: () => string;
   getCursor?: () => EditorPosition;
   setCursor?: (pos: EditorPosition) => void;
   getSelection?: () => string;
@@ -49,6 +51,10 @@ export const defineLegacyEditorMethods = (
 ) => {
   view.getValue = () => view.state.doc.toString();
 
+  view.getLine = (n: number) => view.state.doc.line(n + 1).text;
+
+  view.lastLine = () => view.state.doc.lines;
+
   view.getCursor = () =>
     offsetToPos(view.state.doc, view.state.selection.main.head);
 
@@ -73,27 +79,31 @@ export const defineLegacyEditorMethods = (
     }));
 
   view.transaction = (tx) => {
-    const changes = tx.changes.map((change) => ({
-      from: posToOffset(view.state.doc, change.from),
-      // Spread to only assign 'to' if it exists: https://stackoverflow.com/a/60492828
-      ...(change.to && { to: posToOffset(view.state.doc, change.to) }),
-      insert: change.text,
-    }));
-    view.dispatch({
-      changes,
-    });
+    if (tx.changes) {
+      const changes = tx.changes.map((change) => ({
+        from: posToOffset(view.state.doc, change.from),
+        // Spread to only assign 'to' if it exists: https://stackoverflow.com/a/60492828
+        ...(change.to && { to: posToOffset(view.state.doc, change.to) }),
+        insert: change.text,
+      }));
+      view.dispatch({
+        changes,
+      });
+    }
 
     // Dispatch selections separately as they depend on the updated document
-    const selections = tx.selections.map((selection) => {
-      const fromOffset = posToOffset(view.state.doc, selection.from);
-      const toOffset = posToOffset(
-        view.state.doc,
-        selection.to ? selection.to : selection.from,
-      );
-      return EditorSelection.range(fromOffset, toOffset);
-    });
-    view.dispatch({
-      selection: EditorSelection.create(selections),
-    });
+    if (tx.selections) {
+      const selections = tx.selections.map((selection) => {
+        const fromOffset = posToOffset(view.state.doc, selection.from);
+        const toOffset = posToOffset(
+          view.state.doc,
+          selection.to ? selection.to : selection.from,
+        );
+        return EditorSelection.range(fromOffset, toOffset);
+      });
+      view.dispatch({
+        selection: EditorSelection.create(selections),
+      });
+    }
   };
 };

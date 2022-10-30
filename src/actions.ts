@@ -1,4 +1,11 @@
-import type { App, Editor, EditorPosition, EditorSelection } from 'obsidian';
+import type {
+  App,
+  Editor,
+  EditorChange,
+  EditorPosition,
+  EditorRangeOrCaret,
+  EditorSelection,
+} from 'obsidian';
 import {
   CASE,
   SEARCH_DIRECTION,
@@ -12,6 +19,7 @@ import {
 import { SettingsState } from './state';
 import {
   CheckCharacter,
+  EditorActionCallbackNewArgs,
   findAllMatchPositions,
   findNextMatchPosition,
   findPosOfNextCharacter,
@@ -28,7 +36,11 @@ import {
   isNumeric,
 } from './utils';
 
-export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
+export const insertLineAbove = (
+  editor: Editor,
+  selection: EditorSelection,
+  args: EditorActionCallbackNewArgs,
+) => {
   const { line } = selection.head;
   const startOfCurrentLine = getLineStartPos(line);
 
@@ -48,8 +60,21 @@ export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
     }
   }
 
-  editor.replaceRange(indentation + listPrefix + '\n', startOfCurrentLine);
-  return { anchor: { line, ch: indentation.length + listPrefix.length } };
+  const changes: EditorChange[] = [
+    { from: startOfCurrentLine, text: indentation + listPrefix + '\n' },
+  ];
+  const newSelection = {
+    from: {
+      ...startOfCurrentLine,
+      // Offset
+      line: startOfCurrentLine.line + args.iteration,
+      ch: indentation.length + listPrefix.length,
+    },
+  };
+  return {
+    changes,
+    newSelection,
+  };
 };
 
 export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
