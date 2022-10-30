@@ -3,7 +3,6 @@ import type { Editor } from 'codemirror';
 import { getDocumentAndSelection } from './test-helpers';
 import {
   insertLineAbove,
-  insertLineBelow,
   deleteLine,
   deleteToStartOfLine,
   deleteToEndOfLine,
@@ -27,7 +26,6 @@ import {
   withMultipleSelections,
   defaultMultipleSelectionOptions,
 } from '../utils';
-import { insertLineBelowHandler } from '../custom-selection-handlers';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
 document.createRange = () => {
@@ -89,63 +87,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     ]);
   });
 
-  describe('insertLineBelow', () => {
-    it('should insert lines below', () => {
-      withMultipleSelections(editor as any, insertLineBelow, {
-        ...defaultMultipleSelectionOptions,
-        customSelectionHandler: insertLineBelowHandler,
-      });
-
-      const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(
-        `lorem ipsum\n\ndolor sit\namet\n\n\n` +
-          `consectetur "adipiscing" 'elit'\n\n\n(donec [mattis])\ntincidunt metus`,
-      );
-      expect(selections).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 1, ch: 0 }),
-          head: expect.objectContaining({ line: 1, ch: 0 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 4, ch: 0 }),
-          head: expect.objectContaining({ line: 4, ch: 0 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 7, ch: 0 }),
-          head: expect.objectContaining({ line: 7, ch: 0 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 8, ch: 0 }),
-          head: expect.objectContaining({ line: 8, ch: 0 }),
-        },
-      ]);
-    });
-
-    it('should insert prefixes when inside a list', () => {
-      editor.setValue('- aaa\n  - bbb');
-      editor.setSelections([
-        { anchor: { line: 0, ch: 2 }, head: { line: 0, ch: 2 } },
-        { anchor: { line: 1, ch: 6 }, head: { line: 1, ch: 6 } },
-      ]);
-
-      withMultipleSelections(editor as any, insertLineBelow);
-
-      const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('- aaa\n- \n  - bbb\n  - ');
-      expect(selections).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 1, ch: 2 }),
-          head: expect.objectContaining({ line: 1, ch: 2 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 3, ch: 4 }),
-          head: expect.objectContaining({ line: 3, ch: 4 }),
-        },
-      ]);
-    });
-  });
-
-  describe('deleteSelectedLines', () => {
+  describe('deleteLine', () => {
     it('should delete selected lines', () => {
       withMultipleSelections(editor as any, deleteLine);
 

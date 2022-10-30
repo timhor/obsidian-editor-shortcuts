@@ -3,7 +3,6 @@ import type {
   Editor,
   EditorChange,
   EditorPosition,
-  EditorRangeOrCaret,
   EditorSelection,
 } from 'obsidian';
 import {
@@ -66,7 +65,7 @@ export const insertLineAbove = (
   const newSelection = {
     from: {
       ...startOfCurrentLine,
-      // Offset
+      // Offset by iteration
       line: startOfCurrentLine.line + args.iteration,
       ch: indentation.length + listPrefix.length,
     },
@@ -77,7 +76,11 @@ export const insertLineAbove = (
   };
 };
 
-export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
+export const insertLineBelow = (
+  editor: Editor,
+  selection: EditorSelection,
+  args: EditorActionCallbackNewArgs,
+) => {
   const { line } = selection.head;
   const startOfCurrentLine = getLineStartPos(line);
   const endOfCurrentLine = getLineEndPos(line, editor);
@@ -91,9 +94,18 @@ export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
 
     // Performing this action on an empty list item should delete it
     if (listPrefix === null) {
-      editor.replaceRange('', startOfCurrentLine, endOfCurrentLine);
+      const changes: EditorChange[] = [
+        { from: startOfCurrentLine, to: endOfCurrentLine, text: '' },
+      ];
+      const newSelection = {
+        from: {
+          line,
+          ch: 0,
+        },
+      };
       return {
-        anchor: { line, ch: 0 },
+        changes,
+        newSelection,
       };
     }
 
@@ -102,9 +114,19 @@ export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
     }
   }
 
-  editor.replaceRange('\n' + indentation + listPrefix, endOfCurrentLine);
+  const changes: EditorChange[] = [
+    { from: endOfCurrentLine, text: '\n' + indentation + listPrefix },
+  ];
+  const newSelection = {
+    from: {
+      // Offset by iteration
+      line: line + 1 + args.iteration,
+      ch: indentation.length + listPrefix.length,
+    },
+  };
   return {
-    anchor: { line: line + 1, ch: indentation.length + listPrefix.length },
+    changes,
+    newSelection,
   };
 };
 

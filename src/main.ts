@@ -35,7 +35,6 @@ import {
   withMultipleSelectionsNew,
 } from './utils';
 import { CASE, MODIFIER_KEYS } from './constants';
-import { insertLineBelowHandler } from './custom-selection-handlers';
 import { SettingTab, DEFAULT_SETTINGS, PluginSettings } from './settings';
 import { SettingsState } from './state';
 import { GoToLineModal } from './modals';
@@ -69,10 +68,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, insertLineBelow, {
-          ...defaultMultipleSelectionOptions,
-          customSelectionHandler: insertLineBelowHandler,
-        }),
+        withMultipleSelectionsNew(editor, insertLineBelow),
     });
 
     this.addCommand({

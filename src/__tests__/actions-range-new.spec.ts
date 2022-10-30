@@ -1,42 +1,30 @@
-import {
-  EditorSelection,
-  EditorState,
-  SelectionRange,
-} from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import {
   defineLegacyEditorMethods,
   EditorViewWithLegacyMethods,
   getDocumentAndSelection,
-  posToOffset,
 } from './test-helpers';
-import { insertLineAbove } from '../actions';
+import { insertLineAbove, insertLineBelow } from '../actions';
 import { withMultipleSelectionsNew } from '../utils';
+import { SettingsState } from '../state';
 
 describe('Code Editor Shortcuts: actions - single range selection', () => {
   let view: EditorViewWithLegacyMethods;
-  let initialSelection: SelectionRange;
 
   const originalDoc = 'lorem ipsum\ndolor sit\namet';
-  const initialState = EditorState.create({
-    doc: originalDoc,
-  });
 
   beforeAll(() => {
     view = new EditorView({
       parent: document.body,
-      state: initialState,
     });
-    initialSelection = EditorSelection.range(
-      posToOffset(view.state.doc, { line: 0, ch: 6 }),
-      posToOffset(view.state.doc, { line: 1, ch: 5 }),
-    );
+
     defineLegacyEditorMethods(view);
   });
 
   beforeEach(() => {
-    view.setState(initialState);
-    view.dispatch({ selection: EditorSelection.create([initialSelection]) });
+    SettingsState.autoInsertListPrefix = true;
+    view.setValue(originalDoc);
+    view.setSelection({ line: 0, ch: 6 }, { line: 1, ch: 5 });
   });
 
   describe('insertLineAbove', () => {
@@ -46,6 +34,32 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       const { doc, cursor } = getDocumentAndSelection(view as any);
       expect(doc).toEqual('lorem ipsum\n\ndolor sit\namet');
       expect(cursor.line).toEqual(1);
+    });
+  });
+
+  describe('insertLineBelow', () => {
+    it('should insert line below', () => {
+      withMultipleSelectionsNew(view as any, insertLineBelow);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\n\namet');
+      expect(cursor.line).toEqual(2);
+    });
+
+    it('should insert prefix when inside a list', () => {
+      view.setValue('- aaa\n- bbb');
+      view.setSelection({ line: 0, ch: 2 }, { line: 0, ch: 5 });
+
+      withMultipleSelectionsNew(view as any, insertLineBelow);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('- aaa\n- \n- bbb');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 1,
+          ch: 2,
+        }),
+      );
     });
   });
 });

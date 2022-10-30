@@ -2,7 +2,6 @@ import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
 import { getDocumentAndSelection } from './test-helpers';
 import {
-  insertLineBelow,
   deleteLine,
   deleteToStartOfLine,
   deleteToEndOfLine,
@@ -60,33 +59,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     editor.setSelection({ line: 0, ch: 6 }, { line: 1, ch: 5 });
   });
 
-  describe('insertLineBelow', () => {
-    it('should insert line below', () => {
-      withMultipleSelections(editor as any, insertLineBelow);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('lorem ipsum\ndolor sit\n\namet');
-      expect(cursor.line).toEqual(2);
-    });
-
-    it('should insert prefix when inside a list', () => {
-      editor.setValue('- aaa\n- bbb');
-      editor.setSelection({ line: 0, ch: 2 }, { line: 0, ch: 5 });
-
-      withMultipleSelections(editor as any, insertLineBelow);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('- aaa\n- \n- bbb');
-      expect(cursor).toEqual(
-        expect.objectContaining({
-          line: 1,
-          ch: 2,
-        }),
-      );
-    });
-  });
-
-  describe('deleteSelectedLines', () => {
+  describe('deleteLine', () => {
     it('should delete selected lines', () => {
       withMultipleSelections(editor as any, deleteLine);
 

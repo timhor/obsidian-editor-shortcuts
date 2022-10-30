@@ -12,10 +12,7 @@ import {
   LOWERCASE_ARTICLES,
   LIST_CHARACTER_REGEX,
 } from './constants';
-import {
-  CustomSelectionHandler,
-  CustomSelectionHandlerNew,
-} from './custom-selection-handlers';
+import { CustomSelectionHandler } from './custom-selection-handlers';
 
 type EditorActionCallbackNew = (
   editor: Editor,
@@ -46,9 +43,6 @@ type MultipleSelectionOptionsNew = {
   // Additional information to be passed to the EditorActionCallback
   args?: EditorActionCallbackNewArgs;
 
-  // Perform further processing of new selections before they are set
-  customSelectionHandler?: CustomSelectionHandlerNew;
-
   // Whether the action should be repeated for cursors on the same line
   repeatSameLineActions?: boolean;
 };
@@ -62,7 +56,7 @@ export const withMultipleSelectionsNew = (
 ) => {
   const selections = editor.listSelections();
   let selectionIndexesToProcess: number[];
-  let newSelections: EditorRangeOrCaret[] = [];
+  const newSelections: EditorRangeOrCaret[] = [];
   const changes: EditorChange[] = [];
 
   if (!options.repeatSameLineActions) {
@@ -104,9 +98,6 @@ export const withMultipleSelectionsNew = (
     }
   }
 
-  if (options.customSelectionHandler) {
-    newSelections = options.customSelectionHandler(newSelections);
-  }
   editor.transaction({
     changes,
     selections: newSelections,
@@ -551,7 +542,7 @@ export const formatRemainingListPrefixes = (
 ) => {
   const changes: EditorChange[] = [];
 
-  for (let i = fromLine; i < editor.lastLine(); i++) {
+  for (let i = fromLine; i < editor.lineCount(); i++) {
     const contentsOfCurrentLine = editor.getLine(i);
     // Only prefixes at the same indentation level should be updated
     const listPrefixRegex = new RegExp(`^${indentation}\\d+\\.`);

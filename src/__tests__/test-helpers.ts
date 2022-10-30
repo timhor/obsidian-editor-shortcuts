@@ -1,4 +1,4 @@
-import { EditorSelection, Text } from '@codemirror/state';
+import { EditorState, EditorSelection, Text } from '@codemirror/state';
 import type { EditorView } from '@codemirror/view';
 import type { Editor } from 'codemirror';
 import type {
@@ -19,12 +19,15 @@ export const getDocumentAndSelection = (editor: Editor) => {
 
 export interface EditorViewWithLegacyMethods extends EditorView {
   getValue?: () => string;
+  setValue?: (value: string) => void;
   getLine?: (n: number) => string;
   lastLine?: () => string;
   getCursor?: () => EditorPosition;
   setCursor?: (pos: EditorPosition) => void;
   getSelection?: () => string;
+  setSelection?: (anchor: EditorPosition, head: EditorPosition) => void;
   getSelections?: () => string[];
+  setSelections?: (selectionRanges: ObsidianEditorSelection[]) => void;
   listSelections?: () => ObsidianEditorSelection[];
   transaction?: (tx: EditorTransaction) => void;
 }
@@ -51,6 +54,10 @@ export const defineLegacyEditorMethods = (
 ) => {
   view.getValue = () => view.state.doc.toString();
 
+  view.setValue = (value) => {
+    view.setState(EditorState.create({ doc: value }));
+  };
+
   view.getLine = (n: number) => view.state.doc.line(n + 1).text;
 
   view.lastLine = () => view.state.doc.lines;
@@ -58,10 +65,11 @@ export const defineLegacyEditorMethods = (
   view.getCursor = () =>
     offsetToPos(view.state.doc, view.state.selection.main.head);
 
-  view.setCursor = (pos) =>
+  view.setCursor = (pos) => {
     view.dispatch({
       selection: { anchor: posToOffset(view.state.doc, pos) },
     });
+  };
 
   view.getSelection = () =>
     view.state.sliceDoc(
@@ -69,8 +77,28 @@ export const defineLegacyEditorMethods = (
       view.state.selection.main.to,
     );
 
+  view.setSelection = (anchor, head) => {
+    const selection = EditorSelection.range(
+      posToOffset(view.state.doc, anchor),
+      posToOffset(view.state.doc, head),
+    );
+    view.dispatch({ selection: EditorSelection.create([selection]) });
+  };
+
   view.getSelections = () =>
     view.state.selection.ranges.map((r) => view.state.sliceDoc(r.from, r.to));
+
+  view.setSelections = (selectionRanges) => {
+    const selections = selectionRanges.map((range) =>
+      EditorSelection.range(
+        posToOffset(view.state.doc, range.anchor),
+        posToOffset(view.state.doc, range.head),
+      ),
+    );
+    view.dispatch({
+      selection: EditorSelection.create(selections),
+    });
+  };
 
   view.listSelections = () =>
     view.state.selection.ranges.map((range) => ({
