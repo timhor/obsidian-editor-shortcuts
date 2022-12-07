@@ -366,36 +366,68 @@ export const transformCase = (
     selectedText = editor.getRange(anchor, head);
   }
 
-  if (caseType === CASE.TITLE) {
-    editor.replaceRange(
-      // use capture group to join with the same separator used to split
-      selectedText
-        .split(/(\s+)/)
-        .map((word, index, allWords) => {
-          if (
+  let replacementText = selectedText;
+
+  switch (caseType) {
+    case CASE.UPPER: {
+      replacementText = selectedText.toUpperCase();
+      break;
+    }
+    case CASE.LOWER: {
+      replacementText = selectedText.toLowerCase();
+      break;
+    }
+    case CASE.TITLE: {
+      replacementText = toTitleCase(selectedText);
+      break;
+    }
+    case CASE.NEXT: {
+      replacementText = getNextCase(selectedText);
+      break;
+    }
+  }
+
+  editor.replaceRange(replacementText, from, to);
+
+  return selection;
+};
+
+export const toTitleCase = (selectedText: string) => {
+  // use capture group to join with the same separator used to split
+  return selectedText
+      .split(/(\s+)/)
+      .map((word, index, allWords) => {
+        if (
             index > 0 &&
             index < allWords.length - 1 &&
             LOWERCASE_ARTICLES.includes(word.toLowerCase())
-          ) {
-            return word.toLowerCase();
-          }
-          return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
-        })
-        .join(''),
-      from,
-      to,
-    );
-  } else {
-    editor.replaceRange(
-      caseType === CASE.UPPER
-        ? selectedText.toUpperCase()
-        : selectedText.toLowerCase(),
-      from,
-      to,
-    );
-  }
+        ) {
+          return word.toLowerCase();
+        }
+        return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+      })
+      .join('');
+};
 
-  return selection;
+export const getNextCase = (selectedText: string): string => {
+  const textUpper = selectedText.toUpperCase();
+  const textLower = selectedText.toLowerCase();
+  const textTitle = toTitleCase(selectedText);
+
+  switch (selectedText) {
+    case textUpper: {
+      return textLower;
+    }
+    case textLower: {
+      return textTitle;
+    }
+    case textTitle: {
+      return textUpper;
+    }
+    default: {
+      return textUpper;
+    }
+  }
 };
 
 const expandSelection = ({
