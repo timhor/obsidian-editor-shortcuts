@@ -10,6 +10,7 @@ import {
   CODE_EDITOR,
   LIST_CHARACTER_REGEX,
 } from './constants';
+import { SettingsState } from './state';
 import {
   CheckCharacter,
   findAllMatchPositions,
@@ -33,9 +34,13 @@ export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
   const contentsOfCurrentLine = editor.getLine(line);
   const indentation = getLeadingWhitespace(contentsOfCurrentLine);
 
-  // If inside a list, only insert prefix if within the same list
   let listPrefix = '';
-  if (line > 0 && editor.getLine(line - 1).trim().length > 0) {
+  if (
+    SettingsState.autoInsertListPrefix &&
+    line > 0 &&
+    // If inside a list, only insert prefix if within the same list
+    editor.getLine(line - 1).trim().length > 0
+  ) {
     listPrefix = getNextListPrefix(contentsOfCurrentLine, 'before');
     if (isNumeric(listPrefix)) {
       formatRemainingListPrefixes(editor, line, indentation);
@@ -52,9 +57,13 @@ export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
 
   const contentsOfCurrentLine = editor.getLine(line);
   const indentation = getLeadingWhitespace(contentsOfCurrentLine);
-  const listPrefix = getNextListPrefix(contentsOfCurrentLine, 'after');
-  if (isNumeric(listPrefix)) {
-    formatRemainingListPrefixes(editor, line + 1, indentation);
+
+  let listPrefix = '';
+  if (SettingsState.autoInsertListPrefix) {
+    listPrefix = getNextListPrefix(contentsOfCurrentLine, 'after');
+    if (isNumeric(listPrefix)) {
+      formatRemainingListPrefixes(editor, line + 1, indentation);
+    }
   }
 
   editor.replaceRange('\n' + indentation + listPrefix, endOfCurrentLine);

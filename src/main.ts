@@ -30,9 +30,15 @@ import {
 } from './utils';
 import { CASE, DIRECTION, MODIFIER_KEYS } from './constants';
 import { insertLineBelowHandler } from './custom-selection-handlers';
+import { SettingTab, DEFAULT_SETTINGS, PluginSettings } from './settings';
+import { SettingsState } from './state';
 
 export default class CodeEditorShortcuts extends Plugin {
-  onload() {
+  settings: PluginSettings;
+
+  async onload() {
+    await this.loadSettings();
+
     this.addCommand({
       id: 'insertLineAbove',
       name: 'Insert line above',
@@ -324,6 +330,8 @@ export default class CodeEditorShortcuts extends Plugin {
     });
 
     this.registerSelectionChangeListeners();
+
+    this.addSettingTab(new SettingTab(this.app, this));
   }
 
   private registerSelectionChangeListeners() {
@@ -344,5 +352,19 @@ export default class CodeEditorShortcuts extends Plugin {
         this.registerDomEvent(cm, 'dblclick', handleSelectionChange);
       });
     });
+  }
+
+  async loadSettings() {
+    const savedSettings = await this.loadData();
+    this.settings = {
+      ...DEFAULT_SETTINGS,
+      ...savedSettings,
+    };
+    SettingsState.autoInsertListPrefix = this.settings.autoInsertListPrefix;
+  }
+
+  async saveSettings() {
+    await this.saveData(this.settings);
+    SettingsState.autoInsertListPrefix = this.settings.autoInsertListPrefix;
   }
 }

@@ -23,6 +23,7 @@ import {
 } from '../actions';
 import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
+import { SettingsState } from '../state';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
 document.createRange = () => {
@@ -54,6 +55,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   });
 
   beforeEach(() => {
+    SettingsState.autoInsertListPrefix = true;
     editor.setValue(originalDoc);
     editor.setCursor({ line: 1, ch: 0 });
   });
@@ -78,6 +80,23 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     describe('when inside a list', () => {
+      it('should not insert a prefix when setting is disabled', () => {
+        SettingsState.autoInsertListPrefix = false;
+        editor.setValue('- aaa\n- bbb');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineAbove);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('- aaa\n\n- bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 0,
+          }),
+        );
+      });
+
       it('should not insert a prefix when at the first list item', () => {
         editor.setValue('- aaa\n- bbb');
         editor.setCursor({ line: 0, ch: 4 });
@@ -187,6 +206,23 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     describe('when inside a list', () => {
+      it('should not insert a prefix when setting is disabled', () => {
+        SettingsState.autoInsertListPrefix = false;
+        editor.setValue('- aaa\n- bbb');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineAbove);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('- aaa\n\n- bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 0,
+          }),
+        );
+      });
+
       it.each([
         ['-', '- aaa\n- bbb', '- aaa\n- \n- bbb'],
         ['*', '* aaa\n* bbb', '* aaa\n* \n* bbb'],
