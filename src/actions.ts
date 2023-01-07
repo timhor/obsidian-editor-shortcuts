@@ -133,32 +133,61 @@ export const insertLineBelow = (
 // Note: don't use the built-in exec method for 'deleteLine' as there is a bug
 // where running it on a line that is long enough to be wrapped will focus on
 // the previous line instead of the next line after deletion
-export const deleteLine = (editor: Editor, selection: EditorSelection) => {
+let numLinesDeleted = 0;
+export const deleteLine = (
+  editor: Editor,
+  selection: EditorSelection,
+  args: EditorActionCallbackNewArgs,
+) => {
   const { from, to } = getSelectionBoundaries(selection);
 
   if (to.line === editor.lastLine()) {
     // There is no 'next line' when cursor is on the last line
     const endOfPreviousLine = getLineEndPos(from.line - 1, editor);
-    editor.replaceRange('', endOfPreviousLine, getLineEndPos(to.line, editor));
-    return {
-      anchor: {
+    const changes: EditorChange[] = [
+      {
+        from: endOfPreviousLine,
+        to: getLineEndPos(to.line, editor),
+        text: '',
+      },
+    ];
+    const newSelection = {
+      from: {
         line: from.line - 1,
         ch: Math.min(from.ch, endOfPreviousLine.ch),
       },
     };
+    return {
+      changes,
+      newSelection,
+    };
   }
 
+  // Reset offset at the start of a new bulk delete operation
+  if (args.iteration === 0) {
+    numLinesDeleted = 0;
+  }
   const endOfNextLine = getLineEndPos(to.line + 1, editor);
-  editor.replaceRange(
-    '',
-    getLineStartPos(from.line),
-    getLineStartPos(to.line + 1),
-  );
-  return {
-    anchor: {
-      line: from.line,
-      ch: Math.min(from.ch, endOfNextLine.ch),
+  const changes: EditorChange[] = [
+    {
+      from: getLineStartPos(from.line),
+      to: getLineStartPos(to.line + 1),
+      text: '',
     },
+  ];
+  const newSelection = {
+    from: {
+      // Offset by the number of lines deleted in all previous iterations
+      line: from.line - numLinesDeleted,
+      ch: Math.min(to.ch, endOfNextLine.ch),
+    },
+  };
+  // This needs to be calculated after setting the new selection as it only
+  // applies for subsequent iterations
+  numLinesDeleted += to.line - from.line + 1;
+  return {
+    changes,
+    newSelection,
   };
 };
 

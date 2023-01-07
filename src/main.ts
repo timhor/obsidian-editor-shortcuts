@@ -80,7 +80,11 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'K',
         },
       ],
-      editorCallback: (editor) => withMultipleSelections(editor, deleteLine),
+      editorCallback: (editor) =>
+        withMultipleSelectionsNew(editor, deleteLine, {
+          ...defaultMultipleSelectionOptions,
+          combineSameLineSelections: true,
+        }),
     });
 
     this.addCommand({

@@ -3,7 +3,6 @@ import type { Editor } from 'codemirror';
 import { getDocumentAndSelection } from './test-helpers';
 import {
   insertLineAbove,
-  deleteLine,
   deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
@@ -85,25 +84,6 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       { anchor: { line: 4, ch: 14 }, head: { line: 4, ch: 17 } }, // a{<}dip{>}iscing
       { anchor: { line: 4, ch: 26 }, head: { line: 4, ch: 26 } }, // '{<>}elit
     ]);
-  });
-
-  describe('deleteLine', () => {
-    it('should delete selected lines', () => {
-      withMultipleSelections(editor as any, deleteLine);
-
-      const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(`\n(donec [mattis])\ntincidunt metus`);
-      expect(selections).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 0, ch: 0 }),
-          head: expect.objectContaining({ line: 0, ch: 0 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 1, ch: 16 }),
-          head: expect.objectContaining({ line: 1, ch: 16 }),
-        },
-      ]);
-    });
   });
 
   describe('deleteToStartOfLine', () => {

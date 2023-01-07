@@ -4,7 +4,7 @@ import {
   EditorViewWithLegacyMethods,
   getDocumentAndSelection,
 } from './test-helpers';
-import { insertLineAbove, insertLineBelow } from '../actions';
+import { insertLineAbove, insertLineBelow, deleteLine } from '../actions';
 import { withMultipleSelectionsNew } from '../utils';
 import { SettingsState } from '../state';
 
@@ -60,6 +60,16 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
           ch: 2,
         }),
       );
+    });
+  });
+
+  describe('deleteLine', () => {
+    it('should delete selected lines', () => {
+      withMultipleSelectionsNew(view as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('amet');
+      expect(cursor.line).toEqual(0);
     });
   });
 });

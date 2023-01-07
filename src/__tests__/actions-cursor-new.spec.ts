@@ -4,7 +4,7 @@ import {
   EditorViewWithLegacyMethods,
   getDocumentAndSelection,
 } from './test-helpers';
-import { insertLineAbove, insertLineBelow } from '../actions';
+import { insertLineAbove, insertLineBelow, deleteLine } from '../actions';
 import { withMultipleSelectionsNew } from '../utils';
 import { SettingsState } from '../state';
 
@@ -302,6 +302,47 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
           }),
         );
       });
+    });
+  });
+
+  describe('deleteLine', () => {
+    it('should delete line at cursor', () => {
+      withMultipleSelectionsNew(view as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('lorem ipsum\namet');
+      expect(cursor.line).toEqual(1);
+    });
+
+    it('should delete last line', () => {
+      view.setCursor({ line: 2, ch: 2 });
+
+      withMultipleSelectionsNew(view as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('lorem ipsum\ndolor sit');
+      expect(cursor).toMatchObject({
+        line: 1,
+        ch: 2,
+      });
+    });
+
+    it('should move cursor to correct position when deleting a line that is longer than the following line', () => {
+      view.setValue(
+        'testing with a line that is longer than the following line\nshorter line',
+      );
+      view.setCursor({ line: 0, ch: 53 });
+
+      withMultipleSelectionsNew(view as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('shorter line');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 0,
+          ch: 12,
+        }),
+      );
     });
   });
 });

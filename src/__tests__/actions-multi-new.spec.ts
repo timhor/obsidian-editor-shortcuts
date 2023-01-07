@@ -4,7 +4,7 @@ import {
   EditorViewWithLegacyMethods,
   getDocumentAndSelection,
 } from './test-helpers';
-import { insertLineAbove, insertLineBelow } from '../actions';
+import { insertLineAbove, insertLineBelow, deleteLine } from '../actions';
 import { withMultipleSelectionsNew } from '../utils';
 
 describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
@@ -110,6 +110,27 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         {
           anchor: expect.objectContaining({ line: 3, ch: 4 }),
           head: expect.objectContaining({ line: 3, ch: 4 }),
+        },
+      ]);
+    });
+  });
+
+  describe('deleteLine', () => {
+    it('should delete selected lines', () => {
+      withMultipleSelectionsNew(view as any, deleteLine, {
+        combineSameLineSelections: true,
+      });
+
+      const { doc, selections } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual(`\n(donec [mattis])\ntincidunt metus`);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 16 }),
+          head: expect.objectContaining({ line: 1, ch: 16 }),
         },
       ]);
     });

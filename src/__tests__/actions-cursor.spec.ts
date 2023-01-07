@@ -2,7 +2,6 @@ import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
 import { getDocumentAndSelection } from './test-helpers';
 import {
-  deleteLine,
   deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
@@ -68,53 +67,6 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     SettingsState.autoInsertListPrefix = true;
     editor.setValue(originalDoc);
     editor.setCursor({ line: 1, ch: 0 });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  describe('deleteLine', () => {
-    it('should delete line at cursor', () => {
-      withMultipleSelections(editor as any, deleteLine);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('lorem ipsum\namet');
-      expect(cursor.line).toEqual(1);
-    });
-
-    it('should delete last line', () => {
-      editor.setCursor({ line: 2, ch: 1 });
-
-      withMultipleSelections(editor as any, deleteLine);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('lorem ipsum\ndolor sit');
-      expect(cursor).toEqual(
-        expect.objectContaining({
-          line: 1,
-          ch: 1,
-        }),
-      );
-    });
-
-    it('should move cursor to correct position when deleting a line that is longer than the following line', () => {
-      editor.setValue(
-        'testing with a line that is longer than the following line\nshorter line',
-      );
-      editor.setCursor({ line: 0, ch: 53 });
-
-      withMultipleSelections(editor as any, deleteLine);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('shorter line');
-      expect(cursor).toEqual(
-        expect.objectContaining({
-          line: 0,
-          ch: 12,
-        }),
-      );
-    });
   });
 
   describe('deleteToStartOfLine', () => {

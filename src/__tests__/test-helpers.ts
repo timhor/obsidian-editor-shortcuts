@@ -21,7 +21,8 @@ export interface EditorViewWithLegacyMethods extends EditorView {
   getValue?: () => string;
   setValue?: (value: string) => void;
   getLine?: (n: number) => string;
-  lastLine?: () => string;
+  lineCount?: () => number;
+  lastLine?: () => number;
   getCursor?: () => EditorPosition;
   setCursor?: (pos: EditorPosition) => void;
   getSelection?: () => string;
@@ -30,6 +31,7 @@ export interface EditorViewWithLegacyMethods extends EditorView {
   setSelections?: (selectionRanges: ObsidianEditorSelection[]) => void;
   listSelections?: () => ObsidianEditorSelection[];
   transaction?: (tx: EditorTransaction) => void;
+  textAtSelection?: (length?: number) => string;
 }
 
 export const posToOffset = (doc: Text, pos: EditorPosition) => {
@@ -60,7 +62,9 @@ export const defineLegacyEditorMethods = (
 
   view.getLine = (n: number) => view.state.doc.line(n + 1).text;
 
-  view.lastLine = () => view.state.doc.lines;
+  view.lineCount = () => view.state.doc.lines;
+
+  view.lastLine = () => view.lineCount() - 1;
 
   view.getCursor = () =>
     offsetToPos(view.state.doc, view.state.selection.main.head);
@@ -133,5 +137,11 @@ export const defineLegacyEditorMethods = (
         selection: EditorSelection.create(selections),
       });
     }
+  };
+
+  // For debugging tests
+  view.textAtSelection = (length = 10) => {
+    const from = view.state.selection.main.from;
+    return view.state.doc.slice(from, from + length).toString();
   };
 };

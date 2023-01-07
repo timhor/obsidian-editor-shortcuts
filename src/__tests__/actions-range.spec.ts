@@ -2,7 +2,6 @@ import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
 import { getDocumentAndSelection } from './test-helpers';
 import {
-  deleteLine,
   deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
@@ -57,16 +56,6 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
   beforeEach(() => {
     editor.setValue(originalDoc);
     editor.setSelection({ line: 0, ch: 6 }, { line: 1, ch: 5 });
-  });
-
-  describe('deleteLine', () => {
-    it('should delete selected lines', () => {
-      withMultipleSelections(editor as any, deleteLine);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('amet');
-      expect(cursor.line).toEqual(0);
-    });
   });
 
   describe('deleteToStartOfLine', () => {

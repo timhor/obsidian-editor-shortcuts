@@ -45,6 +45,10 @@ type MultipleSelectionOptionsNew = {
 
   // Whether the action should be repeated for cursors on the same line
   repeatSameLineActions?: boolean;
+
+  // Whether to combine cursors on the same line after the operation has
+  // finished (the cursor with a smaller line number takes precedence)
+  combineSameLineSelections?: boolean;
 };
 
 export const defaultMultipleSelectionOptions = { repeatSameLineActions: true };
@@ -80,22 +84,30 @@ export const withMultipleSelectionsNew = (
       continue;
     }
 
-    // Can't reuse selections variable as positions may change on each iteration
-    const selection = editor.listSelections()[i];
+    const { changes: newChanges, newSelection } = callback(
+      editor,
+      selections[i],
+      {
+        ...options.args,
+        iteration: i,
+      },
+    );
+    changes.push(...newChanges);
 
-    // Selections may disappear (e.g. running delete line for two cursors on the same line)
-    if (selection) {
-      const { changes: newChanges, newSelection } = callback(
-        editor,
-        selection,
-        {
-          ...options.args,
-          iteration: i,
-        },
+    if (options.combineSameLineSelections) {
+      const existingSameLineSelection = newSelections.find(
+        (selection) => selection.from.line === newSelection.from.line,
       );
-      changes.push(...newChanges);
-      newSelections.push(newSelection);
+      // Generally only happens when deleting consecutive lines using separate cursors
+      if (existingSameLineSelection) {
+        // Reset to 0 as `ch` will otherwise exceed the line length
+        existingSameLineSelection.from.ch = 0;
+        // Skip adding a new selection with the same line number
+        continue;
+      }
     }
+
+    newSelections.push(newSelection);
   }
 
   editor.transaction({
