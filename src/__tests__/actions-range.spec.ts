@@ -21,6 +21,8 @@ import {
   expandSelectionToQuotesOrBrackets,
   addCursorsToSelectionEnds,
   setIsManualSelection,
+  insertCursorAbove,
+  insertCursorBelow,
 } from '../actions';
 import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
@@ -775,6 +777,64 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
       expect(selectedText).toEqual('lorem ipsum');
+    });
+  });
+
+  describe('insertCursorAbove', () => {
+    it('should insert cursor above with the same range', () => {
+      editor.setSelection({ line: 1, ch: 0 }, { line: 1, ch: 3 });
+
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 3 } },
+      ]);
+    });
+
+    it('should insert cursor above with shortened range if previous line is shorter', () => {
+      editor.setValue('aaa\nbbbbbb');
+      editor.setSelection({ line: 1, ch: 0 }, { line: 1, ch: 5 });
+
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('aaa\nbbbbbb');
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 5 } },
+      ]);
+    });
+  });
+
+  describe('insertCursorBelow', () => {
+    it('should insert cursor below with the same range', () => {
+      editor.setSelection({ line: 1, ch: 0 }, { line: 1, ch: 3 });
+
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 3 } },
+        { anchor: { line: 2, ch: 0 }, head: { line: 2, ch: 3 } },
+      ]);
+    });
+
+    it('should insert cursor below with shortened range if next line is shorter', () => {
+      editor.setValue('aaaaaa\nbbb');
+      editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 5 });
+
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('aaaaaa\nbbb');
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 5 } },
+        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 3 } },
+      ]);
     });
   });
 });

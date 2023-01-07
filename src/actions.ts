@@ -507,6 +507,36 @@ export const expandSelectionToQuotesOrBrackets = (editor: Editor) => {
   editor.setSelections([...selections, newSelection]);
 };
 
+const insertCursor = (editor: Editor, lineOffset: number) => {
+  const selections = editor.listSelections();
+  const newSelections = [];
+  for (const selection of selections) {
+    const { line, ch } = selection.head;
+    if (
+      (line === 0 && lineOffset < 0) ||
+      (line === editor.lastLine() && lineOffset > 0)
+    ) {
+      break;
+    }
+    const targetLineLength = editor.getLine(line + lineOffset).length;
+    newSelections.push({
+      anchor: {
+        line: selection.anchor.line + lineOffset,
+        ch: Math.min(selection.anchor.ch, targetLineLength),
+      },
+      head: {
+        line: line + lineOffset,
+        ch: Math.min(ch, targetLineLength),
+      },
+    });
+  }
+  editor.setSelections([...editor.listSelections(), ...newSelections]);
+};
+
+export const insertCursorAbove = (editor: Editor) => insertCursor(editor, -1);
+
+export const insertCursorBelow = (editor: Editor) => insertCursor(editor, 1);
+
 export const goToHeading = (
   app: App,
   editor: Editor,

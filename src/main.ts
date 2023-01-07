@@ -22,6 +22,8 @@ import {
   setIsManualSelection,
   setIsProgrammaticSelectionChange,
   transformCase,
+  insertCursorAbove,
+  insertCursorBelow,
 } from './actions';
 import {
   defaultMultipleSelectionOptions,
@@ -315,6 +317,18 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'expandSelectionToQuotesOrBrackets',
       name: 'Expand selection to quotes or brackets',
       editorCallback: (editor) => expandSelectionToQuotesOrBrackets(editor),
+    });
+
+    this.addCommand({
+      id: 'insertCursorAbove',
+      name: 'Insert cursor above',
+      editorCallback: (editor) => insertCursorAbove(editor),
+    });
+
+    this.addCommand({
+      id: 'insertCursorBelow',
+      name: 'Insert cursor below',
+      editorCallback: (editor) => insertCursorBelow(editor),
     });
 
     this.addCommand({

@@ -29,6 +29,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Expand selection to brackets                     | Not set                    |
 | Expand selection to quotes                       | Not set                    |
 | Expand selection to quotes or brackets           | Not set                    |
+| Insert cursor above                              | Not set                    |
+| Insert cursor below                              | Not set                    |
 | Go to next heading                               | Not set                    |
 | Go to previous heading                           | Not set                    |
 

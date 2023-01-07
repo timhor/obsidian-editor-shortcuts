@@ -20,6 +20,8 @@ import {
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
   addCursorsToSelectionEnds,
+  insertCursorAbove,
+  insertCursorBelow,
 } from '../actions';
 import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
@@ -851,6 +853,84 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
       expect(selectedText).toEqual('lorem ipsum');
+    });
+  });
+
+  describe('insertCursorAbove', () => {
+    it('should insert cursor above at the same position', () => {
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 0 } },
+        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
+      ]);
+    });
+
+    it('should insert cursor above at the end if previous line is shorter', () => {
+      editor.setValue('aaa\nbbbbbb');
+      editor.setCursor({ line: 1, ch: 5 });
+
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('aaa\nbbbbbb');
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 1, ch: 5 }, head: { line: 1, ch: 5 } },
+      ]);
+    });
+
+    it('should not insert cursor above if on the first line of the document', () => {
+      editor.setCursor({ line: 0, ch: 3 });
+
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
+      ]);
+    });
+  });
+
+  describe('insertCursorBelow', () => {
+    it('should insert cursor below at the same position', () => {
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
+        { anchor: { line: 2, ch: 0 }, head: { line: 2, ch: 0 } },
+      ]);
+    });
+
+    it('should insert cursor below at the end if next line is shorter', () => {
+      editor.setValue('aaaaaa\nbbb');
+      editor.setCursor({ line: 0, ch: 5 });
+
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('aaaaaa\nbbb');
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 5 }, head: { line: 0, ch: 5 } },
+        { anchor: { line: 1, ch: 3 }, head: { line: 1, ch: 3 } },
+      ]);
+    });
+
+    it('should not insert cursor below if on the last line of the document', () => {
+      editor.setCursor({ line: 2, ch: 3 });
+
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 2, ch: 3 }, head: { line: 2, ch: 3 } },
+      ]);
     });
   });
 });

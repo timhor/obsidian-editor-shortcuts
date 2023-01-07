@@ -20,6 +20,8 @@ import {
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
   addCursorsToSelectionEnds,
+  insertCursorAbove,
+  insertCursorBelow,
 } from '../actions';
 import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import {
@@ -828,5 +830,47 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         expect(selectedTextMultiple[0]).toEqual('lorem ipsum');
       },
     );
+  });
+
+  describe('insertCursorAbove', () => {
+    it('should insert cursors above', () => {
+      editor.setValue('aaaaa\nbbbbb\nccccc\nddddd');
+      editor.setSelections([
+        { anchor: { line: 1, ch: 1 }, head: { line: 1, ch: 3 } },
+        { anchor: { line: 3, ch: 2 }, head: { line: 3, ch: 2 } },
+      ]);
+
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('aaaaa\nbbbbb\nccccc\nddddd');
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 1 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 1, ch: 1 }, head: { line: 1, ch: 3 } },
+        { anchor: { line: 2, ch: 2 }, head: { line: 2, ch: 2 } },
+        { anchor: { line: 3, ch: 2 }, head: { line: 3, ch: 2 } },
+      ]);
+    });
+  });
+
+  describe('insertCursorBelow', () => {
+    it('should insert cursors below', () => {
+      editor.setValue('aaaaa\nbbbbb\nccccc\nddddd');
+      editor.setSelections([
+        { anchor: { line: 0, ch: 1 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 2, ch: 2 }, head: { line: 2, ch: 2 } },
+      ]);
+
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('aaaaa\nbbbbb\nccccc\nddddd');
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 1 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 1, ch: 1 }, head: { line: 1, ch: 3 } },
+        { anchor: { line: 2, ch: 2 }, head: { line: 2, ch: 2 } },
+        { anchor: { line: 3, ch: 2 }, head: { line: 3, ch: 2 } },
+      ]);
+    });
   });
 });
