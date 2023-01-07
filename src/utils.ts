@@ -1,10 +1,11 @@
 import {
   Editor,
+  EditorChange,
   EditorPosition,
   EditorSelection,
   EditorSelectionOrCaret,
 } from 'obsidian';
-import { DIRECTION } from './constants';
+import { DIRECTION, LIST_CHARACTER_REGEX } from './constants';
 import { CustomSelectionHandler } from './custom-selection-handlers';
 
 type EditorActionCallback = (
@@ -376,4 +377,61 @@ export const findAllMatchPositions = ({
     });
   }
   return matchPositions;
+};
+
+/**
+ * Checks if an input string is numeric.
+ *
+ * Adapted from https://stackoverflow.com/a/60548119
+ */
+export const isNumeric = (input: string) => input.length > 0 && !isNaN(+input);
+
+/**
+ * Determines the next markdown list character prefix for a given line. If it's
+ * an ordered list, the prefix will be incremented by 1.
+ */
+export const getNextListPrefix = (
+  text: string,
+  direction: 'before' | 'after',
+) => {
+  const listChars = text.match(LIST_CHARACTER_REGEX) ?? [];
+  if (listChars.length > 0) {
+    let prefix = listChars[0].trimStart();
+    if (isNumeric(prefix) && direction === 'after') {
+      prefix = +prefix + 1 + '. ';
+    }
+    return prefix;
+  }
+  return '';
+};
+
+export const formatRemainingListPrefixes = (
+  editor: Editor,
+  fromLine: number,
+  indentation: string,
+) => {
+  const changes: EditorChange[] = [];
+
+  for (let i = fromLine; i < editor.lastLine(); i++) {
+    const contentsOfCurrentLine = editor.getLine(i);
+    // Only prefixes at the same indentation level should be updated
+    const listPrefixRegex = new RegExp(`^${indentation}\\d+\\.`);
+    const lineStartsWithNumberPrefix = listPrefixRegex.test(
+      contentsOfCurrentLine,
+    );
+    if (!lineStartsWithNumberPrefix) {
+      break;
+    }
+    const replacementContent = contentsOfCurrentLine.replace(
+      /\d+\./,
+      (match) => +match + 1 + '.',
+    );
+    changes.push({
+      from: { line: i, ch: 0 },
+      to: { line: i, ch: contentsOfCurrentLine.length },
+      text: replacementContent,
+    });
+  }
+
+  editor.transaction({ changes });
 };
