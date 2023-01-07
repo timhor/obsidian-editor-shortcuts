@@ -390,11 +390,14 @@ export const isNumeric = (input: string) => input.length > 0 && !isNaN(+input);
  * Determines the next markdown list character prefix for a given line. If it's
  * an ordered list, the prefix will be incremented by 1.
  */
-export const getNextListPrefix = (text: string) => {
+export const getNextListPrefix = (
+  text: string,
+  direction: 'before' | 'after',
+) => {
   const listChars = text.match(LIST_CHARACTER_REGEX) ?? [];
   if (listChars.length > 0) {
     let prefix = listChars[0].trimStart();
-    if (isNumeric(prefix)) {
+    if (isNumeric(prefix) && direction === 'after') {
       prefix = +prefix + 1 + '. ';
     }
     return prefix;

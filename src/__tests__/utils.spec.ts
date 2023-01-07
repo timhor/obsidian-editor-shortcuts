@@ -237,18 +237,23 @@ describe('Code Editor Shortcuts: utils', () => {
     it.each([['- '], ['* '], ['+ '], ['> ']])(
       'should return the same prefix for %s',
       (currentPrefix) => {
-        const prefix = getNextListPrefix(currentPrefix);
+        const prefix = getNextListPrefix(currentPrefix, 'after');
         expect(prefix).toBe(currentPrefix);
       },
     );
 
-    it('should return the next number for a numeric prefix', () => {
-      const prefix = getNextListPrefix('23. ');
+    it('should return the next number for a numeric prefix when going forwards', () => {
+      const prefix = getNextListPrefix('23. ', 'after');
       expect(prefix).toBe('24. ');
     });
 
+    it('should return the same number for a numeric prefix when going backwards', () => {
+      const prefix = getNextListPrefix('23. ', 'before');
+      expect(prefix).toBe('23. ');
+    });
+
     it('should return no prefix for other non-numeric characters', () => {
-      const prefix = getNextListPrefix('x');
+      const prefix = getNextListPrefix('x', 'after');
       expect(prefix).toBe('');
     });
   });

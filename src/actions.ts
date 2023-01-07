@@ -29,8 +29,21 @@ import {
 export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
   const { line } = selection.head;
   const startOfCurrentLine = getLineStartPos(line);
-  editor.replaceRange('\n', startOfCurrentLine);
-  return { anchor: startOfCurrentLine };
+
+  const contentsOfCurrentLine = editor.getLine(line);
+  const indentation = getLeadingWhitespace(contentsOfCurrentLine);
+
+  // If inside a list, only insert prefix if within the same list
+  let listPrefix = '';
+  if (line > 0 && editor.getLine(line - 1).trim().length > 0) {
+    listPrefix = getNextListPrefix(contentsOfCurrentLine, 'before');
+    if (isNumeric(listPrefix)) {
+      formatRemainingListPrefixes(editor, line, indentation);
+    }
+  }
+
+  editor.replaceRange(indentation + listPrefix + '\n', startOfCurrentLine);
+  return { anchor: { line, ch: indentation.length + listPrefix.length } };
 };
 
 export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
@@ -39,7 +52,7 @@ export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
 
   const contentsOfCurrentLine = editor.getLine(line);
   const indentation = getLeadingWhitespace(contentsOfCurrentLine);
-  const listPrefix = getNextListPrefix(contentsOfCurrentLine);
+  const listPrefix = getNextListPrefix(contentsOfCurrentLine, 'after');
   if (isNumeric(listPrefix)) {
     formatRemainingListPrefixes(editor, line + 1, indentation);
   }
