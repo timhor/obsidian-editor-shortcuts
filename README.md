@@ -81,4 +81,4 @@ To get started:
 
 This plugin is completely free to use, but if you'd like to say thanks, consider buying me a coffee! 😄
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C59A43G)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/timhor)

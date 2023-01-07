@@ -6,5 +6,6 @@
   "description": "Add keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code (vscode) or Sublime Text",
   "author": "Tim Hor",
   "authorUrl": "https://github.com/timhor",
+  "fundingUrl": "https://ko-fi.com/timhor",
   "isDesktopOnly": false
 }
