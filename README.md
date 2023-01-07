@@ -58,6 +58,12 @@ Refer to the official installation instructions for third-party plugins [here](h
 
 Go to Settings → Hotkeys to customise the keyboard shortcut for each action.
 
+The following behaviour can be configured via the settings tab for this plugin:
+
+| Setting                 | Description                                                           |
+| ----------------------- | --------------------------------------------------------------------- |
+| Auto insert list prefix | Automatically insert list prefix when inserting a line above or below |
+
 ## Contributing
 
 Contributions and suggestions are welcome – feel free to open an issue or raise a pull request.
