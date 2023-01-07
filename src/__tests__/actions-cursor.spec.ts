@@ -108,6 +108,67 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(doc).toEqual('lorem ipsum\ndolor sit\namet\n');
       expect(cursor.line).toEqual(3);
     });
+
+    describe('when inside a list', () => {
+      it.each([
+        ['-', '- aaa\n- bbb', '- aaa\n- \n- bbb'],
+        ['*', '* aaa\n* bbb', '* aaa\n* \n* bbb'],
+        ['+', '+ aaa\n+ bbb', '+ aaa\n+ \n+ bbb'],
+        ['>', '> aaa\n> bbb', '> aaa\n> \n> bbb'],
+      ])('should insert `%s` prefix', (_scenario, content, expectedDoc) => {
+        editor.setValue(content);
+        editor.setCursor({ line: 0, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineBelow);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual(expectedDoc);
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 2,
+          }),
+        );
+      });
+
+      it('should insert list prefix at the correct indentation', () => {
+        editor.setValue('- aaa\n  - bbb');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineBelow);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('- aaa\n  - bbb\n  - ');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 2,
+            ch: 4,
+          }),
+        );
+      });
+
+      it('should insert number prefix', () => {
+        // @ts-expect-error - editor.transaction only exists in CM6
+        editor.transaction = () => null;
+        editor.setValue('1. aaa\n2. bbb');
+        editor.setCursor({ line: 0, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineBelow);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        // TODO: doc should equal '1. aaa\n2. \n3. bbb' once transactions are
+        // implemented in the test environment
+        expect(doc).toEqual('1. aaa\n2. \n2. bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 3,
+          }),
+        );
+      });
+
+      it.todo('should format the remaining number prefixes');
+    });
   });
 
   describe('deleteSelectedLines', () => {

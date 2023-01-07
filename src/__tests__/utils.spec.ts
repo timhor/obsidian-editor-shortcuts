@@ -8,6 +8,8 @@ import {
   getLeadingWhitespace,
   wordRangeAtPos,
   findPosOfNextCharacter,
+  isNumeric,
+  getNextListPrefix,
 } from '../utils';
 import { DIRECTION } from '../constants';
 
@@ -214,6 +216,40 @@ describe('Code Editor Shortcuts: utils', () => {
         searchDirection: DIRECTION.FORWARD,
       });
       expect(pos).toBeNull();
+    });
+  });
+
+  describe('isNumeric', () => {
+    it('should return true if input string is numeric', () => {
+      expect(isNumeric('1.')).toBe(true);
+    });
+
+    it('should return false if input string is non-numeric', () => {
+      expect(isNumeric('-')).toBe(false);
+    });
+
+    it('should return false if input string is empty', () => {
+      expect(isNumeric('')).toBe(false);
+    });
+  });
+
+  describe('getNextListPrefix', () => {
+    it.each([['- '], ['* '], ['+ '], ['> ']])(
+      'should return the same prefix for %s',
+      (currentPrefix) => {
+        const prefix = getNextListPrefix(currentPrefix);
+        expect(prefix).toBe(currentPrefix);
+      },
+    );
+
+    it('should return the next number for a numeric prefix', () => {
+      const prefix = getNextListPrefix('23. ');
+      expect(prefix).toBe('24. ');
+    });
+
+    it('should return no prefix for other non-numeric characters', () => {
+      const prefix = getNextListPrefix('x');
+      expect(prefix).toBe('');
     });
   });
 });

@@ -78,6 +78,22 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       expect(doc).toEqual('lorem ipsum\ndolor sit\n\namet');
       expect(cursor.line).toEqual(2);
     });
+
+    it('should insert prefix when inside a list', () => {
+      editor.setValue('- aaa\n- bbb');
+      editor.setSelection({ line: 0, ch: 2 }, { line: 0, ch: 5 });
+
+      withMultipleSelections(editor as any, insertLineBelow);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('- aaa\n- \n- bbb');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 1,
+          ch: 2,
+        }),
+      );
+    });
   });
 
   describe('deleteSelectedLines', () => {

@@ -8,18 +8,21 @@ import {
   MATCHING_QUOTES_BRACKETS,
   MatchingCharacterMap,
   CODE_EDITOR,
-  JOIN_LINE_TRIM_REGEX,
+  LIST_CHARACTER_REGEX,
 } from './constants';
 import {
   CheckCharacter,
   findAllMatchPositions,
   findNextMatchPosition,
   findPosOfNextCharacter,
+  formatRemainingListPrefixes,
   getLeadingWhitespace,
   getLineEndPos,
   getLineStartPos,
+  getNextListPrefix,
   getSearchText,
   getSelectionBoundaries,
+  isNumeric,
   wordRangeAtPos,
 } from './utils';
 
@@ -33,9 +36,18 @@ export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
 export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
   const { line } = selection.head;
   const endOfCurrentLine = getLineEndPos(line, editor);
-  const indentation = getLeadingWhitespace(editor.getLine(line));
-  editor.replaceRange('\n' + indentation, endOfCurrentLine);
-  return { anchor: { line: line + 1, ch: indentation.length } };
+
+  const contentsOfCurrentLine = editor.getLine(line);
+  const indentation = getLeadingWhitespace(contentsOfCurrentLine);
+  const listPrefix = getNextListPrefix(contentsOfCurrentLine);
+  if (isNumeric(listPrefix)) {
+    formatRemainingListPrefixes(editor, line + 1, indentation);
+  }
+
+  editor.replaceRange('\n' + indentation + listPrefix, endOfCurrentLine);
+  return {
+    anchor: { line: line + 1, ch: indentation.length + listPrefix.length },
+  };
 };
 
 export const deleteSelectedLines = (
@@ -119,11 +131,11 @@ export const joinLines = (editor: Editor, selection: EditorSelection) => {
     const contentsOfCurrentLine = editor.getLine(line);
     const contentsOfNextLine = editor.getLine(line + 1);
 
-    const charsToTrim = contentsOfNextLine.match(JOIN_LINE_TRIM_REGEX) ?? [];
+    const charsToTrim = contentsOfNextLine.match(LIST_CHARACTER_REGEX) ?? [];
     trimmedChars += charsToTrim[0] ?? '';
 
     const newContentsOfNextLine = contentsOfNextLine.replace(
-      JOIN_LINE_TRIM_REGEX,
+      LIST_CHARACTER_REGEX,
       '',
     );
     if (

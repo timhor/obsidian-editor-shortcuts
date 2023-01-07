@@ -149,6 +149,29 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         },
       ]);
     });
+
+    it('should insert prefixes when inside a list', () => {
+      editor.setValue('- aaa\n  - bbb');
+      editor.setSelections([
+        { anchor: { line: 0, ch: 2 }, head: { line: 0, ch: 2 } },
+        { anchor: { line: 1, ch: 6 }, head: { line: 1, ch: 6 } },
+      ]);
+
+      withMultipleSelections(editor as any, insertLineBelow);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('- aaa\n- \n  - bbb\n  - ');
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 2 }),
+          head: expect.objectContaining({ line: 1, ch: 2 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 4 }),
+          head: expect.objectContaining({ line: 3, ch: 4 }),
+        },
+      ]);
+    });
   });
 
   describe('deleteSelectedLines', () => {
