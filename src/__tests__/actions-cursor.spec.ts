@@ -136,6 +136,28 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         );
       });
 
+      it.each([
+        ['- [ ]', '- [ ] aaa\n- [ ] bbb', '- [ ] aaa\n- [ ] \n- [ ] bbb'],
+        ['- [x]', '- [x] aaa\n- [x] bbb', '- [x] aaa\n- [ ] \n- [x] bbb'],
+      ])(
+        'should insert empty checkbox for `%s` prefix',
+        (_scenario, content, expectedDoc) => {
+          editor.setValue(content);
+          editor.setCursor({ line: 1, ch: 7 });
+
+          withMultipleSelections(editor as any, insertLineAbove);
+
+          const { doc, cursor } = getDocumentAndSelection(editor);
+          expect(doc).toEqual(expectedDoc);
+          expect(cursor).toEqual(
+            expect.objectContaining({
+              line: 1,
+              ch: 6,
+            }),
+          );
+        },
+      );
+
       it('should insert list prefix at the correct indentation', () => {
         editor.setValue('- aaa\n  - bbb');
         editor.setCursor({ line: 1, ch: 4 });
@@ -245,6 +267,28 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
           }),
         );
       });
+
+      it.each([
+        ['- [ ]', '- [ ] aaa\n- [ ] bbb', '- [ ] aaa\n- [ ] \n- [ ] bbb'],
+        ['- [x]', '- [x] aaa\n- [x] bbb', '- [x] aaa\n- [ ] \n- [x] bbb'],
+      ])(
+        'should insert empty checkbox for `%s` prefix',
+        (_scenario, content, expectedDoc) => {
+          editor.setValue(content);
+          editor.setCursor({ line: 0, ch: 7 });
+
+          withMultipleSelections(editor as any, insertLineBelow);
+
+          const { doc, cursor } = getDocumentAndSelection(editor);
+          expect(doc).toEqual(expectedDoc);
+          expect(cursor).toEqual(
+            expect.objectContaining({
+              line: 1,
+              ch: 6,
+            }),
+          );
+        },
+      );
 
       it('should insert list prefix at the correct indentation', () => {
         editor.setValue('- aaa\n  - bbb');

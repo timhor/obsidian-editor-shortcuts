@@ -234,7 +234,7 @@ describe('Code Editor Shortcuts: utils', () => {
   });
 
   describe('getNextListPrefix', () => {
-    it.each([['- '], ['* '], ['+ '], ['> ']])(
+    it.each([['- '], ['* '], ['+ '], ['> '], ['- [ ] ']])(
       'should return the same prefix for %s',
       (currentPrefix) => {
         const prefix = getNextListPrefix(currentPrefix, 'after');
@@ -250,6 +250,11 @@ describe('Code Editor Shortcuts: utils', () => {
     it('should return the same number for a numeric prefix when going backwards', () => {
       const prefix = getNextListPrefix('23. ', 'before');
       expect(prefix).toBe('23. ');
+    });
+
+    it('should return an unticked checkbox for a checkbox prefix', () => {
+      const prefix = getNextListPrefix('- [x] ', 'after');
+      expect(prefix).toBe('- [ ] ');
     });
 
     it('should return no prefix for frontmatter fence', () => {
