@@ -388,7 +388,7 @@ export const isNumeric = (input: string) => input.length > 0 && !isNaN(+input);
 
 /**
  * Determines the next markdown list character prefix for a given line. If it's
- * an ordered list, the prefix will be incremented by 1.
+ * an ordered list and direction is `after`, the prefix will be incremented by 1.
  */
 export const getNextListPrefix = (
   text: string,

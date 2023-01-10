@@ -44,4 +44,4 @@ export const MODIFIER_KEYS = [
   'Fn',
 ];
 
-export const LIST_CHARACTER_REGEX = /^\s*(-|\+|\*|\d+\.|>) ?/;
+export const LIST_CHARACTER_REGEX = /^\s*(-|\+|\*|\d+\.|>) /;

@@ -252,6 +252,11 @@ describe('Code Editor Shortcuts: utils', () => {
       expect(prefix).toBe('23. ');
     });
 
+    it('should return no prefix for frontmatter fence', () => {
+      const prefix = getNextListPrefix('---', 'after');
+      expect(prefix).toBe('');
+    });
+
     it('should return no prefix for other non-numeric characters', () => {
       const prefix = getNextListPrefix('x', 'after');
       expect(prefix).toBe('');
