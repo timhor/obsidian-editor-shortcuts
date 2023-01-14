@@ -1,4 +1,5 @@
 import {
+  App,
   Editor,
   EditorChange,
   EditorPosition,
@@ -483,4 +484,21 @@ export const formatRemainingListPrefixes = (
   }
 
   editor.transaction({ changes });
+};
+
+type VaultConfigSetting = 'showLineNumber' | 'useTab';
+
+export const toggleVaultConfig = (app: App, setting: VaultConfigSetting) => {
+  // @ts-expect-error - getConfig is not in the public API
+  const value = app.vault.getConfig(setting);
+  setVaultConfig(app, setting, !value);
+};
+
+export const setVaultConfig = (
+  app: App,
+  setting: VaultConfigSetting,
+  value: boolean,
+) => {
+  // @ts-expect-error - setConfig is not in the public API
+  app.vault.setConfig(setting, value);
 };

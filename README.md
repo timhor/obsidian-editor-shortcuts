@@ -34,6 +34,9 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Insert cursor below                              | Not set                    |
 | Go to next heading                               | Not set                    |
 | Go to previous heading                           | Not set                    |
+| Toggle line numbers                              | Not set                    |
+| Indent using tabs                                | Not set                    |
+| Indent using spaces                              | Not set                    |
 
 \* On macOS, replace `Ctrl` with `Cmd` and `Alt` with `Opt`
 

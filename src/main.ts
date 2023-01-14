@@ -28,6 +28,8 @@ import {
 import {
   defaultMultipleSelectionOptions,
   iterateCodeMirrorDivs,
+  setVaultConfig,
+  toggleVaultConfig,
   withMultipleSelections,
 } from './utils';
 import { CASE, DIRECTION, MODIFIER_KEYS } from './constants';
@@ -351,6 +353,24 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToPrevHeading',
       name: 'Go to previous heading',
       editorCallback: (editor) => goToHeading(this.app, editor, 'prev'),
+    });
+
+    this.addCommand({
+      id: 'toggle-line-numbers',
+      name: 'Toggle line numbers',
+      callback: () => toggleVaultConfig(this.app, 'showLineNumber'),
+    });
+
+    this.addCommand({
+      id: 'indent-using-tabs',
+      name: 'Indent using tabs',
+      callback: () => setVaultConfig(this.app, 'useTab', true),
+    });
+
+    this.addCommand({
+      id: 'indent-using-spaces',
+      name: 'Indent using spaces',
+      callback: () => setVaultConfig(this.app, 'useTab', false),
     });
 
     this.registerSelectionChangeListeners();
