@@ -684,6 +684,30 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       expect(selectedText).toEqual('Ipsum\nDolor');
     });
 
+    it.each([
+      ['default', 'lorem Ipsum dolor', 'LOREM IPSUM DOLOR'],
+      ['uppercase', 'LOREM IPSUM DOLOR', 'lorem ipsum dolor'],
+      ['lowercase', 'lorem ipsum dolor', 'Lorem Ipsum Dolor'],
+      ['title case', 'Lorem Ipsum Dolor', 'LOREM IPSUM DOLOR'],
+    ])(
+      'should cycle to next case from %s',
+      (_scenario, initialContent, expectedContent) => {
+        editor.setValue(initialContent);
+        editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 17 });
+
+        withMultipleSelections(editor as any, transformCase, {
+          args: CASE.NEXT,
+        });
+
+        const { doc, selections } = getDocumentAndSelection(editor);
+        expect(doc).toEqual(expectedContent);
+        expect(selections[0]).toEqual({
+          anchor: { line: 0, ch: 0 },
+          head: { line: 0, ch: 17 },
+        });
+      },
+    );
+
     it("should not transform 'the', 'a' or 'an' to title case if not the first word", () => {
       editor.setValue(
         'AN EXAMPLE TO TEST THE OBSIDIAN PLUGIN AND A CASE CONVERSION FEATURE',

@@ -2,7 +2,6 @@ import type { App, Editor, EditorPosition, EditorSelection } from 'obsidian';
 import {
   CASE,
   DIRECTION,
-  LOWERCASE_ARTICLES,
   MATCHING_BRACKETS,
   MATCHING_QUOTES,
   MATCHING_QUOTES_BRACKETS,
@@ -20,11 +19,13 @@ import {
   getLeadingWhitespace,
   getLineEndPos,
   getLineStartPos,
-  getNextListPrefix,
-  getSearchText,
+  getNextCase,
+  toTitleCase,
   getSelectionBoundaries,
-  isNumeric,
   wordRangeAtPos,
+  getSearchText,
+  getNextListPrefix,
+  isNumeric,
 } from './utils';
 
 export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
@@ -400,34 +401,28 @@ export const transformCase = (
     selectedText = editor.getRange(anchor, head);
   }
 
-  if (caseType === CASE.TITLE) {
-    editor.replaceRange(
-      // use capture group to join with the same separator used to split
-      selectedText
-        .split(/(\s+)/)
-        .map((word, index, allWords) => {
-          if (
-            index > 0 &&
-            index < allWords.length - 1 &&
-            LOWERCASE_ARTICLES.includes(word.toLowerCase())
-          ) {
-            return word.toLowerCase();
-          }
-          return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
-        })
-        .join(''),
-      from,
-      to,
-    );
-  } else {
-    editor.replaceRange(
-      caseType === CASE.UPPER
-        ? selectedText.toUpperCase()
-        : selectedText.toLowerCase(),
-      from,
-      to,
-    );
+  let replacementText = selectedText;
+
+  switch (caseType) {
+    case CASE.UPPER: {
+      replacementText = selectedText.toUpperCase();
+      break;
+    }
+    case CASE.LOWER: {
+      replacementText = selectedText.toLowerCase();
+      break;
+    }
+    case CASE.TITLE: {
+      replacementText = toTitleCase(selectedText);
+      break;
+    }
+    case CASE.NEXT: {
+      replacementText = getNextCase(selectedText);
+      break;
+    }
   }
+
+  editor.replaceRange(replacementText, from, to);
 
   return selection;
 };

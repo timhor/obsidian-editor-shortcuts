@@ -300,6 +300,16 @@ export default class CodeEditorShortcuts extends Plugin {
     });
 
     this.addCommand({
+      id: 'toggleCase',
+      name: 'Toggle case of selection',
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, transformCase, {
+          ...defaultMultipleSelectionOptions,
+          args: CASE.NEXT,
+        }),
+    });
+
+    this.addCommand({
       id: 'expandSelectionToBrackets',
       name: 'Expand selection to brackets',
       editorCallback: (editor) =>
