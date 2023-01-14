@@ -20,9 +20,12 @@ import {
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
   addCursorsToSelectionEnds,
+  insertCursorAbove,
+  insertCursorBelow,
 } from '../actions';
 import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
+import { SettingsState } from '../state';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
 document.createRange = () => {
@@ -54,6 +57,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   });
 
   beforeEach(() => {
+    SettingsState.autoInsertListPrefix = true;
     editor.setValue(originalDoc);
     editor.setCursor({ line: 1, ch: 0 });
   });
@@ -75,6 +79,122 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('\nlorem ipsum\ndolor sit\namet');
       expect(cursor.line).toEqual(0);
+    });
+
+    describe('when inside a list', () => {
+      it('should not insert a prefix when setting is disabled', () => {
+        SettingsState.autoInsertListPrefix = false;
+        editor.setValue('- aaa\n- bbb');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineAbove);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('- aaa\n\n- bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 0,
+          }),
+        );
+      });
+
+      it('should not insert a prefix when at the first list item', () => {
+        editor.setValue('- aaa\n- bbb');
+        editor.setCursor({ line: 0, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineAbove);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('\n- aaa\n- bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 0,
+            ch: 0,
+          }),
+        );
+      });
+
+      it.each([
+        ['-', '- aaa\n- bbb', '- aaa\n- \n- bbb'],
+        ['*', '* aaa\n* bbb', '* aaa\n* \n* bbb'],
+        ['+', '+ aaa\n+ bbb', '+ aaa\n+ \n+ bbb'],
+        ['>', '> aaa\n> bbb', '> aaa\n> \n> bbb'],
+      ])('should insert `%s` prefix', (_scenario, content, expectedDoc) => {
+        editor.setValue(content);
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineAbove);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual(expectedDoc);
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 2,
+          }),
+        );
+      });
+
+      it.each([
+        ['- [ ]', '- [ ] aaa\n- [ ] bbb', '- [ ] aaa\n- [ ] \n- [ ] bbb'],
+        ['- [x]', '- [x] aaa\n- [x] bbb', '- [x] aaa\n- [ ] \n- [x] bbb'],
+      ])(
+        'should insert empty checkbox for `%s` prefix',
+        (_scenario, content, expectedDoc) => {
+          editor.setValue(content);
+          editor.setCursor({ line: 1, ch: 7 });
+
+          withMultipleSelections(editor as any, insertLineAbove);
+
+          const { doc, cursor } = getDocumentAndSelection(editor);
+          expect(doc).toEqual(expectedDoc);
+          expect(cursor).toEqual(
+            expect.objectContaining({
+              line: 1,
+              ch: 6,
+            }),
+          );
+        },
+      );
+
+      it('should insert list prefix at the correct indentation', () => {
+        editor.setValue('- aaa\n  - bbb');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineAbove);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('- aaa\n  - \n  - bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 4,
+          }),
+        );
+      });
+
+      it('should insert number prefix', () => {
+        // @ts-expect-error - editor.transaction only exists in CM6
+        editor.transaction = () => null;
+        editor.setValue('1. aaa\n2. bbb');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineAbove);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        // TODO: doc should equal '1. aaa\n2. \n3. bbb' once transactions are
+        // implemented in the test environment
+        expect(doc).toEqual('1. aaa\n2. \n2. bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 3,
+          }),
+        );
+      });
+
+      it.todo('should format the remaining number prefixes');
     });
   });
 
@@ -107,6 +227,106 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\namet\n');
       expect(cursor.line).toEqual(3);
+    });
+
+    describe('when inside a list', () => {
+      it('should not insert a prefix when setting is disabled', () => {
+        SettingsState.autoInsertListPrefix = false;
+        editor.setValue('- aaa\n- bbb');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineAbove);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('- aaa\n\n- bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 0,
+          }),
+        );
+      });
+
+      it.each([
+        ['-', '- aaa\n- bbb', '- aaa\n- \n- bbb'],
+        ['*', '* aaa\n* bbb', '* aaa\n* \n* bbb'],
+        ['+', '+ aaa\n+ bbb', '+ aaa\n+ \n+ bbb'],
+        ['>', '> aaa\n> bbb', '> aaa\n> \n> bbb'],
+      ])('should insert `%s` prefix', (_scenario, content, expectedDoc) => {
+        editor.setValue(content);
+        editor.setCursor({ line: 0, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineBelow);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual(expectedDoc);
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 2,
+          }),
+        );
+      });
+
+      it.each([
+        ['- [ ]', '- [ ] aaa\n- [ ] bbb', '- [ ] aaa\n- [ ] \n- [ ] bbb'],
+        ['- [x]', '- [x] aaa\n- [x] bbb', '- [x] aaa\n- [ ] \n- [x] bbb'],
+      ])(
+        'should insert empty checkbox for `%s` prefix',
+        (_scenario, content, expectedDoc) => {
+          editor.setValue(content);
+          editor.setCursor({ line: 0, ch: 7 });
+
+          withMultipleSelections(editor as any, insertLineBelow);
+
+          const { doc, cursor } = getDocumentAndSelection(editor);
+          expect(doc).toEqual(expectedDoc);
+          expect(cursor).toEqual(
+            expect.objectContaining({
+              line: 1,
+              ch: 6,
+            }),
+          );
+        },
+      );
+
+      it('should insert list prefix at the correct indentation', () => {
+        editor.setValue('- aaa\n  - bbb');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineBelow);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('- aaa\n  - bbb\n  - ');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 2,
+            ch: 4,
+          }),
+        );
+      });
+
+      it('should insert number prefix', () => {
+        // @ts-expect-error - editor.transaction only exists in CM6
+        editor.transaction = () => null;
+        editor.setValue('1. aaa\n2. bbb');
+        editor.setCursor({ line: 0, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineBelow);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        // TODO: doc should equal '1. aaa\n2. \n3. bbb' once transactions are
+        // implemented in the test environment
+        expect(doc).toEqual('1. aaa\n2. \n2. bbb');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 3,
+          }),
+        );
+      });
+
+      it.todo('should format the remaining number prefixes');
     });
   });
 
@@ -699,6 +919,84 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
       expect(selectedText).toEqual('lorem ipsum');
+    });
+  });
+
+  describe('insertCursorAbove', () => {
+    it('should insert cursor above at the same position', () => {
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 0 } },
+        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
+      ]);
+    });
+
+    it('should insert cursor above at the end if previous line is shorter', () => {
+      editor.setValue('aaa\nbbbbbb');
+      editor.setCursor({ line: 1, ch: 5 });
+
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('aaa\nbbbbbb');
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
+        { anchor: { line: 1, ch: 5 }, head: { line: 1, ch: 5 } },
+      ]);
+    });
+
+    it('should not insert cursor above if on the first line of the document', () => {
+      editor.setCursor({ line: 0, ch: 3 });
+
+      insertCursorAbove(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
+      ]);
+    });
+  });
+
+  describe('insertCursorBelow', () => {
+    it('should insert cursor below at the same position', () => {
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
+        { anchor: { line: 2, ch: 0 }, head: { line: 2, ch: 0 } },
+      ]);
+    });
+
+    it('should insert cursor below at the end if next line is shorter', () => {
+      editor.setValue('aaaaaa\nbbb');
+      editor.setCursor({ line: 0, ch: 5 });
+
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('aaaaaa\nbbb');
+      expect(selections).toEqual([
+        { anchor: { line: 0, ch: 5 }, head: { line: 0, ch: 5 } },
+        { anchor: { line: 1, ch: 3 }, head: { line: 1, ch: 3 } },
+      ]);
+    });
+
+    it('should not insert cursor below if on the last line of the document', () => {
+      editor.setCursor({ line: 2, ch: 3 });
+
+      insertCursorBelow(editor as any);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        { anchor: { line: 2, ch: 3 }, head: { line: 2, ch: 3 } },
+      ]);
     });
   });
 });

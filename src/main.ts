@@ -22,6 +22,8 @@ import {
   setIsManualSelection,
   setIsProgrammaticSelectionChange,
   transformCase,
+  insertCursorAbove,
+  insertCursorBelow,
 } from './actions';
 import {
   defaultMultipleSelectionOptions,
@@ -30,9 +32,15 @@ import {
 } from './utils';
 import { CASE, DIRECTION, MODIFIER_KEYS } from './constants';
 import { insertLineBelowHandler } from './custom-selection-handlers';
+import { SettingTab, DEFAULT_SETTINGS, PluginSettings } from './settings';
+import { SettingsState } from './state';
 
 export default class CodeEditorShortcuts extends Plugin {
-  onload() {
+  settings: PluginSettings;
+
+  async onload() {
+    await this.loadSettings();
+
     this.addCommand({
       id: 'insertLineAbove',
       name: 'Insert line above',
@@ -322,6 +330,18 @@ export default class CodeEditorShortcuts extends Plugin {
     });
 
     this.addCommand({
+      id: 'insertCursorAbove',
+      name: 'Insert cursor above',
+      editorCallback: (editor) => insertCursorAbove(editor),
+    });
+
+    this.addCommand({
+      id: 'insertCursorBelow',
+      name: 'Insert cursor below',
+      editorCallback: (editor) => insertCursorBelow(editor),
+    });
+
+    this.addCommand({
       id: 'goToNextHeading',
       name: 'Go to next heading',
       editorCallback: (editor) => goToHeading(this.app, editor, 'next'),
@@ -334,6 +354,8 @@ export default class CodeEditorShortcuts extends Plugin {
     });
 
     this.registerSelectionChangeListeners();
+
+    this.addSettingTab(new SettingTab(this.app, this));
   }
 
   private registerSelectionChangeListeners() {
@@ -354,5 +376,19 @@ export default class CodeEditorShortcuts extends Plugin {
         this.registerDomEvent(cm, 'dblclick', handleSelectionChange);
       });
     });
+  }
+
+  async loadSettings() {
+    const savedSettings = await this.loadData();
+    this.settings = {
+      ...DEFAULT_SETTINGS,
+      ...savedSettings,
+    };
+    SettingsState.autoInsertListPrefix = this.settings.autoInsertListPrefix;
+  }
+
+  async saveSettings() {
+    await this.saveData(this.settings);
+    SettingsState.autoInsertListPrefix = this.settings.autoInsertListPrefix;
   }
 }

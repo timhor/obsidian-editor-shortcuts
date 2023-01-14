@@ -7,36 +7,70 @@ import {
   MATCHING_QUOTES_BRACKETS,
   MatchingCharacterMap,
   CODE_EDITOR,
-  JOIN_LINE_TRIM_REGEX,
+  LIST_CHARACTER_REGEX,
 } from './constants';
+import { SettingsState } from './state';
 import {
   CheckCharacter,
   findAllMatchPositions,
   findNextMatchPosition,
   findPosOfNextCharacter,
+  formatRemainingListPrefixes,
   getLeadingWhitespace,
   getLineEndPos,
   getLineStartPos,
   getNextCase,
-  getSearchText,
-  getSelectionBoundaries,
   toTitleCase,
+  getSelectionBoundaries,
   wordRangeAtPos,
+  getSearchText,
+  getNextListPrefix,
+  isNumeric,
 } from './utils';
 
 export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
   const { line } = selection.head;
   const startOfCurrentLine = getLineStartPos(line);
-  editor.replaceRange('\n', startOfCurrentLine);
-  return { anchor: startOfCurrentLine };
+
+  const contentsOfCurrentLine = editor.getLine(line);
+  const indentation = getLeadingWhitespace(contentsOfCurrentLine);
+
+  let listPrefix = '';
+  if (
+    SettingsState.autoInsertListPrefix &&
+    line > 0 &&
+    // If inside a list, only insert prefix if within the same list
+    editor.getLine(line - 1).trim().length > 0
+  ) {
+    listPrefix = getNextListPrefix(contentsOfCurrentLine, 'before');
+    if (isNumeric(listPrefix)) {
+      formatRemainingListPrefixes(editor, line, indentation);
+    }
+  }
+
+  editor.replaceRange(indentation + listPrefix + '\n', startOfCurrentLine);
+  return { anchor: { line, ch: indentation.length + listPrefix.length } };
 };
 
 export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
   const { line } = selection.head;
   const endOfCurrentLine = getLineEndPos(line, editor);
-  const indentation = getLeadingWhitespace(editor.getLine(line));
-  editor.replaceRange('\n' + indentation, endOfCurrentLine);
-  return { anchor: { line: line + 1, ch: indentation.length } };
+
+  const contentsOfCurrentLine = editor.getLine(line);
+  const indentation = getLeadingWhitespace(contentsOfCurrentLine);
+
+  let listPrefix = '';
+  if (SettingsState.autoInsertListPrefix) {
+    listPrefix = getNextListPrefix(contentsOfCurrentLine, 'after');
+    if (isNumeric(listPrefix)) {
+      formatRemainingListPrefixes(editor, line + 1, indentation);
+    }
+  }
+
+  editor.replaceRange('\n' + indentation + listPrefix, endOfCurrentLine);
+  return {
+    anchor: { line: line + 1, ch: indentation.length + listPrefix.length },
+  };
 };
 
 export const deleteSelectedLines = (
@@ -120,11 +154,11 @@ export const joinLines = (editor: Editor, selection: EditorSelection) => {
     const contentsOfCurrentLine = editor.getLine(line);
     const contentsOfNextLine = editor.getLine(line + 1);
 
-    const charsToTrim = contentsOfNextLine.match(JOIN_LINE_TRIM_REGEX) ?? [];
+    const charsToTrim = contentsOfNextLine.match(LIST_CHARACTER_REGEX) ?? [];
     trimmedChars += charsToTrim[0] ?? '';
 
     const newContentsOfNextLine = contentsOfNextLine.replace(
-      JOIN_LINE_TRIM_REGEX,
+      LIST_CHARACTER_REGEX,
       '',
     );
     if (
@@ -467,6 +501,36 @@ export const expandSelectionToQuotesOrBrackets = (editor: Editor) => {
   });
   editor.setSelections([...selections, newSelection]);
 };
+
+const insertCursor = (editor: Editor, lineOffset: number) => {
+  const selections = editor.listSelections();
+  const newSelections = [];
+  for (const selection of selections) {
+    const { line, ch } = selection.head;
+    if (
+      (line === 0 && lineOffset < 0) ||
+      (line === editor.lastLine() && lineOffset > 0)
+    ) {
+      break;
+    }
+    const targetLineLength = editor.getLine(line + lineOffset).length;
+    newSelections.push({
+      anchor: {
+        line: selection.anchor.line + lineOffset,
+        ch: Math.min(selection.anchor.ch, targetLineLength),
+      },
+      head: {
+        line: line + lineOffset,
+        ch: Math.min(ch, targetLineLength),
+      },
+    });
+  }
+  editor.setSelections([...editor.listSelections(), ...newSelections]);
+};
+
+export const insertCursorAbove = (editor: Editor) => insertCursor(editor, -1);
+
+export const insertCursorBelow = (editor: Editor) => insertCursor(editor, 1);
 
 export const goToHeading = (
   app: App,

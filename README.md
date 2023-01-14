@@ -29,6 +29,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Expand selection to brackets                     | Not set                    |
 | Expand selection to quotes                       | Not set                    |
 | Expand selection to quotes or brackets           | Not set                    |
+| Insert cursor above                              | Not set                    |
+| Insert cursor below                              | Not set                    |
 | Go to next heading                               | Not set                    |
 | Go to previous heading                           | Not set                    |
 
@@ -58,6 +60,12 @@ Refer to the official installation instructions for third-party plugins [here](h
 
 Go to Settings → Hotkeys to customise the keyboard shortcut for each action.
 
+The following behaviour can be configured via the settings tab for this plugin:
+
+| Setting                 | Description                                                           |
+| ----------------------- | --------------------------------------------------------------------- |
+| Auto insert list prefix | Automatically insert list prefix when inserting a line above or below |
+
 ## Contributing
 
 Contributions and suggestions are welcome – feel free to open an issue or raise a pull request.
@@ -73,4 +81,4 @@ To get started:
 
 This plugin is completely free to use, but if you'd like to say thanks, consider buying me a coffee! 😄
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C59A43G)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/timhor)
