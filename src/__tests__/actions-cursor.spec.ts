@@ -575,6 +575,28 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(cursor.line).toEqual(1);
       expect(cursor.ch).toEqual(0);
     });
+
+    it.each([
+      ['default', 'loreM', 'LOREM'],
+      ['uppercase', 'LOREM', 'lorem'],
+      ['lowercase', 'lorem', 'Lorem'],
+      ['title case', 'Lorem', 'LOREM'],
+    ])(
+      'should cycle to next case from %s',
+      (_scenario, initialContent, expectedContent) => {
+        editor.setValue(initialContent);
+        editor.setCursor({ line: 0, ch: 0 });
+
+        withMultipleSelections(editor as any, transformCase, {
+          args: CASE.NEXT,
+        });
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual(expectedContent);
+        expect(cursor.line).toEqual(0);
+        expect(cursor.ch).toEqual(0);
+      },
+    );
   });
 
   describe('expandSelectionToBrackets', () => {

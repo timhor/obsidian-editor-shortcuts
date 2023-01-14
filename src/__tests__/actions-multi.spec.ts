@@ -651,6 +651,20 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       );
       expect(selections).toEqual(originalSelectionRanges);
     });
+
+    it('should cycle to next case', () => {
+      withMultipleSelections(editor as any, transformCase, {
+        ...defaultMultipleSelectionOptions,
+        args: CASE.NEXT,
+      });
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(
+        `lorem Ipsum\nDolor sit\nAmet\n\nconsectetur ` +
+          `"aDipiscing" 'Elit'\n(donec [mattis])\ntincidunt metus`,
+      );
+      expect(selections).toEqual(originalSelectionRanges);
+    });
   });
 
   describe('expandSelectionToBrackets', () => {
