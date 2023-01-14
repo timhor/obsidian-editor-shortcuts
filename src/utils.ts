@@ -4,7 +4,7 @@ import {
   EditorSelection,
   EditorSelectionOrCaret,
 } from 'obsidian';
-import { DIRECTION } from './constants';
+import { DIRECTION, LOWERCASE_ARTICLES } from './constants';
 import { CustomSelectionHandler } from './custom-selection-handlers';
 
 type EditorActionCallback = (
@@ -376,4 +376,42 @@ export const findAllMatchPositions = ({
     });
   }
   return matchPositions;
+};
+
+export const toTitleCase = (selectedText: string) => {
+  // use capture group to join with the same separator used to split
+  return selectedText
+    .split(/(\s+)/)
+    .map((word, index, allWords) => {
+      if (
+        index > 0 &&
+        index < allWords.length - 1 &&
+        LOWERCASE_ARTICLES.includes(word.toLowerCase())
+      ) {
+        return word.toLowerCase();
+      }
+      return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+    })
+    .join('');
+};
+
+export const getNextCase = (selectedText: string): string => {
+  const textUpper = selectedText.toUpperCase();
+  const textLower = selectedText.toLowerCase();
+  const textTitle = toTitleCase(selectedText);
+
+  switch (selectedText) {
+    case textUpper: {
+      return textLower;
+    }
+    case textLower: {
+      return textTitle;
+    }
+    case textTitle: {
+      return textUpper;
+    }
+    default: {
+      return textUpper;
+    }
+  }
 };
