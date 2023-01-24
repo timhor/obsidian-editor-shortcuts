@@ -59,7 +59,7 @@ However, if you're using Live Preview, undo and redo will not work intuitively â
 
 ## Installing the plugin
 
-Refer to the official installation instructions for third-party plugins [here](https://help.obsidian.md/Advanced+topics/Community+plugins).
+Refer to the official installation instructions for third-party plugins [here](https://help.obsidian.md/Extending+Obsidian/Community+plugins).
 
 ## Configuring settings
 
