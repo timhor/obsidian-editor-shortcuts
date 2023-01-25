@@ -530,7 +530,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     it('should navigate to the previous lines', () => {
       withMultipleSelections(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'up',
+        args: 'prev',
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -554,7 +554,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     it('should navigate to the next lines', () => {
       withMultipleSelections(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'down',
+        args: 'next',
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -571,6 +571,54 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         {
           anchor: expect.objectContaining({ line: 5, ch: 16 }),
           head: expect.objectContaining({ line: 5, ch: 16 }),
+        },
+      ]);
+    });
+
+    it('should navigate to the first line', () => {
+      withMultipleSelections(editor as any, navigateLine, {
+        ...defaultMultipleSelectionOptions,
+        args: 'top',
+      });
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 2 }),
+          head: expect.objectContaining({ line: 0, ch: 2 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 6 }),
+          head: expect.objectContaining({ line: 0, ch: 6 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 11 }),
+          head: expect.objectContaining({ line: 0, ch: 11 }),
+        },
+      ]);
+    });
+
+    it('should navigate to the last line', () => {
+      withMultipleSelections(editor as any, navigateLine, {
+        ...defaultMultipleSelectionOptions,
+        args: 'bottom',
+      });
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 2 }),
+          head: expect.objectContaining({ line: 6, ch: 2 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 6 }),
+          head: expect.objectContaining({ line: 6, ch: 6 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 15 }),
+          head: expect.objectContaining({ line: 6, ch: 15 }),
         },
       ]);
     });

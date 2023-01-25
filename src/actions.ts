@@ -341,15 +341,22 @@ export const goToLineBoundary = (
 export const navigateLine = (
   editor: Editor,
   selection: EditorSelection,
-  direction: 'up' | 'down',
+  position: 'next' | 'prev' | 'top' | 'bottom',
 ) => {
   const pos = selection.head;
   let line: number;
 
-  if (direction === 'up') {
+  if (position === 'prev') {
     line = Math.max(pos.line - 1, 0);
-  } else {
+  }
+  if (position === 'next') {
     line = Math.min(pos.line + 1, editor.lineCount() - 1);
+  }
+  if (position === 'top') {
+    line = 0;
+  }
+  if (position === 'bottom') {
+    line = editor.lineCount() - 1;
   }
 
   const endOfLine = getLineEndPos(line, editor);
