@@ -21,6 +21,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Go to end of line                                | Not set                    |
 | Go to previous line                              | Not set                    |
 | Go to next line                                  | Not set                    |
+| Go to first line                                 | Not set                    |
+| Go to last line                                  | Not set                    |
 | Delete to start of line                          | Not set                    |
 | Delete to end of line                            | Not set                    |
 | Transform selection to uppercase                 | Not set                    |
