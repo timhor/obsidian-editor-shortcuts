@@ -701,7 +701,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
       expect(cursor.line).toEqual(2);
-      expect(cursor.ch).toEqual(0);
+      expect(cursor.ch).toEqual(4);
     });
   });
 

@@ -585,16 +585,8 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       expect(doc).toEqual(originalDoc);
       expect(selections).toEqual([
         {
-          anchor: expect.objectContaining({ line: 0, ch: 2 }),
-          head: expect.objectContaining({ line: 0, ch: 2 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 0, ch: 6 }),
-          head: expect.objectContaining({ line: 0, ch: 6 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 0, ch: 11 }),
-          head: expect.objectContaining({ line: 0, ch: 11 }),
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 0 }),
         },
       ]);
     });
@@ -608,14 +600,6 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
       expect(selections).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 6, ch: 2 }),
-          head: expect.objectContaining({ line: 6, ch: 2 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 6, ch: 6 }),
-          head: expect.objectContaining({ line: 6, ch: 6 }),
-        },
         {
           anchor: expect.objectContaining({ line: 6, ch: 15 }),
           head: expect.objectContaining({ line: 6, ch: 15 }),

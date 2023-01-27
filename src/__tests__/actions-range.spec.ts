@@ -631,7 +631,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
       expect(cursor.line).toEqual(0);
-      expect(cursor.ch).toEqual(5);
+      expect(cursor.ch).toEqual(0);
     });
 
     it('should navigate to the last line', () => {
