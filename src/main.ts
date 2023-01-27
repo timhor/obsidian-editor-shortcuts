@@ -36,6 +36,7 @@ import { CASE, DIRECTION, MODIFIER_KEYS } from './constants';
 import { insertLineBelowHandler } from './custom-selection-handlers';
 import { SettingTab, DEFAULT_SETTINGS, PluginSettings } from './settings';
 import { SettingsState } from './state';
+import { GoToLineModal } from './modals';
 
 export default class CodeEditorShortcuts extends Plugin {
   settings: PluginSettings;
@@ -269,6 +270,16 @@ export default class CodeEditorShortcuts extends Plugin {
           ...defaultMultipleSelectionOptions,
           args: 'last',
         }),
+    });
+
+    this.addCommand({
+      id: 'goToLineNumber',
+      name: 'Go to line number',
+      editorCallback: (editor) => {
+        const lineCount = editor.lineCount();
+        const onSubmit = (line: number) => editor.setCursor({ line, ch: 0 });
+        new GoToLineModal(this.app, lineCount, onSubmit).open();
+      },
     });
 
     this.addCommand({

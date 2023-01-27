@@ -23,6 +23,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Go to next line                                  | Not set                    |
 | Go to first line                                 | Not set                    |
 | Go to last line                                  | Not set                    |
+| Go to line number                                | Not set                    |
 | Delete to start of line                          | Not set                    |
 | Delete to end of line                            | Not set                    |
 | Transform selection to uppercase                 | Not set                    |
@@ -47,7 +48,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 - `Ctrl` + `Enter` for 'Insert line below' may conflict with the default shortcut for _Open link under cursor in new tab_; changing/removing one of the bindings is recommended.
 - `Ctrl` + `L` for 'Select line' may conflict with the default shortcut for _Toggle checkbox status_; changing/removing one of the bindings is recommended.
 - `Ctrl` + `D` for 'Select word or next occurrence of selection' will behave differently depending on how the initial selection was made. If it was also done via `Ctrl` + `D`, the command will only look for the entire word in subsequent matches. However, if the selection was done by hand, it will search within words as well.
-- 'Toggle case of selection' will cycle between uppercase, lowercase and title case
+- 'Toggle case of selection' will cycle between uppercase, lowercase and title case.
 - If you are looking for the `Alt` + `Up` and `Alt` + `Down` shortcuts from VS Code, you can assign those hotkeys to Obsidian's built in actions "Move line up" and "Move line down".
 
 ### Multiple Cursors
