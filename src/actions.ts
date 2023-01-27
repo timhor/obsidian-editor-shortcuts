@@ -341,7 +341,7 @@ export const goToLineBoundary = (
 export const navigateLine = (
   editor: Editor,
   selection: EditorSelection,
-  position: 'next' | 'prev' | 'top' | 'bottom',
+  position: 'next' | 'prev' | 'first' | 'last',
 ) => {
   const pos = selection.head;
   let line: number;
@@ -352,10 +352,10 @@ export const navigateLine = (
   if (position === 'next') {
     line = Math.min(pos.line + 1, editor.lineCount() - 1);
   }
-  if (position === 'top') {
+  if (position === 'first') {
     line = 0;
   }
-  if (position === 'bottom') {
+  if (position === 'last') {
     line = editor.lineCount() - 1;
   }
 

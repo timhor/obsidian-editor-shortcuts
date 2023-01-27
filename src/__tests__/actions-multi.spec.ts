@@ -578,7 +578,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     it('should navigate to the first line', () => {
       withMultipleSelections(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'top',
+        args: 'first',
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -602,7 +602,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     it('should navigate to the last line', () => {
       withMultipleSelections(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'bottom',
+        args: 'last',
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);

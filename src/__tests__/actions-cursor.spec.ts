@@ -687,7 +687,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should navigate to the first line', () => {
-      withMultipleSelections(editor as any, navigateLine, { args: 'top' });
+      withMultipleSelections(editor as any, navigateLine, { args: 'first' });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -696,7 +696,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should navigate to the last line', () => {
-      withMultipleSelections(editor as any, navigateLine, { args: 'bottom' });
+      withMultipleSelections(editor as any, navigateLine, { args: 'last' });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);

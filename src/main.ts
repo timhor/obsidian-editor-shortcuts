@@ -257,7 +257,7 @@ export default class CodeEditorShortcuts extends Plugin {
       editorCallback: (editor) =>
         withMultipleSelections(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'top',
+          args: 'first',
         }),
     });
 
@@ -267,7 +267,7 @@ export default class CodeEditorShortcuts extends Plugin {
       editorCallback: (editor) =>
         withMultipleSelections(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'bottom',
+          args: 'last',
         }),
     });
 
