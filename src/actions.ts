@@ -341,19 +341,31 @@ export const goToLineBoundary = (
 export const navigateLine = (
   editor: Editor,
   selection: EditorSelection,
-  direction: 'up' | 'down',
+  position: 'next' | 'prev' | 'first' | 'last',
 ) => {
   const pos = selection.head;
   let line: number;
+  let ch: number;
 
-  if (direction === 'up') {
+  if (position === 'prev') {
     line = Math.max(pos.line - 1, 0);
-  } else {
-    line = Math.min(pos.line + 1, editor.lineCount() - 1);
+    const endOfLine = getLineEndPos(line, editor);
+    ch = Math.min(pos.ch, endOfLine.ch);
   }
-
-  const endOfLine = getLineEndPos(line, editor);
-  const ch = Math.min(pos.ch, endOfLine.ch);
+  if (position === 'next') {
+    line = Math.min(pos.line + 1, editor.lineCount() - 1);
+    const endOfLine = getLineEndPos(line, editor);
+    ch = Math.min(pos.ch, endOfLine.ch);
+  }
+  if (position === 'first') {
+    line = 0;
+    ch = 0;
+  }
+  if (position === 'last') {
+    line = editor.lineCount() - 1;
+    const endOfLine = getLineEndPos(line, editor);
+    ch = endOfLine.ch;
+  }
 
   return { anchor: { line, ch } };
 };
