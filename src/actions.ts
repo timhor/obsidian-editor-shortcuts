@@ -397,6 +397,18 @@ export const moveCursor = (
   return { anchor: newPos };
 };
 
+export const moveCursorVertical = (
+  editor: Editor,
+  direction: 'up' | 'down',
+) => {
+  if (direction === 'up') {
+    editor.exec('goUp');
+  }
+  if (direction === 'down') {
+    editor.exec('goDown');
+  }
+};
+
 export const transformCase = (
   editor: Editor,
   selection: EditorSelection,

@@ -22,6 +22,7 @@ import {
   addCursorsToSelectionEnds,
   insertCursorAbove,
   insertCursorBelow,
+  moveCursorVertical,
 } from '../actions';
 import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
 import { withMultipleSelections } from '../utils';
@@ -41,8 +42,15 @@ document.createRange = () => {
   return range;
 };
 
+export interface ObsidianEditorBridge extends Editor {
+  /**
+   * `exec` is the CodeMirror equivalent of `execCommand`
+   */
+  exec?: (name: string) => void;
+}
+
 describe('Code Editor Shortcuts: actions - single cursor selection', () => {
-  let editor: Editor;
+  let editor: ObsidianEditorBridge;
   const originalDoc = 'lorem ipsum\ndolor sit\namet';
 
   beforeAll(() => {
@@ -54,12 +62,18 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     // Assign the CodeMirror equivalents of posToOffset and offsetToPos
     (editor as any).posToOffset = editor.indexFromPos;
     (editor as any).offsetToPos = editor.posFromIndex;
+
+    editor.exec = jest.fn();
   });
 
   beforeEach(() => {
     SettingsState.autoInsertListPrefix = true;
     editor.setValue(originalDoc);
     editor.setCursor({ line: 1, ch: 0 });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('insertLineAbove', () => {
@@ -774,6 +788,18 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(doc).toEqual(originalDoc);
       expect(cursor.line).toEqual(2);
       expect(cursor.ch).toEqual(4);
+    });
+  });
+
+  describe('moveCursorVertical', () => {
+    it('should move cursor up', () => {
+      moveCursorVertical(editor as any, 'up');
+      expect(editor.exec).toHaveBeenCalledWith('goUp');
+    });
+
+    it('should move cursor down', () => {
+      moveCursorVertical(editor as any, 'down');
+      expect(editor.exec).toHaveBeenCalledWith('goDown');
     });
   });
 

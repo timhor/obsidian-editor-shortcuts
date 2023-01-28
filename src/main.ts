@@ -24,6 +24,7 @@ import {
   transformCase,
   insertCursorAbove,
   insertCursorBelow,
+  moveCursorVertical,
 } from './actions';
 import {
   defaultMultipleSelectionOptions,
@@ -300,6 +301,22 @@ export default class CodeEditorShortcuts extends Plugin {
           ...defaultMultipleSelectionOptions,
           args: DIRECTION.BACKWARD,
         }),
+    });
+
+    this.addCommand({
+      id: 'moveCursorUp',
+      name: 'Move cursor up',
+      editorCallback: (editor) => {
+        moveCursorVertical(editor, 'up');
+      },
+    });
+
+    this.addCommand({
+      id: 'moveCursorDown',
+      name: 'Move cursor down',
+      editorCallback: (editor) => {
+        moveCursorVertical(editor, 'down');
+      },
     });
 
     this.addCommand({

@@ -17,6 +17,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Select all occurrences of selection              | `Ctrl` + `Shift` + `L`     |
 | Move cursor left                                 | Not set                    |
 | Move cursor right                                | Not set                    |
+| Move cursor up                                   | Not set                    |
+| Move cursor down                                 | Not set                    |
 | Go to start of line                              | Not set                    |
 | Go to end of line                                | Not set                    |
 | Go to previous line                              | Not set                    |
