@@ -14,7 +14,6 @@ import {
   selectLine,
   goToLineBoundary,
   navigateLine,
-  moveCursor,
   transformCase,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
@@ -23,7 +22,7 @@ import {
   insertCursorAbove,
   insertCursorBelow,
 } from '../actions';
-import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
+import { CASE, CODE_EDITOR } from '../constants';
 import {
   withMultipleSelections,
   defaultMultipleSelectionOptions,
@@ -603,64 +602,6 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         {
           anchor: expect.objectContaining({ line: 6, ch: 15 }),
           head: expect.objectContaining({ line: 6, ch: 15 }),
-        },
-      ]);
-    });
-  });
-
-  describe('moveCursor', () => {
-    it('should navigate cursors backward', () => {
-      withMultipleSelections(editor as any, moveCursor, {
-        ...defaultMultipleSelectionOptions,
-        args: DIRECTION.BACKWARD,
-      });
-
-      const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(selections).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 0, ch: 5 }),
-          head: expect.objectContaining({ line: 0, ch: 5 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 2, ch: 1 }),
-          head: expect.objectContaining({ line: 2, ch: 1 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 4, ch: 16 }),
-          head: expect.objectContaining({ line: 4, ch: 16 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 4, ch: 25 }),
-          head: expect.objectContaining({ line: 4, ch: 25 }),
-        },
-      ]);
-    });
-
-    it('should navigate cursors forward', () => {
-      withMultipleSelections(editor as any, moveCursor, {
-        ...defaultMultipleSelectionOptions,
-        args: DIRECTION.FORWARD,
-      });
-
-      const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(selections).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 0, ch: 7 }),
-          head: expect.objectContaining({ line: 0, ch: 7 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 2, ch: 3 }),
-          head: expect.objectContaining({ line: 2, ch: 3 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 4, ch: 18 }),
-          head: expect.objectContaining({ line: 4, ch: 18 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 4, ch: 27 }),
-          head: expect.objectContaining({ line: 4, ch: 27 }),
         },
       ]);
     });

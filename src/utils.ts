@@ -7,7 +7,7 @@ import {
   EditorSelectionOrCaret,
 } from 'obsidian';
 import {
-  DIRECTION,
+  SEARCH_DIRECTION,
   LOWERCASE_ARTICLES,
   LIST_CHARACTER_REGEX,
 } from './constants';
@@ -183,14 +183,14 @@ export const findPosOfNextCharacter = ({
   editor: Editor;
   startPos: EditorPosition;
   checkCharacter: CheckCharacter;
-  searchDirection: DIRECTION;
+  searchDirection: SEARCH_DIRECTION;
 }) => {
   let { line, ch } = startPos;
   let lineContent = editor.getLine(line);
   let matchFound = false;
   let matchedChar: string;
 
-  if (searchDirection === DIRECTION.BACKWARD) {
+  if (searchDirection === SEARCH_DIRECTION.BACKWARD) {
     while (line >= 0) {
       // ch will initially be 0 if searching from start of line
       const char = lineContent.charAt(Math.max(ch - 1, 0));

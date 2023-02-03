@@ -22,9 +22,8 @@ import {
   addCursorsToSelectionEnds,
   insertCursorAbove,
   insertCursorBelow,
-  moveCursorVertical,
 } from '../actions';
-import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
+import { CASE, CODE_EDITOR } from '../constants';
 import { withMultipleSelections } from '../utils';
 import { SettingsState } from '../state';
 
@@ -720,86 +719,24 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   });
 
   describe('moveCursor', () => {
-    it('should navigate the cursor backward', () => {
-      editor.setCursor({ line: 2, ch: 2 });
-      withMultipleSelections(editor as any, moveCursor, {
-        args: DIRECTION.BACKWARD,
-      });
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(2);
-      expect(cursor.ch).toEqual(1);
-    });
-
-    it('should navigate the cursor backward over a line boundary', () => {
-      withMultipleSelections(editor as any, moveCursor, {
-        args: DIRECTION.BACKWARD,
-      });
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(0);
-      expect(cursor.ch).toEqual(11);
-    });
-
-    it('should not attempt to navigate the cursor past start of document', () => {
-      editor.setCursor({ line: 0, ch: 0 });
-      withMultipleSelections(editor as any, moveCursor, {
-        args: DIRECTION.BACKWARD,
-      });
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(0);
-      expect(cursor.ch).toEqual(0);
-    });
-
-    it('should navigate the cursor forward', () => {
-      withMultipleSelections(editor as any, moveCursor, {
-        args: DIRECTION.FORWARD,
-      });
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(1);
-      expect(cursor.ch).toEqual(1);
-    });
-
-    it('should navigate the cursor forward over a line boundary', () => {
-      editor.setCursor({ line: 1, ch: 9 });
-      withMultipleSelections(editor as any, moveCursor, {
-        args: DIRECTION.FORWARD,
-      });
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(2);
-      expect(cursor.ch).toEqual(0);
-    });
-
-    it('should not attempt to navigate the cursor past end of document', () => {
-      editor.setCursor({ line: 2, ch: 4 });
-      withMultipleSelections(editor as any, moveCursor, {
-        args: DIRECTION.FORWARD,
-      });
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(2);
-      expect(cursor.ch).toEqual(4);
-    });
-  });
-
-  describe('moveCursorVertical', () => {
     it('should move cursor up', () => {
-      moveCursorVertical(editor as any, 'up');
+      moveCursor(editor as any, 'up');
       expect(editor.exec).toHaveBeenCalledWith('goUp');
     });
 
     it('should move cursor down', () => {
-      moveCursorVertical(editor as any, 'down');
+      moveCursor(editor as any, 'down');
       expect(editor.exec).toHaveBeenCalledWith('goDown');
+    });
+
+    it('should move cursor left', () => {
+      moveCursor(editor as any, 'left');
+      expect(editor.exec).toHaveBeenCalledWith('goLeft');
+    });
+
+    it('should move cursor right', () => {
+      moveCursor(editor as any, 'right');
+      expect(editor.exec).toHaveBeenCalledWith('goRight');
     });
   });
 

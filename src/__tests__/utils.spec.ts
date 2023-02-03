@@ -11,7 +11,7 @@ import {
   isNumeric,
   getNextListPrefix,
 } from '../utils';
-import { DIRECTION } from '../constants';
+import { SEARCH_DIRECTION } from '../constants';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
 document.createRange = () => {
@@ -181,7 +181,7 @@ describe('Code Editor Shortcuts: utils', () => {
         editor: editor as any,
         startPos: { line: 0, ch: 5 },
         checkCharacter: (char: string) => /s/.test(char),
-        searchDirection: DIRECTION.FORWARD,
+        searchDirection: SEARCH_DIRECTION.FORWARD,
       });
       expect(pos).toEqual({
         match: 's',
@@ -197,7 +197,7 @@ describe('Code Editor Shortcuts: utils', () => {
         editor: editor as any,
         startPos: { line: 0, ch: 5 },
         checkCharacter: (char: string) => /r/.test(char),
-        searchDirection: DIRECTION.BACKWARD,
+        searchDirection: SEARCH_DIRECTION.BACKWARD,
       });
       expect(pos).toEqual({
         match: 'r',
@@ -213,7 +213,7 @@ describe('Code Editor Shortcuts: utils', () => {
         editor: editor as any,
         startPos: { line: 0, ch: 0 },
         checkCharacter: (char: string) => /x/.test(char),
-        searchDirection: DIRECTION.FORWARD,
+        searchDirection: SEARCH_DIRECTION.FORWARD,
       });
       expect(pos).toBeNull();
     });

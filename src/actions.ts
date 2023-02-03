@@ -1,7 +1,7 @@
 import type { App, Editor, EditorPosition, EditorSelection } from 'obsidian';
 import {
   CASE,
-  DIRECTION,
+  SEARCH_DIRECTION,
   MATCHING_BRACKETS,
   MATCHING_QUOTES,
   MATCHING_QUOTES_BRACKETS,
@@ -372,40 +372,21 @@ export const navigateLine = (
 
 export const moveCursor = (
   editor: Editor,
-  selection: EditorSelection,
-  direction: DIRECTION,
+  direction: 'up' | 'down' | 'left' | 'right',
 ) => {
-  const { line, ch } = selection.head;
-
-  const movement = direction === DIRECTION.BACKWARD ? -1 : 1;
-  const lineLength = editor.getLine(line).length;
-  const newPos = { line, ch: ch + movement };
-
-  if (newPos.ch < 0 && newPos.line === 0) {
-    // Moving backward past start of doc, do nothing
-    newPos.ch = ch;
-  } else if (newPos.ch < 0) {
-    // Wrap backward over start of line
-    newPos.line = Math.max(newPos.line - 1, 0);
-    newPos.ch = editor.getLine(newPos.line).length;
-  } else if (newPos.ch > lineLength) {
-    // Wrap forward over end of line
-    newPos.line += 1;
-    newPos.ch = 0;
-  }
-
-  return { anchor: newPos };
-};
-
-export const moveCursorVertical = (
-  editor: Editor,
-  direction: 'up' | 'down',
-) => {
-  if (direction === 'up') {
-    editor.exec('goUp');
-  }
-  if (direction === 'down') {
-    editor.exec('goDown');
+  switch (direction) {
+    case 'up':
+      editor.exec('goUp');
+      break;
+    case 'down':
+      editor.exec('goDown');
+      break;
+    case 'left':
+      editor.exec('goLeft');
+      break;
+    case 'right':
+      editor.exec('goRight');
+      break;
   }
 };
 
@@ -473,7 +454,7 @@ const expandSelection = ({
     editor,
     startPos: anchor,
     checkCharacter: openingCharacterCheck,
-    searchDirection: DIRECTION.BACKWARD,
+    searchDirection: SEARCH_DIRECTION.BACKWARD,
   });
   if (!newAnchor) {
     return selection;
@@ -484,7 +465,7 @@ const expandSelection = ({
     startPos: head,
     checkCharacter: (char: string) =>
       char === matchingCharacterMap[newAnchor.match],
-    searchDirection: DIRECTION.FORWARD,
+    searchDirection: SEARCH_DIRECTION.FORWARD,
   });
   if (!newHead) {
     return selection;

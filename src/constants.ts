@@ -7,7 +7,7 @@ export enum CASE {
 
 export const LOWERCASE_ARTICLES = ['the', 'a', 'an'];
 
-export enum DIRECTION {
+export enum SEARCH_DIRECTION {
   FORWARD = 'forward',
   BACKWARD = 'backward',
 }

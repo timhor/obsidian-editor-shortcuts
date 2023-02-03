@@ -14,7 +14,6 @@ import {
   selectLine,
   goToLineBoundary,
   navigateLine,
-  moveCursor,
   transformCase,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
@@ -24,7 +23,7 @@ import {
   insertCursorAbove,
   insertCursorBelow,
 } from '../actions';
-import { CASE, CODE_EDITOR, DIRECTION } from '../constants';
+import { CASE, CODE_EDITOR } from '../constants';
 import { withMultipleSelections } from '../utils';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
@@ -641,30 +640,6 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       expect(doc).toEqual(originalDoc);
       expect(cursor.line).toEqual(2);
       expect(cursor.ch).toEqual(4);
-    });
-  });
-
-  describe('moveCursor', () => {
-    it('should navigate the cursor backward', () => {
-      withMultipleSelections(editor as any, moveCursor, {
-        args: DIRECTION.BACKWARD,
-      });
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(1);
-      expect(cursor.ch).toEqual(4);
-    });
-
-    it('should navigate the cursor forward', () => {
-      withMultipleSelections(editor as any, moveCursor, {
-        args: DIRECTION.FORWARD,
-      });
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(originalDoc);
-      expect(cursor.line).toEqual(1);
-      expect(cursor.ch).toEqual(6);
     });
   });
 

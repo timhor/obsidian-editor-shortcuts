@@ -24,7 +24,6 @@ import {
   transformCase,
   insertCursorAbove,
   insertCursorBelow,
-  moveCursorVertical,
 } from './actions';
 import {
   defaultMultipleSelectionOptions,
@@ -33,7 +32,7 @@ import {
   toggleVaultConfig,
   withMultipleSelections,
 } from './utils';
-import { CASE, DIRECTION, MODIFIER_KEYS } from './constants';
+import { CASE, MODIFIER_KEYS } from './constants';
 import { insertLineBelowHandler } from './custom-selection-handlers';
 import { SettingTab, DEFAULT_SETTINGS, PluginSettings } from './settings';
 import { SettingsState } from './state';
@@ -286,37 +285,25 @@ export default class CodeEditorShortcuts extends Plugin {
     this.addCommand({
       id: 'goToNextChar',
       name: 'Move cursor forward',
-      editorCallback: (editor) =>
-        withMultipleSelections(editor, moveCursor, {
-          ...defaultMultipleSelectionOptions,
-          args: DIRECTION.FORWARD,
-        }),
+      editorCallback: (editor) => moveCursor(editor, 'right'),
     });
 
     this.addCommand({
       id: 'goToPrevChar',
       name: 'Move cursor backward',
-      editorCallback: (editor) =>
-        withMultipleSelections(editor, moveCursor, {
-          ...defaultMultipleSelectionOptions,
-          args: DIRECTION.BACKWARD,
-        }),
+      editorCallback: (editor) => moveCursor(editor, 'left'),
     });
 
     this.addCommand({
       id: 'moveCursorUp',
       name: 'Move cursor up',
-      editorCallback: (editor) => {
-        moveCursorVertical(editor, 'up');
-      },
+      editorCallback: (editor) => moveCursor(editor, 'up'),
     });
 
     this.addCommand({
       id: 'moveCursorDown',
       name: 'Move cursor down',
-      editorCallback: (editor) => {
-        moveCursorVertical(editor, 'down');
-      },
+      editorCallback: (editor) => moveCursor(editor, 'down'),
     });
 
     this.addCommand({
