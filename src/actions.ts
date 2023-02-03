@@ -372,6 +372,19 @@ export const moveCursor = (
   }
 };
 
+export const moveWord = (editor: Editor, direction: 'left' | 'right') => {
+  switch (direction) {
+    case 'left':
+      // @ts-expect-error - command not defined in Obsidian API
+      editor.exec('goWordLeft');
+      break;
+    case 'right':
+      // @ts-expect-error - command not defined in Obsidian API
+      editor.exec('goWordRight');
+      break;
+  }
+};
+
 export const transformCase = (
   editor: Editor,
   selection: EditorSelection,

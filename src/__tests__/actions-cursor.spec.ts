@@ -22,6 +22,7 @@ import {
   addCursorsToSelectionEnds,
   insertCursorAbove,
   insertCursorBelow,
+  moveWord,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
 import { withMultipleSelections } from '../utils';
@@ -724,6 +725,18 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should move cursor right', () => {
       moveCursor(editor as any, 'right');
       expect(editor.exec).toHaveBeenCalledWith('goRight');
+    });
+  });
+
+  describe('moveWord', () => {
+    it('should go to next word', () => {
+      moveWord(editor as any, 'right');
+      expect(editor.exec).toHaveBeenCalledWith('goWordRight');
+    });
+
+    it('should go to previous word', () => {
+      moveWord(editor as any, 'left');
+      expect(editor.exec).toHaveBeenCalledWith('goWordLeft');
     });
   });
 

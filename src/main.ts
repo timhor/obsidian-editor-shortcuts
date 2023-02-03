@@ -24,6 +24,7 @@ import {
   transformCase,
   insertCursorAbove,
   insertCursorBelow,
+  moveWord,
 } from './actions';
 import {
   defaultMultipleSelectionOptions,
@@ -303,6 +304,18 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'moveCursorDown',
       name: 'Move cursor down',
       editorCallback: (editor) => moveCursor(editor, 'down'),
+    });
+
+    this.addCommand({
+      id: 'goToPreviousWord',
+      name: 'Go to previous word',
+      editorCallback: (editor) => moveWord(editor, 'left'),
+    });
+
+    this.addCommand({
+      id: 'goToNextWord',
+      name: 'Go to next word',
+      editorCallback: (editor) => moveWord(editor, 'right'),
     });
 
     this.addCommand({
