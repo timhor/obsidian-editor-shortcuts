@@ -4,7 +4,6 @@ import { getDocumentAndSelection } from './test-helpers';
 import {
   insertLineAbove,
   insertLineBelow,
-  deleteSelectedLines,
   deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
@@ -94,16 +93,6 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
           ch: 2,
         }),
       );
-    });
-  });
-
-  describe('deleteSelectedLines', () => {
-    it('should delete selected lines', () => {
-      withMultipleSelections(editor as any, deleteSelectedLines);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('amet');
-      expect(cursor.line).toEqual(0);
     });
   });
 

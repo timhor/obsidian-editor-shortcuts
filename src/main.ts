@@ -2,7 +2,7 @@ import { Plugin } from 'obsidian';
 import {
   addCursorsToSelectionEnds,
   copyLine,
-  deleteSelectedLines,
+  deleteLine,
   deleteToStartOfLine,
   deleteToEndOfLine,
   expandSelectionToBrackets,
@@ -82,8 +82,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'K',
         },
       ],
-      editorCallback: (editor) =>
-        withMultipleSelections(editor, deleteSelectedLines),
+      editorCallback: (editor) => deleteLine(editor),
     });
 
     this.addCommand({

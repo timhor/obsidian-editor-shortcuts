@@ -4,7 +4,6 @@ import { getDocumentAndSelection } from './test-helpers';
 import {
   insertLineAbove,
   insertLineBelow,
-  deleteSelectedLines,
   deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
@@ -170,25 +169,6 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         {
           anchor: expect.objectContaining({ line: 3, ch: 4 }),
           head: expect.objectContaining({ line: 3, ch: 4 }),
-        },
-      ]);
-    });
-  });
-
-  describe('deleteSelectedLines', () => {
-    it('should delete selected lines', () => {
-      withMultipleSelections(editor as any, deleteSelectedLines);
-
-      const { doc, selections } = getDocumentAndSelection(editor);
-      expect(doc).toEqual(`\n(donec [mattis])\ntincidunt metus`);
-      expect(selections).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 0, ch: 0 }),
-          head: expect.objectContaining({ line: 0, ch: 0 }),
-        },
-        {
-          anchor: expect.objectContaining({ line: 1, ch: 16 }),
-          head: expect.objectContaining({ line: 1, ch: 16 }),
         },
       ]);
     });

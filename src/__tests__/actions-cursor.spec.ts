@@ -4,7 +4,7 @@ import { getDocumentAndSelection } from './test-helpers';
 import {
   insertLineAbove,
   insertLineBelow,
-  deleteSelectedLines,
+  deleteLine,
   deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
@@ -343,23 +343,10 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
   });
 
-  describe('deleteSelectedLines', () => {
+  describe('deleteLine', () => {
     it('should delete line at cursor', () => {
-      withMultipleSelections(editor as any, deleteSelectedLines);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('lorem ipsum\namet');
-      expect(cursor.line).toEqual(1);
-    });
-
-    it('should delete last line', () => {
-      editor.setCursor({ line: 2, ch: 0 });
-
-      withMultipleSelections(editor as any, deleteSelectedLines);
-
-      const { doc, cursor } = getDocumentAndSelection(editor);
-      expect(doc).toEqual('lorem ipsum\ndolor sit');
-      expect(cursor.line).toEqual(1);
+      deleteLine(editor as any);
+      expect(editor.exec).toHaveBeenCalledWith('deleteLine');
     });
   });
 
