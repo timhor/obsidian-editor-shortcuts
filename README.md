@@ -57,7 +57,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 
 ### Multiple Cursors
 
-These shortcuts also work with [multiple cursors](https://help.obsidian.md/How+to/Working+with+multiple+cursors), with the exception of:
+These shortcuts also work with [multiple cursors](https://help.obsidian.md/How+to/Multiple+cursors), with the exception of:
 
 - Expand selection to quotes or brackets
 - Go to next/previous heading
