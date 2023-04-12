@@ -83,8 +83,26 @@ export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
   };
 };
 
-export const deleteLine = (editor: Editor) => {
-  editor.exec('deleteLine');
+// Note: don't use the built-in exec method for 'deleteLine' as there is a bug
+// where running it on a line that is long enough to be wrapped will focus on
+// the previous line instead of the next line after deletion
+export const deleteLine = (editor: Editor, selection: EditorSelection) => {
+  const { from, to } = getSelectionBoundaries(selection);
+  if (to.line === editor.lastLine()) {
+    // There is no 'next line' when cursor is on the last line
+    editor.replaceRange(
+      '',
+      getLineEndPos(from.line - 1, editor),
+      getLineEndPos(to.line, editor),
+    );
+  } else {
+    editor.replaceRange(
+      '',
+      getLineStartPos(from.line),
+      getLineStartPos(to.line + 1),
+    );
+  }
+  return { anchor: { line: from.line, ch: selection.head.ch } };
 };
 
 export const deleteToStartOfLine = (

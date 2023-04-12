@@ -83,7 +83,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'K',
         },
       ],
-      editorCallback: (editor) => deleteLine(editor),
+      editorCallback: (editor) => withMultipleSelections(editor, deleteLine),
     });
 
     this.addCommand({
