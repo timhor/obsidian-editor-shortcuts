@@ -208,6 +208,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         );
       });
 
+      // TODO: Implement once migrated to CM6
       it.todo('should format the remaining number prefixes');
     });
   });
@@ -340,7 +341,24 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         );
       });
 
+      // TODO: Implement once migrated to CM6
       it.todo('should format the remaining number prefixes');
+
+      it('should delete line contents if list item is empty', () => {
+        editor.setValue('- aaa\n  - ');
+        editor.setCursor({ line: 1, ch: 4 });
+
+        withMultipleSelections(editor as any, insertLineBelow);
+
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('- aaa\n');
+        expect(cursor).toEqual(
+          expect.objectContaining({
+            line: 1,
+            ch: 0,
+          }),
+        );
+      });
     });
   });
 

@@ -438,14 +438,20 @@ export const isNumeric = (input: string) => input.length > 0 && !isNaN(+input);
  * incremented by 1.
  *
  * If it's a checklist, the newly inserted checkbox will always be unticked.
+ *
+ * If the current list item is empty, this will be indicated by a `null` prefix.
  */
 export const getNextListPrefix = (
   text: string,
   direction: 'before' | 'after',
-) => {
-  const listChars = text.match(LIST_CHARACTER_REGEX) ?? [];
-  if (listChars.length > 0) {
+): string | null => {
+  const listChars = text.match(LIST_CHARACTER_REGEX);
+  if (listChars && listChars.length > 0) {
     let prefix = listChars[0].trimStart();
+    const isEmptyListItem = prefix === listChars.input.trimStart();
+    if (isEmptyListItem) {
+      return null;
+    }
     if (isNumeric(prefix) && direction === 'after') {
       prefix = +prefix + 1 + '. ';
     }

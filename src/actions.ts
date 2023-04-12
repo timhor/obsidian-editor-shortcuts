@@ -54,6 +54,7 @@ export const insertLineAbove = (editor: Editor, selection: EditorSelection) => {
 
 export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
   const { line } = selection.head;
+  const startOfCurrentLine = getLineStartPos(line);
   const endOfCurrentLine = getLineEndPos(line, editor);
 
   const contentsOfCurrentLine = editor.getLine(line);
@@ -62,6 +63,15 @@ export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
   let listPrefix = '';
   if (SettingsState.autoInsertListPrefix) {
     listPrefix = getNextListPrefix(contentsOfCurrentLine, 'after');
+
+    // Performing this action on an empty list item should delete it
+    if (listPrefix === null) {
+      editor.replaceRange('', startOfCurrentLine, endOfCurrentLine);
+      return {
+        anchor: { line, ch: 0 },
+      };
+    }
+
     if (isNumeric(listPrefix)) {
       formatRemainingListPrefixes(editor, line + 1, indentation);
     }

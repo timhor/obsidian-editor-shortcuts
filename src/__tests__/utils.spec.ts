@@ -237,23 +237,26 @@ describe('Code Editor Shortcuts: utils', () => {
     it.each([['- '], ['* '], ['+ '], ['> '], ['- [ ] ']])(
       'should return the same prefix for %s',
       (currentPrefix) => {
-        const prefix = getNextListPrefix(currentPrefix, 'after');
+        const prefix = getNextListPrefix(
+          `${currentPrefix} lorem ipsum`,
+          'after',
+        );
         expect(prefix).toBe(currentPrefix);
       },
     );
 
     it('should return the next number for a numeric prefix when going forwards', () => {
-      const prefix = getNextListPrefix('23. ', 'after');
+      const prefix = getNextListPrefix('23. lorem ipsum', 'after');
       expect(prefix).toBe('24. ');
     });
 
     it('should return the same number for a numeric prefix when going backwards', () => {
-      const prefix = getNextListPrefix('23. ', 'before');
+      const prefix = getNextListPrefix('23. lorem ipsum', 'before');
       expect(prefix).toBe('23. ');
     });
 
     it('should return an unticked checkbox for a checkbox prefix', () => {
-      const prefix = getNextListPrefix('- [x] ', 'after');
+      const prefix = getNextListPrefix('- [x] lorem ipsum', 'after');
       expect(prefix).toBe('- [ ] ');
     });
 
@@ -265,6 +268,11 @@ describe('Code Editor Shortcuts: utils', () => {
     it('should return no prefix for other non-numeric characters', () => {
       const prefix = getNextListPrefix('x', 'after');
       expect(prefix).toBe('');
+    });
+
+    it('should return null if list item is empty', () => {
+      const prefix = getNextListPrefix('- ', 'after');
+      expect(prefix).toBeNull();
     });
   });
 });
