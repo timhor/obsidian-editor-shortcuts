@@ -145,19 +145,21 @@ export const getLeadingWhitespace = (lineContent: string) => {
 // Match any character from any language: https://www.regular-expressions.info/unicode.html
 const isLetterCharacter = (char: string) => /\p{L}\p{M}*/u.test(char);
 
+const isDigit = (char: string) => /\d/.test(char);
+
+const isLetterOrDigit = (char: string) =>
+  isLetterCharacter(char) || isDigit(char);
+
 export const wordRangeAtPos = (
   pos: EditorPosition,
   lineContent: string,
 ): { anchor: EditorPosition; head: EditorPosition } => {
   let start = pos.ch;
   let end = pos.ch;
-  while (start > 0 && isLetterCharacter(lineContent.charAt(start - 1))) {
+  while (start > 0 && isLetterOrDigit(lineContent.charAt(start - 1))) {
     start--;
   }
-  while (
-    end < lineContent.length &&
-    isLetterCharacter(lineContent.charAt(end))
-  ) {
+  while (end < lineContent.length && isLetterOrDigit(lineContent.charAt(end))) {
     end++;
   }
   return {

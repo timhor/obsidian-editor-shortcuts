@@ -561,6 +561,16 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       const { selectedText } = getDocumentAndSelection(editor);
       expect(selectedText).toEqual('café');
     });
+
+    it('should select word comprising only digits', () => {
+      editor.setValue('123');
+      editor.setCursor({ line: 0, ch: 0 });
+
+      selectWordOrNextOccurrence(editor as any);
+
+      const { selectedText } = getDocumentAndSelection(editor);
+      expect(selectedText).toEqual('123');
+    });
   });
 
   describe('selectAllOccurrences', () => {
