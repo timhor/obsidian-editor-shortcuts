@@ -88,21 +88,31 @@ export const insertLineBelow = (editor: Editor, selection: EditorSelection) => {
 // the previous line instead of the next line after deletion
 export const deleteLine = (editor: Editor, selection: EditorSelection) => {
   const { from, to } = getSelectionBoundaries(selection);
+
   if (to.line === editor.lastLine()) {
     // There is no 'next line' when cursor is on the last line
-    editor.replaceRange(
-      '',
-      getLineEndPos(from.line - 1, editor),
-      getLineEndPos(to.line, editor),
-    );
-  } else {
-    editor.replaceRange(
-      '',
-      getLineStartPos(from.line),
-      getLineStartPos(to.line + 1),
-    );
+    const endOfPreviousLine = getLineEndPos(from.line - 1, editor);
+    editor.replaceRange('', endOfPreviousLine, getLineEndPos(to.line, editor));
+    return {
+      anchor: {
+        line: from.line - 1,
+        ch: Math.min(from.ch, endOfPreviousLine.ch),
+      },
+    };
   }
-  return { anchor: { line: from.line, ch: selection.head.ch } };
+
+  const endOfNextLine = getLineEndPos(to.line + 1, editor);
+  editor.replaceRange(
+    '',
+    getLineStartPos(from.line),
+    getLineStartPos(to.line + 1),
+  );
+  return {
+    anchor: {
+      line: from.line,
+      ch: Math.min(from.ch, endOfNextLine.ch),
+    },
+  };
 };
 
 export const deleteToStartOfLine = (

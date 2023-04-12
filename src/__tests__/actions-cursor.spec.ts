@@ -372,13 +372,36 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should delete last line', () => {
-      editor.setCursor({ line: 2, ch: 0 });
+      editor.setCursor({ line: 2, ch: 1 });
 
       withMultipleSelections(editor as any, deleteLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit');
-      expect(cursor.line).toEqual(1);
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 1,
+          ch: 1,
+        }),
+      );
+    });
+
+    it('should move cursor to correct position when deleting a line that is longer than the following line', () => {
+      editor.setValue(
+        'testing with a line that is longer than the following line\nshorter line',
+      );
+      editor.setCursor({ line: 0, ch: 53 });
+
+      withMultipleSelections(editor as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('shorter line');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 0,
+          ch: 12,
+        }),
+      );
     });
   });
 
