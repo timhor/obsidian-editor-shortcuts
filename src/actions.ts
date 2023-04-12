@@ -211,7 +211,7 @@ export const setIsProgrammaticSelectionChange = (value: boolean) => {
   isProgrammaticSelectionChange = value;
 };
 
-export const selectWordOrNextOccurrence = (editor: Editor) => {
+export const selectWordOrNextOccurrence = (editor: Editor, skip = false) => {
   setIsProgrammaticSelectionChange(true);
   const allSelections = editor.listSelections();
   const { searchText, singleSearchText } = getSearchText({
@@ -231,9 +231,11 @@ export const selectWordOrNextOccurrence = (editor: Editor) => {
       searchWithinWords: isManualSelection,
       documentContent: editor.getValue(),
     });
-    const newSelections = nextMatch
-      ? allSelections.concat(nextMatch)
-      : allSelections;
+    let newSelections = allSelections;
+    if (skip) {
+      allSelections.splice(allSelections.length - 1);
+    }
+    newSelections = nextMatch ? allSelections.concat(nextMatch) : allSelections;
     editor.setSelections(newSelections);
     const lastSelection = newSelections[newSelections.length - 1];
     editor.scrollIntoView(getSelectionBoundaries(lastSelection));

@@ -177,6 +177,18 @@ export default class CodeEditorShortcuts extends Plugin {
     });
 
     this.addCommand({
+      id: 'skip',
+      name: 'skippp',
+      hotkeys: [
+        {
+          modifiers: ['Mod'],
+          key: 'T',
+        },
+      ],
+      editorCallback: (editor) => selectWordOrNextOccurrence(editor, true),
+    });
+
+    this.addCommand({
       id: 'selectAllOccurrences',
       name: 'Select all occurrences',
       hotkeys: [
