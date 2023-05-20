@@ -134,21 +134,40 @@ describe('Code Editor Shortcuts: utils', () => {
       const anchor = { line: 0, ch: 5 };
       const head = { line: 0, ch: 6 };
       const pos = getSelectionBoundaries({ anchor, head });
-      expect(pos).toEqual({ from: anchor, to: head });
+      expect(pos).toEqual({
+        from: anchor,
+        to: head,
+        hasTrailingNewline: false,
+      });
     });
 
     it('should swap selection boundaries if user selects upwards', () => {
       const anchor = { line: 1, ch: 5 };
       const head = { line: 0, ch: 6 };
       const pos = getSelectionBoundaries({ anchor, head });
-      expect(pos).toEqual({ from: head, to: anchor });
+      expect(pos).toEqual({
+        from: head,
+        to: anchor,
+        hasTrailingNewline: false,
+      });
     });
 
     it('should swap selection boundaries if user selects backwards on the same line', () => {
       const anchor = { line: 0, ch: 8 };
       const head = { line: 0, ch: 4 };
       const pos = getSelectionBoundaries({ anchor, head });
-      expect(pos).toEqual({ from: head, to: anchor });
+      expect(pos).toEqual({
+        from: head,
+        to: anchor,
+        hasTrailingNewline: false,
+      });
+    });
+
+    it('should determine if selection has a trailing newline', () => {
+      const anchor = { line: 0, ch: 0 };
+      const head = { line: 1, ch: 0 };
+      const pos = getSelectionBoundaries({ anchor, head });
+      expect(pos).toEqual({ from: anchor, to: head, hasTrailingNewline: true });
     });
   });
 

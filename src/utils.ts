@@ -181,7 +181,7 @@ export const withMultipleSelections = (
 /**
  * Executes the supplied callback for each top-level CodeMirror div element in the
  * DOM. This is an interim util made to work with both CM5 and CM6 as Obsidian's
- * `iterateCodeMirrors` method only works with the CM5.
+ * `iterateCodeMirrors` method only works with CM5.
  */
 export const iterateCodeMirrorDivs = (callback: (cm: HTMLElement) => any) => {
   let codeMirrors: NodeListOf<HTMLElement>;
@@ -208,17 +208,17 @@ export const getLineEndPos = (
 export const getSelectionBoundaries = (selection: EditorSelection) => {
   let { anchor: from, head: to } = selection;
 
-  // in case user selects upwards
+  // In case user selects upwards
   if (from.line > to.line) {
     [from, to] = [to, from];
   }
 
-  // in case user selects backwards on the same line
+  // In case user selects backwards on the same line
   if (from.line === to.line && from.ch > to.ch) {
     [from, to] = [to, from];
   }
 
-  return { from, to };
+  return { from, to, hasTrailingNewline: to.line > from.line && to.ch === 0 };
 };
 
 export const getLeadingWhitespace = (lineContent: string) => {

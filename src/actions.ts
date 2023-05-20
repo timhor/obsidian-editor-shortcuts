@@ -294,19 +294,22 @@ export const copyLine = (
   selection: EditorSelection,
   direction: 'up' | 'down',
 ) => {
-  const { from, to } = getSelectionBoundaries(selection);
+  const { from, to, hasTrailingNewline } = getSelectionBoundaries(selection);
   const fromLineStart = getLineStartPos(from.line);
-  const toLineEnd = getLineEndPos(to.line, editor);
+  // Exclude line starting at trailing newline from being duplicated
+  const toLine = hasTrailingNewline ? to.line - 1 : to.line;
+  const toLineEnd = getLineEndPos(toLine, editor);
   const contentsOfSelectedLines = editor.getRange(fromLineStart, toLineEnd);
   if (direction === 'up') {
     editor.replaceRange('\n' + contentsOfSelectedLines, toLineEnd);
     return selection;
   } else {
     editor.replaceRange(contentsOfSelectedLines + '\n', fromLineStart);
+    // This uses `to.line` instead of `toLine` to avoid a double adjustment
     const linesSelected = to.line - from.line + 1;
     return {
-      anchor: { line: to.line + 1, ch: from.ch },
-      head: { line: to.line + linesSelected, ch: to.ch },
+      anchor: { line: toLine + 1, ch: from.ch },
+      head: { line: toLine + linesSelected, ch: to.ch },
     };
   }
 };

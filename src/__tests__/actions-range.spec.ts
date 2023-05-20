@@ -156,6 +156,19 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         head: expect.objectContaining({ line: 3, ch: 5 }),
       });
     });
+
+    it('should exclude line starting at trailing newline from being duplicated', () => {
+      editor.setSelection({ line: 0, ch: 0 }, { line: 1, ch: 0 });
+
+      withMultipleSelections(editor as any, copyLine, { args: 'down' });
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\nlorem ipsum\ndolor sit\namet');
+      expect(selections[0]).toEqual({
+        anchor: expect.objectContaining({ line: 1, ch: 0 }),
+        head: expect.objectContaining({ line: 2, ch: 0 }),
+      });
+    });
   });
 
   describe('selectWordOrNextOccurrence', () => {
