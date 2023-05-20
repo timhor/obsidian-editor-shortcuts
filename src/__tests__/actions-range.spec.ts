@@ -543,6 +543,25 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         },
       ]);
     });
+
+    it('should exclude line starting at trailing newline from having cursor added', () => {
+      editor.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 0 });
+
+      addCursorsToSelectionEnds(editor as any, CODE_EDITOR.VSCODE);
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual(originalDoc);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 11 }),
+          head: expect.objectContaining({ line: 0, ch: 11 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 9 }),
+          head: expect.objectContaining({ line: 1, ch: 9 }),
+        },
+      ]);
+    });
   });
 
   describe('goToLineBoundary', () => {

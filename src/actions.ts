@@ -406,9 +406,11 @@ export const addCursorsToSelectionEnds = (
     return;
   }
   const selection = editor.listSelections()[0];
-  const { from, to } = getSelectionBoundaries(selection);
+  const { from, to, hasTrailingNewline } = getSelectionBoundaries(selection);
   const newSelections = [];
-  for (let line = from.line; line <= to.line; line++) {
+  // Exclude line starting at trailing newline from having cursor added
+  const toLine = hasTrailingNewline ? to.line - 1 : to.line;
+  for (let line = from.line; line <= toLine; line++) {
     const head = line === to.line ? to : getLineEndPos(line, editor);
     let anchor: EditorPosition;
     if (emulate === CODE_EDITOR.VSCODE) {
