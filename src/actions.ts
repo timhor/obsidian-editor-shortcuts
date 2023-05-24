@@ -139,21 +139,26 @@ export const deleteLine = (
   selection: EditorSelection,
   args: EditorActionCallbackNewArgs,
 ) => {
-  const { from, to } = getSelectionBoundaries(selection);
+  const { from, to, hasTrailingNewline } = getSelectionBoundaries(selection);
 
   if (to.line === editor.lastLine()) {
     // There is no 'next line' when cursor is on the last line
-    const endOfPreviousLine = getLineEndPos(from.line - 1, editor);
+    const previousLine = Math.max(0, from.line - 1);
+    const endOfPreviousLine = getLineEndPos(previousLine, editor);
     const changes: EditorChange[] = [
       {
-        from: endOfPreviousLine,
-        to: getLineEndPos(to.line, editor),
+        from: from.line === 0 ? getLineStartPos(0) : endOfPreviousLine,
+        to:
+          // Exclude line starting at trailing newline at end of document from being deleted
+          to.ch === 0
+            ? getLineStartPos(to.line)
+            : getLineEndPos(to.line, editor),
         text: '',
       },
     ];
     const newSelection = {
       from: {
-        line: from.line - 1,
+        line: previousLine,
         ch: Math.min(from.ch, endOfPreviousLine.ch),
       },
     };
@@ -167,11 +172,13 @@ export const deleteLine = (
   if (args.iteration === 0) {
     numLinesDeleted = 0;
   }
-  const endOfNextLine = getLineEndPos(to.line + 1, editor);
+  // Exclude line starting at trailing newline from being deleted
+  const toLine = hasTrailingNewline ? to.line - 1 : to.line;
+  const endOfNextLine = getLineEndPos(toLine + 1, editor);
   const changes: EditorChange[] = [
     {
       from: getLineStartPos(from.line),
-      to: getLineStartPos(to.line + 1),
+      to: getLineStartPos(toLine + 1),
       text: '',
     },
   ];
@@ -184,7 +191,7 @@ export const deleteLine = (
   };
   // This needs to be calculated after setting the new selection as it only
   // applies for subsequent iterations
-  numLinesDeleted += to.line - from.line + 1;
+  numLinesDeleted += toLine - from.line + 1;
   return {
     changes,
     newSelection,

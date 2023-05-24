@@ -71,5 +71,35 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       expect(doc).toEqual('amet');
       expect(cursor.line).toEqual(0);
     });
+
+    it('should delete all lines if entire document is selected', () => {
+      view.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 4 });
+
+      withMultipleSelectionsNew(view as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('');
+      expect(cursor.line).toEqual(0);
+    });
+
+    it('should exclude line starting at trailing newline from being deleted', () => {
+      view.setSelection({ line: 0, ch: 0 }, { line: 1, ch: 0 });
+
+      withMultipleSelectionsNew(view as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('dolor sit\namet');
+      expect(cursor.line).toEqual(0);
+    });
+
+    it('should exclude line starting at trailing newline at end of document from being deleted', () => {
+      view.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 0 });
+
+      withMultipleSelectionsNew(view as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(view as any);
+      expect(doc).toEqual('amet');
+      expect(cursor.line).toEqual(0);
+    });
   });
 });
