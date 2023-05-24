@@ -44,6 +44,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Toggle line numbers                              | Not set                    |
 | Indent using tabs                                | Not set                    |
 | Indent using spaces                              | Not set                    |
+| Undo                                             | Not set                    |
+| Redo                                             | Not set                    |
 
 \* On macOS, replace `Ctrl` with `Cmd` and `Alt` with `Opt`
 
@@ -57,12 +59,18 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 
 ### Multiple Cursors
 
-These shortcuts also work with [multiple cursors](https://help.obsidian.md/How+to/Multiple+cursors), with the exception of:
+Most\* of these shortcuts work with [multiple cursors](https://help.obsidian.md/How+to/Multiple+cursors). However, undo and redo will not work intuitively in Live Preview – actions will be handled individually for each cursor, rather than grouped together. Work is underway to incrementally migrate them to the newer Obsidian editor API so they are grouped, and has been completed for the following:
+
+- Insert line above
+- Insert line below
+- Delete line
+
+As a workaround, you can also switch back to the legacy editor in Settings as all actions will be grouped in that case.
+
+\* These shortcuts currently do not support multiple cursors:
 
 - Expand selection to quotes or brackets
 - Go to next/previous heading
-
-However, if you're using Live Preview, undo and redo will not work intuitively – actions will be handled individually for each cursor, rather than grouped together. If this becomes an issue for you, you can switch back to the legacy editor in Settings as a workaround as actions will be grouped in that case.
 
 ## Installing the plugin
 

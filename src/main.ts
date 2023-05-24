@@ -421,6 +421,18 @@ export default class CodeEditorShortcuts extends Plugin {
       callback: () => setVaultConfig(this.app, 'useTab', false),
     });
 
+    this.addCommand({
+      id: 'undo',
+      name: 'Undo',
+      editorCallback: (editor) => editor.undo(),
+    });
+
+    this.addCommand({
+      id: 'redo',
+      name: 'Redo',
+      editorCallback: (editor) => editor.redo(),
+    });
+
     this.registerSelectionChangeListeners();
 
     this.addSettingTab(new SettingTab(this.app, this));
