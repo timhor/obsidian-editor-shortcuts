@@ -59,7 +59,7 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 
 ### Multiple Cursors
 
-Most\* of these shortcuts work with [multiple cursors](https://help.obsidian.md/How+to/Multiple+cursors). However, undo and redo will not work intuitively in Live Preview – actions will be handled individually for each cursor, rather than grouped together. Work is underway to incrementally migrate them to the newer Obsidian editor API so they are grouped, and has been completed for the following:
+Most\* of these shortcuts work with [multiple cursors](https://help.obsidian.md/Editing+and+formatting/Multiple+cursors). However, undo and redo will not work intuitively in Live Preview – actions will be handled individually for each cursor, rather than grouped together. Work is underway to incrementally migrate them to the newer Obsidian editor API so they are grouped, and has been completed for the following:
 
 - Insert line above
 - Insert line below
