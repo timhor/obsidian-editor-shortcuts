@@ -1,5 +1,10 @@
 # Code Editor Shortcuts
 
+> [!NOTE]
+> Due to personal circumstances, active development is **paused** on this project until approximately mid-2024. Please continue to use the existing features, submit issues and contribute pull requests, but expect a delayed response.
+>
+> Feature requests won't be individually acknowledged but will still be tracked on the [project board](https://github.com/timhor/obsidian-editor-shortcuts/projects/1) as before.
+
 This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) commonly found in code editors such as Visual Studio Code or Sublime Text.
 
 | Command                                          | Shortcut \*                |
@@ -74,7 +79,7 @@ As a workaround, you can also switch back to the legacy editor in Settings as al
 
 ## Installing the plugin
 
-Refer to the official installation instructions for third-party plugins [here](https://help.obsidian.md/Extending+Obsidian/Community+plugins).
+Refer to the official installation instructions for third-party plugins [here](https://help.obsidian.md/Extending+Obsidian/Community+plugins) and search for the plugin `Code Editor Shortcuts`.
 
 ## Configuring settings
 
