@@ -1735,12 +1735,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/codemirror@npm:0.0.108":
-  version: 0.0.108
-  resolution: "@types/codemirror@npm:0.0.108"
+"@types/codemirror@npm:5.60.8":
+  version: 5.60.8
+  resolution: "@types/codemirror@npm:5.60.8"
   dependencies:
     "@types/tern": "*"
-  checksum: 0951282991d004df056451ba04a2ee01ec409be0336c985bd825a5483bf9582f5daaf9ccc89aecbedfda64b9c93cf42e36feb52002f348542cda4bafaf3d28cf
+  checksum: bc3a63eab0308b3ef5ed2ca22afb7f1c0b8acde6477e1d569df7e93f3fe4f78754d28a3e081c72931259fe1bf906a319b54bcdeba74600b989e5558d32478496
   languageName: node
   linkType: hard
 
@@ -4986,10 +4986,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:2.29.1":
-  version: 2.29.1
-  resolution: "moment@npm:2.29.1"
-  checksum: 1e14d5f422a2687996be11dd2d50c8de3bd577c4a4ca79ba5d02c397242a933e5b941655de6c8cb90ac18f01cc4127e55b4a12ae3c527a6c0a274e455979345e
+"moment@npm:2.29.4":
+  version: 2.29.4
+  resolution: "moment@npm:2.29.4"
+  checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
   languageName: node
   linkType: hard
 
@@ -5139,20 +5139,23 @@ __metadata:
     husky: ^7.0.2
     jest: ^27.4.5
     lint-staged: ^11.1.2
-    obsidian: ^0.12.17
+    obsidian: ^1.13.1
     prettier: ^2.5.0
     tslib: 2.3.1
     typescript: ^5.8.3
   languageName: unknown
   linkType: soft
 
-"obsidian@npm:^0.12.17":
-  version: 0.12.17
-  resolution: "obsidian@npm:0.12.17"
+"obsidian@npm:^1.13.1":
+  version: 1.13.1
+  resolution: "obsidian@npm:1.13.1"
   dependencies:
-    "@types/codemirror": 0.0.108
-    moment: 2.29.1
-  checksum: 0b5c4e0a813f53674372ece04daa6611b1638b11c82f1d489755ed4443000db8f4b500b6cf45ae585557a752e9cd125ad412a2940a051b9b985e878b6b721d6e
+    "@types/codemirror": 5.60.8
+    moment: 2.29.4
+  peerDependencies:
+    "@codemirror/state": 6.5.0
+    "@codemirror/view": 6.38.6
+  checksum: 052cd41f87c7c1456ec910ba80acaca42cd9da05ff9ca652a7f27dabea8787da7529b57188dd750e0da4aa4f7325e41f8776811518f51c5811f5ceab9291736e
   languageName: node
   linkType: hard
 
