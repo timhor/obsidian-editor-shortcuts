@@ -401,7 +401,10 @@ export const selectLine = (_editor: Editor, selection: EditorSelection) => {
   const startOfCurrentLine = getLineStartPos(from.line);
   // if a line is already selected, expand the selection to the next line
   const startOfNextLine = getLineStartPos(to.line + 1);
-  return { anchor: startOfCurrentLine, head: startOfNextLine };
+  return {
+    changes: [] as EditorChange[],
+    newSelection: { from: startOfCurrentLine, to: startOfNextLine },
+  };
 };
 
 export const addCursorsToSelectionEnds = (

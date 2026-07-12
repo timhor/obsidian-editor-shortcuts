@@ -198,7 +198,8 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'L',
         },
       ],
-      editorCallback: (editor) => withMultipleSelections(editor, selectLine),
+      editorCallback: (editor) =>
+        withMultipleSelectionsNew(editor, selectLine),
     });
 
     this.addCommand({

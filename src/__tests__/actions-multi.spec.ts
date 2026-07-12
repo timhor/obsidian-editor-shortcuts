@@ -23,6 +23,7 @@ import {
 import { CASE, CODE_EDITOR } from '../constants';
 import {
   withMultipleSelections,
+  withMultipleSelectionsNew,
   defaultMultipleSelectionOptions,
 } from '../utils';
 
@@ -347,7 +348,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('selectLine', () => {
     it('should select lines', () => {
-      withMultipleSelections(editor as any, selectLine);
+      withMultipleSelectionsNew(editor as any, selectLine);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);

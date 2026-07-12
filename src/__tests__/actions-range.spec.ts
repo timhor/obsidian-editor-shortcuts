@@ -21,7 +21,7 @@ import {
   insertCursorBelow,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
-import { withMultipleSelections } from '../utils';
+import { withMultipleSelections, withMultipleSelectionsNew } from '../utils';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
 document.createRange = () => {
@@ -501,7 +501,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('selectLine', () => {
     it('should select lines', () => {
-      withMultipleSelections(editor as any, selectLine);
+      withMultipleSelectionsNew(editor as any, selectLine);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);

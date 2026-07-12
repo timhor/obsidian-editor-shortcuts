@@ -22,7 +22,7 @@ import {
   moveWord,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
-import { withMultipleSelections } from '../utils';
+import { withMultipleSelections, withMultipleSelectionsNew } from '../utils';
 import { SettingsState } from '../state';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
@@ -321,7 +321,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('selectLine', () => {
     it('should select line', () => {
-      withMultipleSelections(editor as any, selectLine);
+      withMultipleSelectionsNew(editor as any, selectLine);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
