@@ -323,9 +323,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'transformToUppercase',
       name: 'Transform selection to uppercase',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, transformCase, {
+        withMultipleSelectionsNew(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
-          args: CASE.UPPER,
+          args: { caseType: CASE.UPPER },
         }),
     });
 
@@ -333,9 +333,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'transformToLowercase',
       name: 'Transform selection to lowercase',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, transformCase, {
+        withMultipleSelectionsNew(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
-          args: CASE.LOWER,
+          args: { caseType: CASE.LOWER },
         }),
     });
 
@@ -343,9 +343,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'transformToTitlecase',
       name: 'Transform selection to title case',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, transformCase, {
+        withMultipleSelectionsNew(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
-          args: CASE.TITLE,
+          args: { caseType: CASE.TITLE },
         }),
     });
 
@@ -353,9 +353,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'toggleCase',
       name: 'Toggle case of selection',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, transformCase, {
+        withMultipleSelectionsNew(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
-          args: CASE.NEXT,
+          args: { caseType: CASE.NEXT },
         }),
     });
 

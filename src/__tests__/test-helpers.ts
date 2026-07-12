@@ -21,6 +21,9 @@ export interface EditorViewWithLegacyMethods extends EditorView {
   getValue?: () => string;
   setValue?: (value: string) => void;
   getLine?: (n: number) => string;
+  getRange?: (from: EditorPosition, to: EditorPosition) => string;
+  posToOffset?: (pos: EditorPosition) => number;
+  offsetToPos?: (offset: number) => EditorPosition;
   lineCount?: () => number;
   lastLine?: () => number;
   getCursor?: () => EditorPosition;
@@ -61,6 +64,16 @@ export const defineLegacyEditorMethods = (
   };
 
   view.getLine = (n: number) => view.state.doc.line(n + 1).text;
+
+  view.getRange = (from, to) =>
+    view.state.sliceDoc(
+      posToOffset(view.state.doc, from),
+      posToOffset(view.state.doc, to),
+    );
+
+  view.posToOffset = (pos) => posToOffset(view.state.doc, pos);
+
+  view.offsetToPos = (offset) => offsetToPos(view.state.doc, offset);
 
   view.lineCount = () => view.state.doc.lines;
 

@@ -488,8 +488,8 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('transformCase', () => {
     it('should transform to uppercase', () => {
-      withMultipleSelections(editor as any, transformCase, {
-        args: CASE.UPPER,
+      withMultipleSelectionsNew(editor as any, transformCase, {
+        args: { caseType: CASE.UPPER },
       });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
@@ -502,8 +502,8 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue('lorem ipsum\nDOLOR sit\namet');
       editor.setCursor({ line: 1, ch: 0 });
 
-      withMultipleSelections(editor as any, transformCase, {
-        args: CASE.LOWER,
+      withMultipleSelectionsNew(editor as any, transformCase, {
+        args: { caseType: CASE.LOWER },
       });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
@@ -513,8 +513,8 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should transform to title case', () => {
-      withMultipleSelections(editor as any, transformCase, {
-        args: CASE.TITLE,
+      withMultipleSelectionsNew(editor as any, transformCase, {
+        args: { caseType: CASE.TITLE },
       });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
@@ -534,8 +534,8 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue(initialContent);
         editor.setCursor({ line: 0, ch: 0 });
 
-        withMultipleSelections(editor as any, transformCase, {
-          args: CASE.NEXT,
+        withMultipleSelectionsNew(editor as any, transformCase, {
+          args: { caseType: CASE.NEXT },
         });
 
         const { doc, cursor } = getDocumentAndSelection(editor);

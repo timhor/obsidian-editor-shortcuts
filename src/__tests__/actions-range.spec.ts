@@ -646,8 +646,8 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('transformCase', () => {
     it('should transform to uppercase', () => {
-      withMultipleSelections(editor as any, transformCase, {
-        args: CASE.UPPER,
+      withMultipleSelectionsNew(editor as any, transformCase, {
+        args: { caseType: CASE.UPPER },
       });
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
@@ -659,8 +659,8 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue('lorem ipsum\nDOLOR sit\namet');
       editor.setSelection({ line: 0, ch: 6 }, { line: 1, ch: 5 });
 
-      withMultipleSelections(editor as any, transformCase, {
-        args: CASE.LOWER,
+      withMultipleSelectionsNew(editor as any, transformCase, {
+        args: { caseType: CASE.LOWER },
       });
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
@@ -669,8 +669,8 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should transform to title case', () => {
-      withMultipleSelections(editor as any, transformCase, {
-        args: CASE.TITLE,
+      withMultipleSelectionsNew(editor as any, transformCase, {
+        args: { caseType: CASE.TITLE },
       });
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
@@ -689,8 +689,8 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         editor.setValue(initialContent);
         editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 17 });
 
-        withMultipleSelections(editor as any, transformCase, {
-          args: CASE.NEXT,
+        withMultipleSelectionsNew(editor as any, transformCase, {
+          args: { caseType: CASE.NEXT },
         });
 
         const { doc, selections } = getDocumentAndSelection(editor);
@@ -708,8 +708,8 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       );
       editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 68 });
 
-      withMultipleSelections(editor as any, transformCase, {
-        args: CASE.TITLE,
+      withMultipleSelectionsNew(editor as any, transformCase, {
+        args: { caseType: CASE.TITLE },
       });
 
       const { doc } = getDocumentAndSelection(editor);

@@ -5,7 +5,12 @@ import {
   getDocumentAndSelection,
 } from './test-helpers';
 import { withMultipleSelectionsNew } from '../utils';
-import { deleteToStartOfLine, expandSelectionToQuotes } from '../actions';
+import {
+  deleteToStartOfLine,
+  expandSelectionToQuotes,
+  transformCase,
+} from '../actions';
+import { CASE } from '../constants';
 
 describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
   let view: EditorViewWithLegacyMethods;
@@ -136,5 +141,22 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
       { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 0 } },
       { anchor: { line: 0, ch: 5 }, head: { line: 0, ch: 5 } },
     ]);
+  });
+
+  it('applies toggleCase once when two cursors are inside the same word', () => {
+    // Legacy behavior applied the transform per cursor sequentially (the
+    // second toggle undoing the first); identical overlapping changes are
+    // now merged so the transform applies exactly once
+    view.setSelections([
+      { anchor: { line: 0, ch: 7 }, head: { line: 0, ch: 7 } },
+      { anchor: { line: 0, ch: 9 }, head: { line: 0, ch: 9 } },
+    ]);
+
+    withMultipleSelectionsNew(view as any, transformCase, {
+      args: { caseType: CASE.NEXT },
+    });
+
+    const { doc } = getDocumentAndSelection(view as any);
+    expect(doc).toEqual('lorem Ipsum\ndolor sit\namet');
   });
 });

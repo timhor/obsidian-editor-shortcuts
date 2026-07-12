@@ -638,8 +638,9 @@ export const moveWord = (editor: Editor, direction: 'left' | 'right') => {
 export const transformCase = (
   editor: Editor,
   selection: EditorSelection,
-  caseType: CASE,
+  args: EditorActionCallbackNewArgs,
 ) => {
+  const caseType: CASE = args.caseType;
   let { from, to } = getSelectionBoundaries(selection);
   let selectedText = editor.getRange(from, to);
 
@@ -672,9 +673,15 @@ export const transformCase = (
     }
   }
 
-  editor.replaceRange(replacementText, from, to);
-
-  return selection;
+  return {
+    changes: [{ from, to, text: replacementText }] as EditorChange[],
+    // Restore the original selection (or caret, for the no-selection
+    // word-expand case), preserving its direction. Positions match the
+    // legacy behavior of returning `selection` unchanged; note case
+    // transforms are length-preserving for all but a few exotic characters
+    // (e.g. eszett), matching the legacy accounting exactly.
+    newSelection: { from: selection.anchor, to: selection.head },
+  };
 };
 
 const expandSelection = ({

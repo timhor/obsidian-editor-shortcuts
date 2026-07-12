@@ -506,9 +506,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('transformCase', () => {
     it('should transform to uppercase', () => {
-      withMultipleSelections(editor as any, transformCase, {
+      withMultipleSelectionsNew(editor as any, transformCase, {
         ...defaultMultipleSelectionOptions,
-        args: CASE.UPPER,
+        args: { caseType: CASE.UPPER },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -520,9 +520,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should transform to lowercase', () => {
-      withMultipleSelections(editor as any, transformCase, {
+      withMultipleSelectionsNew(editor as any, transformCase, {
         ...defaultMultipleSelectionOptions,
-        args: CASE.LOWER,
+        args: { caseType: CASE.LOWER },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -534,9 +534,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should transform to title case', () => {
-      withMultipleSelections(editor as any, transformCase, {
+      withMultipleSelectionsNew(editor as any, transformCase, {
         ...defaultMultipleSelectionOptions,
-        args: CASE.TITLE,
+        args: { caseType: CASE.TITLE },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -548,9 +548,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should cycle to next case', () => {
-      withMultipleSelections(editor as any, transformCase, {
+      withMultipleSelectionsNew(editor as any, transformCase, {
         ...defaultMultipleSelectionOptions,
-        args: CASE.NEXT,
+        args: { caseType: CASE.NEXT },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
