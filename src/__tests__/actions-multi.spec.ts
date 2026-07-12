@@ -1,6 +1,6 @@
 import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
-import { getDocumentAndSelection } from './test-helpers';
+import { getDocumentAndSelection, defineCm5TransactionMethod } from './test-helpers';
 import {
   insertLineAbove,
   deleteToStartOfLine,
@@ -52,6 +52,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     // To make cm.operation() work, since editor here already refers to the
     // CodeMirror object
     (editor as any).cm = editor;
+    defineCm5TransactionMethod(editor);
 
     // Assign the CodeMirror equivalents of posToOffset and offsetToPos
     (editor as any).posToOffset = editor.indexFromPos;
@@ -89,7 +90,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('deleteToStartOfLine', () => {
     it('should delete to the start of the lines', () => {
-      withMultipleSelections(editor as any, deleteToStartOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(

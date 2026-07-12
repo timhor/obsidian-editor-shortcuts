@@ -145,3 +145,30 @@ export const defineLegacyEditorMethods = (
     return view.state.doc.slice(from, from + length).toString();
   };
 };
+
+/**
+ * Defines an Obsidian-style `transaction` method on a legacy CM5 test editor,
+ * so specs can exercise actions that dispatch through `editor.transaction`.
+ * Changes are applied from the end of the document backwards so that earlier
+ * positions remain valid while applying.
+ */
+export const defineCm5TransactionMethod = (editor: any) => {
+  editor.transaction = (tx: EditorTransaction) => {
+    if (tx.changes) {
+      const sortedDescending = [...tx.changes].sort(
+        (a, b) => b.from.line - a.from.line || b.from.ch - a.from.ch,
+      );
+      for (const change of sortedDescending) {
+        editor.replaceRange(change.text, change.from, change.to ?? change.from);
+      }
+    }
+    if (tx.selections) {
+      editor.setSelections(
+        tx.selections.map((selection) => ({
+          anchor: selection.from,
+          head: selection.to ?? selection.from,
+        })),
+      );
+    }
+  };
+};

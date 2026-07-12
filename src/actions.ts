@@ -198,26 +198,64 @@ export const deleteLine = (
   };
 };
 
+// Accumulators for multi-cursor deleteToStartOfLine: number of newlines
+// deleted (which shift subsequent selections up) and the number of leading
+// characters deleted per line (which shift the landing position of a cursor
+// merging up into that line)
+let numNewlinesDeletedToStart = 0;
+let charsDeletedAtStartOfLine: Record<number, number> = {};
 export const deleteToStartOfLine = (
   editor: Editor,
   selection: EditorSelection,
+  args: EditorActionCallbackNewArgs,
 ) => {
+  // Reset offsets at the start of a new bulk operation
+  if (args.iteration === 0) {
+    numNewlinesDeletedToStart = 0;
+    charsDeletedAtStartOfLine = {};
+  }
+
   const pos = selection.head;
-  let startPos = getLineStartPos(pos.line);
 
   if (pos.line === 0 && pos.ch === 0) {
     // We're at the start of the document so do nothing
-    return selection;
+    return {
+      changes: [] as EditorChange[],
+      newSelection: { from: pos },
+    };
   }
 
-  if (pos.line === startPos.line && pos.ch === startPos.ch) {
+  if (pos.ch === 0) {
     // We're at the start of the line so delete the preceding newline
-    startPos = getLineEndPos(pos.line - 1, editor);
+    const endOfPreviousLine = getLineEndPos(pos.line - 1, editor);
+    const newSelection = {
+      from: {
+        line: pos.line - 1 - numNewlinesDeletedToStart,
+        // Account for characters previously deleted from the start of the
+        // line this cursor is merging up into
+        ch:
+          endOfPreviousLine.ch -
+          (charsDeletedAtStartOfLine[pos.line - 1] ?? 0),
+      },
+    };
+    numNewlinesDeletedToStart += 1;
+    return {
+      changes: [{ from: endOfPreviousLine, to: pos, text: '' }],
+      newSelection,
+    };
   }
 
-  editor.replaceRange('', startPos, pos);
+  // Same-line cursors produce overlapping deletions which are merged into
+  // their union when the transaction is dispatched
+  charsDeletedAtStartOfLine[pos.line] = Math.max(
+    charsDeletedAtStartOfLine[pos.line] ?? 0,
+    pos.ch,
+  );
   return {
-    anchor: startPos,
+    changes: [{ from: getLineStartPos(pos.line), to: pos, text: '' }],
+    newSelection: {
+      from: { line: pos.line - numNewlinesDeletedToStart, ch: 0 },
+    },
   };
 };
 

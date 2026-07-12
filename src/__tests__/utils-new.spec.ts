@@ -5,7 +5,7 @@ import {
   getDocumentAndSelection,
 } from './test-helpers';
 import { withMultipleSelectionsNew } from '../utils';
-import { expandSelectionToQuotes } from '../actions';
+import { deleteToStartOfLine, expandSelectionToQuotes } from '../actions';
 
 describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
   let view: EditorViewWithLegacyMethods;
@@ -26,8 +26,8 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
 
   it('uses setSelections (not an empty transaction) when no changes are produced', () => {
     view.setSelections([
-      { anchor: { line: 0, ch: 0 } },
-      { anchor: { line: 1, ch: 0 } },
+      { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 0 } },
+      { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
     ]);
 
     withMultipleSelectionsNew(view as any, (editor, selection) => ({
@@ -45,8 +45,8 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
 
   it('merges identical duplicate ranges produced by multiple cursors on the same line', () => {
     view.setSelections([
-      { anchor: { line: 0, ch: 0 } },
-      { anchor: { line: 0, ch: 3 } },
+      { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 0 } },
+      { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
     ]);
 
     withMultipleSelectionsNew(view as any, () => ({
@@ -62,8 +62,8 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
 
   it('does not merge same-position zero-width inserts (they should stack)', () => {
     view.setSelections([
-      { anchor: { line: 0, ch: 0 } },
-      { anchor: { line: 0, ch: 3 } },
+      { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 0 } },
+      { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
     ]);
 
     withMultipleSelectionsNew(view as any, () => ({
@@ -79,8 +79,8 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
 
   it('merges overlapping change ranges into their union instead of throwing', () => {
     view.setSelections([
-      { anchor: { line: 0, ch: 0 } },
-      { anchor: { line: 0, ch: 3 } },
+      { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 0 } },
+      { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
     ]);
 
     let call = 0;
@@ -113,6 +113,25 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
     expect(doc).toEqual(originalDoc);
     expect(selections).toEqual([
       { anchor: { line: 1, ch: 5 }, head: { line: 0, ch: 6 } },
+    ]);
+  });
+
+  it('accounts for earlier same-command deletions when merging a line up (deleteToStartOfLine)', () => {
+    // First cursor deletes 6 chars from the start of line 0; second cursor
+    // at the start of line 1 deletes the preceding newline and must land at
+    // the end of the truncated line 0
+    view.setSelections([
+      { anchor: { line: 0, ch: 6 }, head: { line: 0, ch: 6 } },
+      { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
+    ]);
+
+    withMultipleSelectionsNew(view as any, deleteToStartOfLine);
+
+    const { doc, selections } = getDocumentAndSelection(view as any);
+    expect(doc).toEqual('ipsumdolor sit\namet');
+    expect(selections).toEqual([
+      { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 0 } },
+      { anchor: { line: 0, ch: 5 }, head: { line: 0, ch: 5 } },
     ]);
   });
 });

@@ -1,6 +1,6 @@
 import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
-import { getDocumentAndSelection } from './test-helpers';
+import { getDocumentAndSelection, defineCm5TransactionMethod } from './test-helpers';
 import {
   deleteToStartOfLine,
   deleteToEndOfLine,
@@ -55,6 +55,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     // To make cm.operation() work, since editor here already refers to the
     // CodeMirror object
     (editor as any).cm = editor;
+    defineCm5TransactionMethod(editor);
 
     // Assign the CodeMirror equivalents of posToOffset and offsetToPos
     (editor as any).posToOffset = editor.indexFromPos;
@@ -72,7 +73,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   describe('deleteToStartOfLine', () => {
     it('should delete to the start of the line', () => {
       editor.setCursor({ line: 1, ch: 7 });
-      withMultipleSelections(editor as any, deleteToStartOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\nit\namet');
@@ -86,7 +87,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should delete the preceding newline when at the start of the line', () => {
       editor.setCursor({ line: 1, ch: 0 });
-      withMultipleSelections(editor as any, deleteToStartOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsumdolor sit\namet');
@@ -100,7 +101,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should delete nothing when at the start of the document', () => {
       editor.setCursor({ line: 0, ch: 0 });
-      withMultipleSelections(editor as any, deleteToStartOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\namet');

@@ -91,7 +91,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'deleteToStartOfLine',
       name: 'Delete to start of line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, deleteToStartOfLine),
+        withMultipleSelectionsNew(editor, deleteToStartOfLine),
     });
 
     this.addCommand({
