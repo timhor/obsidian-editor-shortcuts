@@ -53,6 +53,70 @@ type MultipleSelectionOptionsNew = {
 
 export const defaultMultipleSelectionOptions = { repeatSameLineActions: true };
 
+const comparePositions = (a: EditorPosition, b: EditorPosition) =>
+  a.line - b.line || a.ch - b.ch;
+
+const isBefore = (a: EditorPosition, b: EditorPosition) =>
+  comparePositions(a, b) < 0;
+
+const isAfter = (a: EditorPosition, b: EditorPosition) =>
+  comparePositions(a, b) > 0;
+
+/**
+ * Prepares a set of changes to be dispatched together in a single CM6
+ * transaction. Under CM6, overlapping change ranges throw a
+ * `RangeError: Overlapping changes` when passed to `EditorTransaction`, which
+ * can happen when several cursors on the same line each contribute a
+ * non-empty range (e.g. `deleteToStartOfLine`, `transformCase` deleting/
+ * replacing overlapping spans). This merges overlapping/duplicate-range
+ * deletions/replacements into the union of their ranges, so a single change
+ * is applied covering the combined span.
+ *
+ * Zero-width changes (plain insertions, e.g. from `insertLineAbove`) are
+ * intentionally left alone even when several land at the exact same
+ * position - CM6 applies same-position insertions in order rather than
+ * throwing, and legacy behavior relied on being able to stack them (e.g.
+ * two cursors on the same line each inserting a blank line above).
+ *
+ * Changes are returned sorted by starting position (stable, so same-position
+ * changes keep their original relative order), which is required by
+ * `Editor.transaction`/CM6's changeset construction.
+ */
+const normalizeChanges = (changes: EditorChange[]): EditorChange[] => {
+  const sorted = [...changes].sort((a, b) => comparePositions(a.from, b.from));
+  const result: EditorChange[] = [];
+
+  for (const change of sorted) {
+    const to = change.to ?? change.from;
+    const hasWidth = isBefore(change.from, to);
+    const last = result[result.length - 1];
+
+    if (last && hasWidth) {
+      const lastTo = last.to ?? last.from;
+      const lastHasWidth = isBefore(last.from, lastTo);
+      const overlaps = lastHasWidth && isAfter(lastTo, change.from);
+
+      if (overlaps) {
+        // Merge into the union of the two ranges.
+        const mergedFrom = isBefore(last.from, change.from)
+          ? last.from
+          : change.from;
+        const mergedTo = isAfter(lastTo, to) ? lastTo : to;
+        result[result.length - 1] = {
+          from: mergedFrom,
+          to: mergedTo,
+          text: last.text || change.text,
+        };
+        continue;
+      }
+    }
+
+    result.push(change);
+  }
+
+  return result;
+};
+
 export const withMultipleSelectionsNew = (
   editor: Editor,
   callback: EditorActionCallbackNew,
@@ -110,8 +174,25 @@ export const withMultipleSelectionsNew = (
     newSelections.push(newSelection);
   }
 
+  if (changes.length === 0) {
+    // Selection-only result (e.g. selectLine, goToLineBoundary,
+    // navigateLine, expandSelection*): use setSelections directly rather
+    // than dispatching an empty transaction, so undo history isn't
+    // polluted with no-op steps. setSelections takes anchor/head (and can
+    // therefore express a reversed/backwards selection), whereas the
+    // from/to shape accumulated above is for editor.transaction's
+    // `selections` option - convert between the two here.
+    editor.setSelections(
+      newSelections.map((selection) => ({
+        anchor: selection.from,
+        head: selection.to ?? selection.from,
+      })),
+    );
+    return;
+  }
+
   editor.transaction({
-    changes,
+    changes: normalizeChanges(changes),
     selections: newSelections,
   });
 };
