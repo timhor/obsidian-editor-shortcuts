@@ -565,7 +565,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 5, ch: 6 }, head: { line: 5, ch: 6 } }, // (donec{<>}
       ]);
 
-      withMultipleSelections(editor as any, expandSelectionToBrackets);
+      withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -587,7 +587,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('expandSelectionToQuotes', () => {
     it('should expand selections to quotes', () => {
-      withMultipleSelections(editor as any, expandSelectionToQuotes);
+      withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);

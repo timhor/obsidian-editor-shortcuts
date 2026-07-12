@@ -606,24 +606,36 @@ const expandSelection = ({
 export const expandSelectionToBrackets = (
   editor: Editor,
   selection: EditorSelection,
-) =>
-  expandSelection({
+) => {
+  const { anchor, head } = expandSelection({
     editor,
     selection,
     openingCharacterCheck: (char: string) => /[([{]/.test(char),
     matchingCharacterMap: MATCHING_BRACKETS,
   });
+  return {
+    changes: [] as EditorChange[],
+    // `from`/`to` map to anchor/head in the selection-only path, so
+    // direction is preserved if the original selection is returned unchanged
+    newSelection: { from: anchor, to: head },
+  };
+};
 
 export const expandSelectionToQuotes = (
   editor: Editor,
   selection: EditorSelection,
-) =>
-  expandSelection({
+) => {
+  const { anchor, head } = expandSelection({
     editor,
     selection,
     openingCharacterCheck: (char: string) => /['"`]/.test(char),
     matchingCharacterMap: MATCHING_QUOTES,
   });
+  return {
+    changes: [] as EditorChange[],
+    newSelection: { from: anchor, to: head },
+  };
+};
 
 export const expandSelectionToQuotesOrBrackets = (editor: Editor) => {
   const selections = editor.listSelections();

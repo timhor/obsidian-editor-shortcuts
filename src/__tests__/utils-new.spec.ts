@@ -5,6 +5,7 @@ import {
   getDocumentAndSelection,
 } from './test-helpers';
 import { withMultipleSelectionsNew } from '../utils';
+import { expandSelectionToQuotes } from '../actions';
 
 describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
   let view: EditorViewWithLegacyMethods;
@@ -97,5 +98,21 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
     const { doc } = getDocumentAndSelection(view as any);
     // Union of [0,5) and [2,8) is [0,8) removed from 'lorem ipsum...'
     expect(doc).toEqual('sum\ndolor sit\namet');
+  });
+
+  it('preserves a reversed selection through the selection-only path', () => {
+    // No quotes in the document, so expandSelectionToQuotes returns the
+    // original (reversed) selection unchanged
+    view.setSelections([
+      { anchor: { line: 1, ch: 5 }, head: { line: 0, ch: 6 } },
+    ]);
+
+    withMultipleSelectionsNew(view as any, expandSelectionToQuotes);
+
+    const { doc, selections } = getDocumentAndSelection(view as any);
+    expect(doc).toEqual(originalDoc);
+    expect(selections).toEqual([
+      { anchor: { line: 1, ch: 5 }, head: { line: 0, ch: 6 } },
+    ]);
   });
 });

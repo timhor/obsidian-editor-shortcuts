@@ -712,7 +712,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         editor.setValue(content);
         editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 5 });
 
-        withMultipleSelections(editor as any, expandSelectionToBrackets);
+        withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
 
         const { doc, selectedText } = getDocumentAndSelection(editor);
         expect(doc).toEqual(content);
@@ -725,7 +725,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue(content);
       editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
 
-      withMultipleSelections(editor as any, expandSelectionToBrackets);
+      withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
@@ -743,7 +743,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         editor.setValue(content);
         editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
 
-        withMultipleSelections(editor as any, expandSelectionToQuotes);
+        withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
 
         const { doc, selectedText } = getDocumentAndSelection(editor);
         expect(doc).toEqual(content);
@@ -756,7 +756,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue(content);
       editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
 
-      withMultipleSelections(editor as any, expandSelectionToQuotes);
+      withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
