@@ -234,8 +234,7 @@ export const deleteToStartOfLine = (
         // Account for characters previously deleted from the start of the
         // line this cursor is merging up into
         ch:
-          endOfPreviousLine.ch -
-          (charsDeletedAtStartOfLine[pos.line - 1] ?? 0),
+          endOfPreviousLine.ch - (charsDeletedAtStartOfLine[pos.line - 1] ?? 0),
       },
     };
     numNewlinesDeletedToStart += 1;
@@ -367,27 +366,73 @@ export const joinLines = (editor: Editor, selection: EditorSelection) => {
   };
 };
 
+// Insertions made by previous copyLine iterations in the current bulk
+// operation: the line each insertion was anchored at and how many lines it
+// added, so subsequent selections can be shifted accordingly
+let copyLineInsertions: { line: number; numLines: number }[] = [];
 export const copyLine = (
   editor: Editor,
   selection: EditorSelection,
-  direction: 'up' | 'down',
+  args: EditorActionCallbackNewArgs,
 ) => {
+  const { direction } = args;
+  // Reset offsets at the start of a new bulk operation
+  if (args.iteration === 0) {
+    copyLineInsertions = [];
+  }
+
   const { from, to, hasTrailingNewline } = getSelectionBoundaries(selection);
   const fromLineStart = getLineStartPos(from.line);
   // Exclude line starting at trailing newline from being duplicated
   const toLine = hasTrailingNewline ? to.line - 1 : to.line;
   const toLineEnd = getLineEndPos(toLine, editor);
   const contentsOfSelectedLines = editor.getRange(fromLineStart, toLineEnd);
+  const numLinesCopied = toLine - from.line + 1;
+
   if (direction === 'up') {
-    editor.replaceRange('\n' + contentsOfSelectedLines, toLineEnd);
-    return selection;
+    // The duplicate is inserted below the selection, which stays put: it is
+    // only shifted by previous insertions strictly above its first line
+    const numLinesAddedAbove = copyLineInsertions.reduce(
+      (total, insertion) =>
+        insertion.line < from.line ? total + insertion.numLines : total,
+      0,
+    );
+    copyLineInsertions.push({ line: toLine, numLines: numLinesCopied });
+    return {
+      changes: [
+        { from: toLineEnd, text: '\n' + contentsOfSelectedLines },
+      ] as EditorChange[],
+      // Preserve the original selection, including its direction
+      newSelection: {
+        from: {
+          line: selection.anchor.line + numLinesAddedAbove,
+          ch: selection.anchor.ch,
+        },
+        to: {
+          line: selection.head.line + numLinesAddedAbove,
+          ch: selection.head.ch,
+        },
+      },
+    };
   } else {
-    editor.replaceRange(contentsOfSelectedLines + '\n', fromLineStart);
+    // The duplicate is inserted above the selection, so insertions at or
+    // above its first line shift it down
+    const numLinesAddedAbove = copyLineInsertions.reduce(
+      (total, insertion) =>
+        insertion.line <= from.line ? total + insertion.numLines : total,
+      0,
+    );
+    copyLineInsertions.push({ line: from.line, numLines: numLinesCopied });
     // This uses `to.line` instead of `toLine` to avoid a double adjustment
     const linesSelected = to.line - from.line + 1;
     return {
-      anchor: { line: toLine + 1, ch: from.ch },
-      head: { line: toLine + linesSelected, ch: to.ch },
+      changes: [
+        { from: fromLineStart, text: contentsOfSelectedLines + '\n' },
+      ] as EditorChange[],
+      newSelection: {
+        from: { line: toLine + 1 + numLinesAddedAbove, ch: from.ch },
+        to: { line: toLine + linesSelected + numLinesAddedAbove, ch: to.ch },
+      },
     };
   }
 };

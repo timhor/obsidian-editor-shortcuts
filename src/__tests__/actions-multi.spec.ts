@@ -1,6 +1,9 @@
 import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
-import { getDocumentAndSelection, defineCm5TransactionMethod } from './test-helpers';
+import {
+  getDocumentAndSelection,
+  defineCm5TransactionMethod,
+} from './test-helpers';
 import {
   insertLineAbove,
   deleteToStartOfLine,
@@ -230,9 +233,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('copyLine', () => {
     it('should copy selected lines up', () => {
-      withMultipleSelections(editor as any, copyLine, {
+      withMultipleSelectionsNew(editor as any, copyLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'up',
+        args: { direction: 'up' },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -262,9 +265,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should copy selected lines down', () => {
-      withMultipleSelections(editor as any, copyLine, {
+      withMultipleSelectionsNew(editor as any, copyLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'down',
+        args: { direction: 'down' },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);

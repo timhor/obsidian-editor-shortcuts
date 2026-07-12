@@ -127,9 +127,9 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, copyLine, {
+        withMultipleSelectionsNew(editor, copyLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'down',
+          args: { direction: 'down' },
         }),
     });
 
@@ -143,9 +143,9 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, copyLine, {
+        withMultipleSelectionsNew(editor, copyLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'up',
+          args: { direction: 'up' },
         }),
     });
 
@@ -159,9 +159,9 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, copyLine, {
+        withMultipleSelectionsNew(editor, copyLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'down',
+          args: { direction: 'down' },
         }),
     });
 
@@ -198,8 +198,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'L',
         },
       ],
-      editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, selectLine),
+      editorCallback: (editor) => withMultipleSelectionsNew(editor, selectLine),
     });
 
     this.addCommand({

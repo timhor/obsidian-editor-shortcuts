@@ -32,7 +32,10 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
 
     withMultipleSelectionsNew(view as any, (editor, selection) => ({
       changes: [],
-      newSelection: { from: selection.head, to: { line: selection.head.line, ch: 5 } },
+      newSelection: {
+        from: selection.head,
+        to: { line: selection.head.line, ch: 5 },
+      },
     }));
 
     const { doc, selections } = getDocumentAndSelection(view as any);

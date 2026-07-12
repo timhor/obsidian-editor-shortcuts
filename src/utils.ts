@@ -191,10 +191,33 @@ export const withMultipleSelectionsNew = (
     return;
   }
 
+  // `newSelection.from`/`to` map to anchor/head, so a callback can express a
+  // reversed (backwards) selection by returning from > to. The transaction's
+  // `selections` option cannot represent direction, so dispatch ordered
+  // ranges and restore direction afterwards via setSelections (which does
+  // not add an undo step).
+  const hasReversedSelection = newSelections.some(
+    (selection) =>
+      selection.to && comparePositions(selection.from, selection.to) > 0,
+  );
+
   editor.transaction({
     changes: normalizeChanges(changes),
-    selections: newSelections,
+    selections: newSelections.map((selection) =>
+      selection.to && comparePositions(selection.from, selection.to) > 0
+        ? { from: selection.to, to: selection.from }
+        : selection,
+    ),
   });
+
+  if (hasReversedSelection) {
+    editor.setSelections(
+      newSelections.map((selection) => ({
+        anchor: selection.from,
+        head: selection.to ?? selection.from,
+      })),
+    );
+  }
 };
 
 export const withMultipleSelections = (

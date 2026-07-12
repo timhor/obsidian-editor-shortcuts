@@ -1,6 +1,9 @@
 import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
-import { getDocumentAndSelection, defineCm5TransactionMethod } from './test-helpers';
+import {
+  getDocumentAndSelection,
+  defineCm5TransactionMethod,
+} from './test-helpers';
 import {
   deleteToStartOfLine,
   deleteToEndOfLine,
@@ -133,7 +136,9 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('copyLine', () => {
     it('should copy selected lines up', () => {
-      withMultipleSelections(editor as any, copyLine, { args: 'up' });
+      withMultipleSelectionsNew(editor as any, copyLine, {
+        args: { direction: 'up' },
+      });
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(
@@ -146,7 +151,9 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should copy selected lines down', () => {
-      withMultipleSelections(editor as any, copyLine, { args: 'down' });
+      withMultipleSelectionsNew(editor as any, copyLine, {
+        args: { direction: 'down' },
+      });
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(
@@ -161,7 +168,9 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should exclude line starting at trailing newline from being duplicated', () => {
       editor.setSelection({ line: 0, ch: 0 }, { line: 1, ch: 0 });
 
-      withMultipleSelections(editor as any, copyLine, { args: 'down' });
+      withMultipleSelectionsNew(editor as any, copyLine, {
+        args: { direction: 'down' },
+      });
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\nlorem ipsum\ndolor sit\namet');
@@ -591,7 +600,9 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('navigateLine', () => {
     it('should navigate to the previous line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'prev' } });
+      withMultipleSelectionsNew(editor as any, navigateLine, {
+        args: { position: 'prev' },
+      });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -600,7 +611,9 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should navigate to the next line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'next' } });
+      withMultipleSelectionsNew(editor as any, navigateLine, {
+        args: { position: 'next' },
+      });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -609,7 +622,9 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should navigate to the first line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'first' } });
+      withMultipleSelectionsNew(editor as any, navigateLine, {
+        args: { position: 'first' },
+      });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -618,7 +633,9 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should navigate to the last line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'last' } });
+      withMultipleSelectionsNew(editor as any, navigateLine, {
+        args: { position: 'last' },
+      });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
