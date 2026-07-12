@@ -259,21 +259,54 @@ export const deleteToStartOfLine = (
   };
 };
 
+// Accumulators for multi-cursor deleteToEndOfLine: number of newlines
+// deleted (which shift subsequent selections up) and the smallest deletion
+// start column per line (same-line cursors' deletions are merged into their
+// union, so every cursor on that line ends up at the union's start)
+let numNewlinesDeletedToEnd = 0;
+let minDeletionStartOfLine: Record<number, number> = {};
 export const deleteToEndOfLine = (
   editor: Editor,
   selection: EditorSelection,
+  args: EditorActionCallbackNewArgs,
 ) => {
-  const pos = selection.head;
-  let endPos = getLineEndPos(pos.line, editor);
-
-  if (pos.line === endPos.line && pos.ch === endPos.ch) {
-    // We're at the end of the line so delete just the newline
-    endPos = getLineStartPos(pos.line + 1);
+  // Reset offsets at the start of a new bulk operation
+  if (args.iteration === 0) {
+    numNewlinesDeletedToEnd = 0;
+    minDeletionStartOfLine = {};
   }
 
-  editor.replaceRange('', pos, endPos);
+  const pos = selection.head;
+  const endPos = getLineEndPos(pos.line, editor);
+
+  if (pos.ch === endPos.ch) {
+    // We're at the end of the line so delete just the newline
+    if (pos.line === editor.lineCount() - 1) {
+      // We're at the end of the document so do nothing
+      return {
+        changes: [] as EditorChange[],
+        newSelection: {
+          from: { line: pos.line - numNewlinesDeletedToEnd, ch: pos.ch },
+        },
+      };
+    }
+    const newSelection = {
+      from: { line: pos.line - numNewlinesDeletedToEnd, ch: pos.ch },
+    };
+    numNewlinesDeletedToEnd += 1;
+    return {
+      changes: [{ from: pos, to: getLineStartPos(pos.line + 1), text: '' }],
+      newSelection,
+    };
+  }
+
+  const minCh = Math.min(pos.ch, minDeletionStartOfLine[pos.line] ?? Infinity);
+  minDeletionStartOfLine[pos.line] = minCh;
   return {
-    anchor: pos,
+    changes: [{ from: pos, to: endPos, text: '' }],
+    newSelection: {
+      from: { line: pos.line - numNewlinesDeletedToEnd, ch: minCh },
+    },
   };
 };
 

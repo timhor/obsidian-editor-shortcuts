@@ -117,7 +117,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   describe('deleteToEndOfLine', () => {
     it('should delete to the end of the line', () => {
       editor.setCursor({ line: 1, ch: 1 });
-      withMultipleSelections(editor as any, deleteToEndOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\nd\namet');
@@ -131,7 +131,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should delete the newline when at the end of the line', () => {
       editor.setCursor({ line: 1, ch: 9 });
-      withMultipleSelections(editor as any, deleteToEndOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sitamet');
@@ -145,7 +145,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should delete nothing when at the end of the document', () => {
       editor.setCursor({ line: 2, ch: 4 });
-      withMultipleSelections(editor as any, deleteToEndOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\namet');

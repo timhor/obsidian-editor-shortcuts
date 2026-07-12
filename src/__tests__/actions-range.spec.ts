@@ -70,7 +70,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('deleteToEndOfLine', () => {
     it('should delete to the end of the line', () => {
-      withMultipleSelections(editor as any, deleteToEndOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
 
       const { doc } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor\namet');

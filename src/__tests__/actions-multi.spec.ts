@@ -115,7 +115,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('deleteToEndOfLine', () => {
     it('should delete to the end of the lines', () => {
-      withMultipleSelections(editor as any, deleteToEndOfLine);
+      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(

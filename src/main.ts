@@ -98,7 +98,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'deleteToEndOfLine',
       name: 'Delete to end of line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, deleteToEndOfLine),
+        withMultipleSelectionsNew(editor, deleteToEndOfLine),
     });
 
     this.addCommand({
