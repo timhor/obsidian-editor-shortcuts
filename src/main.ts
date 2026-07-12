@@ -218,9 +218,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLineStart',
       name: 'Go to start of line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, goToLineBoundary, {
+        withMultipleSelectionsNew(editor, goToLineBoundary, {
           ...defaultMultipleSelectionOptions,
-          args: 'start',
+          args: { boundary: 'start' },
         }),
     });
 
@@ -228,9 +228,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLineEnd',
       name: 'Go to end of line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, goToLineBoundary, {
+        withMultipleSelectionsNew(editor, goToLineBoundary, {
           ...defaultMultipleSelectionOptions,
-          args: 'end',
+          args: { boundary: 'end' },
         }),
     });
 

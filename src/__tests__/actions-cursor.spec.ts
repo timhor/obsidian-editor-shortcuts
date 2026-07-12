@@ -342,8 +342,8 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('goToLineBoundary', () => {
     it('should go to line start', () => {
-      withMultipleSelections(editor as any, goToLineBoundary, {
-        args: 'start',
+      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
+        args: { boundary: 'start' },
       });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
@@ -353,8 +353,8 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should go to line end', () => {
-      withMultipleSelections(editor as any, goToLineBoundary, {
-        args: 'end',
+      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
+        args: { boundary: 'end' },
       });
 
       const { doc, cursor } = getDocumentAndSelection(editor);

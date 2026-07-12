@@ -439,14 +439,17 @@ export const addCursorsToSelectionEnds = (
 export const goToLineBoundary = (
   editor: Editor,
   selection: EditorSelection,
-  boundary: 'start' | 'end',
+  args: EditorActionCallbackNewArgs,
 ) => {
   const { from, to } = getSelectionBoundaries(selection);
-  if (boundary === 'start') {
-    return { anchor: getLineStartPos(from.line) };
-  } else {
-    return { anchor: getLineEndPos(to.line, editor) };
-  }
+  const newSelection =
+    args.boundary === 'start'
+      ? { from: getLineStartPos(from.line) }
+      : { from: getLineEndPos(to.line, editor) };
+  return {
+    changes: [] as EditorChange[],
+    newSelection,
+  };
 };
 
 export const navigateLine = (

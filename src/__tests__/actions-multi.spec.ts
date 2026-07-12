@@ -370,9 +370,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('goToLineBoundary', () => {
     it('should go to line starts', () => {
-      withMultipleSelections(editor as any, goToLineBoundary, {
+      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
         ...defaultMultipleSelectionOptions,
-        args: 'start',
+        args: { boundary: 'start' },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -394,9 +394,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should go to line ends', () => {
-      withMultipleSelections(editor as any, goToLineBoundary, {
+      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
         ...defaultMultipleSelectionOptions,
-        args: 'end',
+        args: { boundary: 'end' },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
