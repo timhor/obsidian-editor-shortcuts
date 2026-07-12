@@ -238,9 +238,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToNextLine',
       name: 'Go to next line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, navigateLine, {
+        withMultipleSelectionsNew(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'next',
+          args: { position: 'next' },
         }),
     });
 
@@ -248,9 +248,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToPrevLine',
       name: 'Go to previous line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, navigateLine, {
+        withMultipleSelectionsNew(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'prev',
+          args: { position: 'prev' },
         }),
     });
 
@@ -258,9 +258,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToFirstLine',
       name: 'Go to first line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, navigateLine, {
+        withMultipleSelectionsNew(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'first',
+          args: { position: 'first' },
         }),
     });
 
@@ -268,9 +268,9 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLastLine',
       name: 'Go to last line',
       editorCallback: (editor) =>
-        withMultipleSelections(editor, navigateLine, {
+        withMultipleSelectionsNew(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
-          args: 'last',
+          args: { position: 'last' },
         }),
     });
 

@@ -420,9 +420,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('navigateLine', () => {
     it('should navigate to the previous lines', () => {
-      withMultipleSelections(editor as any, navigateLine, {
+      withMultipleSelectionsNew(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'prev',
+        args: { position: 'prev' },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -444,9 +444,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should navigate to the next lines', () => {
-      withMultipleSelections(editor as any, navigateLine, {
+      withMultipleSelectionsNew(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'next',
+        args: { position: 'next' },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -468,9 +468,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should navigate to the first line', () => {
-      withMultipleSelections(editor as any, navigateLine, {
+      withMultipleSelectionsNew(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'first',
+        args: { position: 'first' },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);
@@ -484,9 +484,9 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should navigate to the last line', () => {
-      withMultipleSelections(editor as any, navigateLine, {
+      withMultipleSelectionsNew(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
-        args: 'last',
+        args: { position: 'last' },
       });
 
       const { doc, selections } = getDocumentAndSelection(editor);

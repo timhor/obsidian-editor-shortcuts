@@ -367,7 +367,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   describe('navigateLine', () => {
     it('should navigate to the previous line', () => {
       editor.setCursor({ line: 2, ch: 0 });
-      withMultipleSelections(editor as any, navigateLine, { args: 'prev' });
+      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'prev' } });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -377,7 +377,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should not navigate past the start of the document', () => {
       editor.setCursor({ line: 0, ch: 0 });
-      withMultipleSelections(editor as any, navigateLine, { args: 'prev' });
+      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'prev' } });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -386,7 +386,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should navigate to the next line', () => {
-      withMultipleSelections(editor as any, navigateLine, { args: 'next' });
+      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'next' } });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -396,7 +396,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should not navigate past the end of the document', () => {
       editor.setCursor({ line: 2, ch: 4 });
-      withMultipleSelections(editor as any, navigateLine, { args: 'next' });
+      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'next' } });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -408,7 +408,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue('line zero\nzz\nline two');
       editor.setCursor({ line: 0, ch: 5 });
 
-      withMultipleSelections(editor as any, navigateLine, { args: 'next' });
+      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'next' } });
 
       const { cursor } = getDocumentAndSelection(editor);
       expect(cursor.line).toEqual(1);
@@ -416,7 +416,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should navigate to the first line', () => {
-      withMultipleSelections(editor as any, navigateLine, { args: 'first' });
+      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'first' } });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -425,7 +425,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should navigate to the last line', () => {
-      withMultipleSelections(editor as any, navigateLine, { args: 'last' });
+      withMultipleSelectionsNew(editor as any, navigateLine, { args: { position: 'last' } });
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);

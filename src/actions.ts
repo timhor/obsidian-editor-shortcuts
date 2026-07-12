@@ -455,8 +455,9 @@ export const goToLineBoundary = (
 export const navigateLine = (
   editor: Editor,
   selection: EditorSelection,
-  position: 'next' | 'prev' | 'first' | 'last',
+  args: EditorActionCallbackNewArgs,
 ) => {
+  const { position } = args;
   const pos = selection.head;
   let line: number;
   let ch: number;
@@ -481,7 +482,10 @@ export const navigateLine = (
     ch = endOfLine.ch;
   }
 
-  return { anchor: { line, ch } };
+  return {
+    changes: [] as EditorChange[],
+    newSelection: { from: { line, ch } },
+  };
 };
 
 export const moveCursor = (
