@@ -144,7 +144,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('joinLines', () => {
     it('should join multiple selected lines', () => {
-      withMultipleSelections(editor as any, joinLines, {
+      withMultipleSelectionsNew(editor as any, joinLines, {
         ...defaultMultipleSelectionOptions,
         repeatSameLineActions: false,
       });
@@ -176,7 +176,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 6, ch: 6 }, head: { line: 6, ch: 6 } }, // tincid{<>}unt
       ]);
 
-      withMultipleSelections(editor as any, joinLines, {
+      withMultipleSelectionsNew(editor as any, joinLines, {
         ...defaultMultipleSelectionOptions,
         repeatSameLineActions: false,
       });
@@ -214,7 +214,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 2, ch: 4 }, head: { line: 2, ch: 4 } },
       ]);
 
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('- aaa bbb\n- ccc ddd');

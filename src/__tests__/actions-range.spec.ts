@@ -24,7 +24,7 @@ import {
   insertCursorBelow,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
-import { withMultipleSelections, withMultipleSelectionsNew } from '../utils';
+import { withMultipleSelectionsNew } from '../utils';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
 document.createRange = () => {
@@ -82,7 +82,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('joinLines', () => {
     it('should join multiple selected lines', () => {
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum dolor sit\namet');
@@ -95,7 +95,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should join the same text from either direction', () => {
       editor.setSelection({ line: 1, ch: 5 }, { line: 0, ch: 6 });
 
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum dolor sit\namet');
@@ -108,7 +108,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should not join next line when at the end of the document', () => {
       editor.setSelection({ line: 2, ch: 4 }, { line: 2, ch: 0 });
 
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -123,7 +123,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue(content);
       editor.setSelection({ line: 2, ch: 4 }, { line: 0, ch: 3 });
 
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('- aaa bbb ccc');

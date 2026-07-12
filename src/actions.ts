@@ -1,4 +1,5 @@
 import type {
+  EditorRangeOrCaret,
   App,
   Editor,
   EditorChange,
@@ -309,23 +310,43 @@ export const deleteToEndOfLine = (
   };
 };
 
-export const joinLines = (editor: Editor, selection: EditorSelection) => {
+// Number of lines removed by previous joinLines iterations in the current
+// bulk operation, used to shift subsequent selections up
+let numLinesJoined = 0;
+export const joinLines = (
+  editor: Editor,
+  selection: EditorSelection,
+  args: EditorActionCallbackNewArgs,
+) => {
+  // Reset offset at the start of a new bulk operation
+  if (args.iteration === 0) {
+    numLinesJoined = 0;
+  }
+
   const { from, to } = getSelectionBoundaries(selection);
   const { line } = from;
 
-  let endOfCurrentLine = getLineEndPos(line, editor);
   const joinRangeLimit = Math.max(to.line - line, 1);
   const selectionLength = editor.posToOffset(to) - editor.posToOffset(from);
   let trimmedChars = '';
 
+  // Single pass over the original document: accumulate the joined line
+  // content, evaluating the space-insertion rule against the accumulated
+  // string (matching the legacy sequential behavior)
+  let joinedContent = editor.getLine(line);
+  // End of the current line as it was at the start of the final join,
+  // where the cursor lands for caret selections (this matches the legacy
+  // loop, which captured the position before each join)
+  let endOfCurrentLineCh = joinedContent.length;
+  let numLinesJoinedHere = 0;
+
   for (let i = 0; i < joinRangeLimit; i++) {
-    if (line === editor.lineCount() - 1) {
+    const nextLineIndex = line + 1 + numLinesJoinedHere;
+    if (nextLineIndex > editor.lineCount() - 1) {
       break;
     }
-    endOfCurrentLine = getLineEndPos(line, editor);
-    const endOfNextLine = getLineEndPos(line + 1, editor);
-    const contentsOfCurrentLine = editor.getLine(line);
-    const contentsOfNextLine = editor.getLine(line + 1);
+    endOfCurrentLineCh = joinedContent.length;
+    const contentsOfNextLine = editor.getLine(nextLineIndex);
 
     const charsToTrim = contentsOfNextLine.match(LIST_CHARACTER_REGEX) ?? [];
     trimmedChars += charsToTrim[0] ?? '';
@@ -336,34 +357,43 @@ export const joinLines = (editor: Editor, selection: EditorSelection) => {
     );
     if (
       newContentsOfNextLine.length > 0 &&
-      contentsOfCurrentLine.charAt(endOfCurrentLine.ch - 1) !== ' '
+      joinedContent.charAt(joinedContent.length - 1) !== ' '
     ) {
-      editor.replaceRange(
-        ' ' + newContentsOfNextLine,
-        endOfCurrentLine,
-        endOfNextLine,
-      );
+      joinedContent += ' ' + newContentsOfNextLine;
     } else {
-      editor.replaceRange(
-        newContentsOfNextLine,
-        endOfCurrentLine,
-        endOfNextLine,
-      );
+      joinedContent += newContentsOfNextLine;
     }
+    numLinesJoinedHere += 1;
   }
 
+  const changes: EditorChange[] =
+    numLinesJoinedHere > 0
+      ? [
+          {
+            from: getLineStartPos(line),
+            to: getLineEndPos(line + numLinesJoinedHere, editor),
+            text: joinedContent,
+          },
+        ]
+      : [];
+
+  let newSelection: EditorRangeOrCaret;
   if (selectionLength === 0) {
-    return {
-      anchor: endOfCurrentLine,
+    newSelection = {
+      from: { line: line - numLinesJoined, ch: endOfCurrentLineCh },
+    };
+  } else {
+    newSelection = {
+      from: { line: line - numLinesJoined, ch: from.ch },
+      to: {
+        line: line - numLinesJoined,
+        ch: from.ch + selectionLength - trimmedChars.length,
+      },
     };
   }
-  return {
-    anchor: from,
-    head: {
-      line: from.line,
-      ch: from.ch + selectionLength - trimmedChars.length,
-    },
-  };
+  numLinesJoined += numLinesJoinedHere;
+
+  return { changes, newSelection };
 };
 
 // Insertions made by previous copyLine iterations in the current bulk

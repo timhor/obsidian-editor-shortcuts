@@ -25,7 +25,7 @@ import {
   moveWord,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
-import { withMultipleSelections, withMultipleSelectionsNew } from '../utils';
+import { withMultipleSelectionsNew } from '../utils';
 import { SettingsState } from '../state';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
@@ -163,7 +163,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('joinLines', () => {
     it('should join next line to current line', () => {
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit amet');
@@ -174,7 +174,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should not join next line when at the end of the document', () => {
       editor.setCursor({ line: 2, ch: 2 });
 
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -187,9 +187,9 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 0 });
 
-      withMultipleSelections(editor as any, joinLines);
-      withMultipleSelections(editor as any, joinLines);
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('- aaa bbb ccc ~ ddd');
@@ -202,7 +202,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 0 });
 
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('> aaa bbb\n> ccc');
@@ -215,7 +215,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 1, ch: 0 });
 
-      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelectionsNew(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit amet');

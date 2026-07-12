@@ -31,7 +31,6 @@ import {
   iterateCodeMirrorDivs,
   setVaultConfig,
   toggleVaultConfig,
-  withMultipleSelections,
   withMultipleSelectionsNew,
 } from './utils';
 import { CASE, MODIFIER_KEYS } from './constants';
@@ -111,7 +110,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelections(editor, joinLines, {
+        withMultipleSelectionsNew(editor, joinLines, {
           ...defaultMultipleSelectionOptions,
           repeatSameLineActions: false,
         }),
