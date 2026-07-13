@@ -27,7 +27,7 @@ import {
   insertCursorBelow,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
-import { withMultipleSelectionsNew } from '../utils';
+import { withMultipleSelections } from '../utils';
 import { SettingsState } from '../state';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
@@ -61,7 +61,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('deleteToStartOfLine', () => {
     it('should delete to the start of the line', () => {
-      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
+      withMultipleSelections(editor as any, deleteToStartOfLine);
 
       const { doc } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\n sit\namet');
@@ -70,7 +70,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('deleteToEndOfLine', () => {
     it('should delete to the end of the line', () => {
-      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
+      withMultipleSelections(editor as any, deleteToEndOfLine);
 
       const { doc } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor\namet');
@@ -79,7 +79,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('joinLines', () => {
     it('should join multiple selected lines', () => {
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum dolor sit\namet');
@@ -92,7 +92,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should join the same text from either direction', () => {
       editor.setSelection({ line: 1, ch: 5 }, { line: 0, ch: 6 });
 
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum dolor sit\namet');
@@ -105,7 +105,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should not join next line when at the end of the document', () => {
       editor.setSelection({ line: 2, ch: 4 }, { line: 2, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -120,7 +120,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue(content);
       editor.setSelection({ line: 2, ch: 4 }, { line: 0, ch: 3 });
 
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('- aaa bbb ccc');
@@ -133,7 +133,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('copyLine', () => {
     it('should copy selected lines up', () => {
-      withMultipleSelectionsNew(editor as any, copyLine, {
+      withMultipleSelections(editor as any, copyLine, {
         args: { direction: 'up' },
       });
 
@@ -148,7 +148,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should copy selected lines down', () => {
-      withMultipleSelectionsNew(editor as any, copyLine, {
+      withMultipleSelections(editor as any, copyLine, {
         args: { direction: 'down' },
       });
 
@@ -165,7 +165,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should exclude line starting at trailing newline from being duplicated', () => {
       editor.setSelection({ line: 0, ch: 0 }, { line: 1, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, copyLine, {
+      withMultipleSelections(editor as any, copyLine, {
         args: { direction: 'down' },
       });
 
@@ -508,7 +508,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('selectLine', () => {
     it('should select lines', () => {
-      withMultipleSelectionsNew(editor as any, selectLine);
+      withMultipleSelections(editor as any, selectLine);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -573,7 +573,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('goToLineBoundary', () => {
     it('should go to line start', () => {
-      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
+      withMultipleSelections(editor as any, goToLineBoundary, {
         args: { boundary: 'start' },
       });
 
@@ -584,7 +584,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should go to line end', () => {
-      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
+      withMultipleSelections(editor as any, goToLineBoundary, {
         args: { boundary: 'end' },
       });
 
@@ -597,7 +597,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('navigateLine', () => {
     it('should navigate to the previous line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'prev' },
       });
 
@@ -608,7 +608,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should navigate to the next line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'next' },
       });
 
@@ -619,7 +619,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should navigate to the first line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'first' },
       });
 
@@ -630,7 +630,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should navigate to the last line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'last' },
       });
 
@@ -643,7 +643,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('transformCase', () => {
     it('should transform to uppercase', () => {
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         args: { caseType: CASE.UPPER },
       });
 
@@ -656,7 +656,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue('lorem ipsum\nDOLOR sit\namet');
       editor.setSelection({ line: 0, ch: 6 }, { line: 1, ch: 5 });
 
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         args: { caseType: CASE.LOWER },
       });
 
@@ -666,7 +666,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     });
 
     it('should transform to title case', () => {
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         args: { caseType: CASE.TITLE },
       });
 
@@ -686,7 +686,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         editor.setValue(initialContent);
         editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 17 });
 
-        withMultipleSelectionsNew(editor as any, transformCase, {
+        withMultipleSelections(editor as any, transformCase, {
           args: { caseType: CASE.NEXT },
         });
 
@@ -705,7 +705,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       );
       editor.setSelection({ line: 0, ch: 0 }, { line: 0, ch: 68 });
 
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         args: { caseType: CASE.TITLE },
       });
 
@@ -727,7 +727,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         editor.setValue(content);
         editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 5 });
 
-        withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
+        withMultipleSelections(editor as any, expandSelectionToBrackets);
 
         const { doc, selectedText } = getDocumentAndSelection(editor);
         expect(doc).toEqual(content);
@@ -740,7 +740,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue(content);
       editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
 
-      withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
+      withMultipleSelections(editor as any, expandSelectionToBrackets);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
@@ -758,7 +758,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         editor.setValue(content);
         editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
 
-        withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
+        withMultipleSelections(editor as any, expandSelectionToQuotes);
 
         const { doc, selectedText } = getDocumentAndSelection(editor);
         expect(doc).toEqual(content);
@@ -771,7 +771,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue(content);
       editor.setSelection({ line: 0, ch: 10 }, { line: 1, ch: 2 });
 
-      withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
+      withMultipleSelections(editor as any, expandSelectionToQuotes);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
@@ -855,7 +855,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('insertLineAbove', () => {
     it('should insert line above', () => {
-      withMultipleSelectionsNew(editor as any, insertLineAbove);
+      withMultipleSelections(editor as any, insertLineAbove);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('lorem ipsum\n\ndolor sit\namet');
@@ -865,7 +865,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('insertLineBelow', () => {
     it('should insert line below', () => {
-      withMultipleSelectionsNew(editor as any, insertLineBelow);
+      withMultipleSelections(editor as any, insertLineBelow);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('lorem ipsum\ndolor sit\n\namet');
@@ -876,7 +876,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       editor.setValue('- aaa\n- bbb');
       editor.setSelection({ line: 0, ch: 2 }, { line: 0, ch: 5 });
 
-      withMultipleSelectionsNew(editor as any, insertLineBelow);
+      withMultipleSelections(editor as any, insertLineBelow);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('- aaa\n- \n- bbb');
@@ -891,7 +891,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
 
   describe('deleteLine', () => {
     it('should delete selected lines', () => {
-      withMultipleSelectionsNew(editor as any, deleteLine);
+      withMultipleSelections(editor as any, deleteLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('amet');
@@ -901,7 +901,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should delete all lines if entire document is selected', () => {
       editor.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 4 });
 
-      withMultipleSelectionsNew(editor as any, deleteLine);
+      withMultipleSelections(editor as any, deleteLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('');
@@ -911,7 +911,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should exclude line starting at trailing newline from being deleted', () => {
       editor.setSelection({ line: 0, ch: 0 }, { line: 1, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, deleteLine);
+      withMultipleSelections(editor as any, deleteLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('dolor sit\namet');
@@ -921,7 +921,7 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
     it('should exclude line starting at trailing newline at end of document from being deleted', () => {
       editor.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, deleteLine);
+      withMultipleSelections(editor as any, deleteLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('amet');

@@ -31,7 +31,7 @@ import {
   iterateCodeMirrorDivs,
   setVaultConfig,
   toggleVaultConfig,
-  withMultipleSelectionsNew,
+  withMultipleSelections,
 } from './utils';
 import { CASE, MODIFIER_KEYS } from './constants';
 import { SettingTab, DEFAULT_SETTINGS, PluginSettings } from './settings';
@@ -54,7 +54,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, insertLineAbove),
+        withMultipleSelections(editor, insertLineAbove),
     });
 
     this.addCommand({
@@ -67,7 +67,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, insertLineBelow),
+        withMultipleSelections(editor, insertLineBelow),
     });
 
     this.addCommand({
@@ -80,7 +80,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, deleteLine, {
+        withMultipleSelections(editor, deleteLine, {
           ...defaultMultipleSelectionOptions,
           combineSameLineSelections: true,
         }),
@@ -90,14 +90,14 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'deleteToStartOfLine',
       name: 'Delete to start of line',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, deleteToStartOfLine),
+        withMultipleSelections(editor, deleteToStartOfLine),
     });
 
     this.addCommand({
       id: 'deleteToEndOfLine',
       name: 'Delete to end of line',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, deleteToEndOfLine),
+        withMultipleSelections(editor, deleteToEndOfLine),
     });
 
     this.addCommand({
@@ -110,7 +110,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, joinLines, {
+        withMultipleSelections(editor, joinLines, {
           ...defaultMultipleSelectionOptions,
           repeatSameLineActions: false,
         }),
@@ -126,7 +126,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, copyLine, {
+        withMultipleSelections(editor, copyLine, {
           ...defaultMultipleSelectionOptions,
           args: { direction: 'down' },
         }),
@@ -142,7 +142,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, copyLine, {
+        withMultipleSelections(editor, copyLine, {
           ...defaultMultipleSelectionOptions,
           args: { direction: 'up' },
         }),
@@ -158,7 +158,7 @@ export default class CodeEditorShortcuts extends Plugin {
         },
       ],
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, copyLine, {
+        withMultipleSelections(editor, copyLine, {
           ...defaultMultipleSelectionOptions,
           args: { direction: 'down' },
         }),
@@ -197,7 +197,7 @@ export default class CodeEditorShortcuts extends Plugin {
           key: 'L',
         },
       ],
-      editorCallback: (editor) => withMultipleSelectionsNew(editor, selectLine),
+      editorCallback: (editor) => withMultipleSelections(editor, selectLine),
     });
 
     this.addCommand({
@@ -216,7 +216,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLineStart',
       name: 'Go to start of line',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, goToLineBoundary, {
+        withMultipleSelections(editor, goToLineBoundary, {
           ...defaultMultipleSelectionOptions,
           args: { boundary: 'start' },
         }),
@@ -226,7 +226,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLineEnd',
       name: 'Go to end of line',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, goToLineBoundary, {
+        withMultipleSelections(editor, goToLineBoundary, {
           ...defaultMultipleSelectionOptions,
           args: { boundary: 'end' },
         }),
@@ -236,7 +236,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToNextLine',
       name: 'Go to next line',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, navigateLine, {
+        withMultipleSelections(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
           args: { position: 'next' },
         }),
@@ -246,7 +246,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToPrevLine',
       name: 'Go to previous line',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, navigateLine, {
+        withMultipleSelections(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
           args: { position: 'prev' },
         }),
@@ -256,7 +256,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToFirstLine',
       name: 'Go to first line',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, navigateLine, {
+        withMultipleSelections(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
           args: { position: 'first' },
         }),
@@ -266,7 +266,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToLastLine',
       name: 'Go to last line',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, navigateLine, {
+        withMultipleSelections(editor, navigateLine, {
           ...defaultMultipleSelectionOptions,
           args: { position: 'last' },
         }),
@@ -322,7 +322,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'transformToUppercase',
       name: 'Transform selection to uppercase',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, transformCase, {
+        withMultipleSelections(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
           args: { caseType: CASE.UPPER },
         }),
@@ -332,7 +332,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'transformToLowercase',
       name: 'Transform selection to lowercase',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, transformCase, {
+        withMultipleSelections(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
           args: { caseType: CASE.LOWER },
         }),
@@ -342,7 +342,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'transformToTitlecase',
       name: 'Transform selection to title case',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, transformCase, {
+        withMultipleSelections(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
           args: { caseType: CASE.TITLE },
         }),
@@ -352,7 +352,7 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'toggleCase',
       name: 'Toggle case of selection',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, transformCase, {
+        withMultipleSelections(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
           args: { caseType: CASE.NEXT },
         }),
@@ -362,14 +362,14 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'expandSelectionToBrackets',
       name: 'Expand selection to brackets',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, expandSelectionToBrackets),
+        withMultipleSelections(editor, expandSelectionToBrackets),
     });
 
     this.addCommand({
       id: 'expandSelectionToQuotes',
       name: 'Expand selection to quotes',
       editorCallback: (editor) =>
-        withMultipleSelectionsNew(editor, expandSelectionToQuotes),
+        withMultipleSelections(editor, expandSelectionToQuotes),
     });
 
     this.addCommand({

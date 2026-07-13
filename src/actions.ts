@@ -19,7 +19,7 @@ import {
 import { SettingsState } from './state';
 import {
   CheckCharacter,
-  EditorActionCallbackNewArgs,
+  EditorActionCallbackArgs,
   findAllMatchPositions,
   findNextMatchPosition,
   findPosOfNextCharacter,
@@ -39,7 +39,7 @@ import {
 export const insertLineAbove = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   const { line } = selection.head;
   const startOfCurrentLine = getLineStartPos(line);
@@ -80,7 +80,7 @@ export const insertLineAbove = (
 export const insertLineBelow = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   const { line } = selection.head;
   const startOfCurrentLine = getLineStartPos(line);
@@ -138,7 +138,7 @@ let numLinesDeleted = 0;
 export const deleteLine = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   const { from, to, hasTrailingNewline } = getSelectionBoundaries(selection);
 
@@ -208,7 +208,7 @@ let charsDeletedAtStartOfLine: Record<number, number> = {};
 export const deleteToStartOfLine = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   // Reset offsets at the start of a new bulk operation
   if (args.iteration === 0) {
@@ -268,7 +268,7 @@ let minDeletionStartOfLine: Record<number, number> = {};
 export const deleteToEndOfLine = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   // Reset offsets at the start of a new bulk operation
   if (args.iteration === 0) {
@@ -316,7 +316,7 @@ let numLinesJoined = 0;
 export const joinLines = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   // Reset offset at the start of a new bulk operation
   if (args.iteration === 0) {
@@ -403,7 +403,7 @@ let copyLineInsertions: { line: number; numLines: number }[] = [];
 export const copyLine = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   const { direction } = args;
   // Reset offsets at the start of a new bulk operation
@@ -585,7 +585,7 @@ export const addCursorsToSelectionEnds = (
 export const goToLineBoundary = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   const { from, to } = getSelectionBoundaries(selection);
   const newSelection =
@@ -601,7 +601,7 @@ export const goToLineBoundary = (
 export const navigateLine = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   const { position } = args;
   const pos = selection.head;
@@ -668,7 +668,7 @@ export const moveWord = (editor: Editor, direction: 'left' | 'right') => {
 export const transformCase = (
   editor: Editor,
   selection: EditorSelection,
-  args: EditorActionCallbackNewArgs,
+  args: EditorActionCallbackArgs,
 ) => {
   const caseType: CASE = args.caseType;
   let { from, to } = getSelectionBoundaries(selection);

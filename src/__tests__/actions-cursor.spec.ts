@@ -28,7 +28,7 @@ import {
   moveWord,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
-import { withMultipleSelectionsNew } from '../utils';
+import { withMultipleSelections } from '../utils';
 import { SettingsState } from '../state';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
@@ -65,7 +65,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   describe('deleteToStartOfLine', () => {
     it('should delete to the start of the line', () => {
       editor.setCursor({ line: 1, ch: 7 });
-      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
+      withMultipleSelections(editor as any, deleteToStartOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\nit\namet');
@@ -79,7 +79,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should delete the preceding newline when at the start of the line', () => {
       editor.setCursor({ line: 1, ch: 0 });
-      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
+      withMultipleSelections(editor as any, deleteToStartOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsumdolor sit\namet');
@@ -93,7 +93,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should delete nothing when at the start of the document', () => {
       editor.setCursor({ line: 0, ch: 0 });
-      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
+      withMultipleSelections(editor as any, deleteToStartOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\namet');
@@ -109,7 +109,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   describe('deleteToEndOfLine', () => {
     it('should delete to the end of the line', () => {
       editor.setCursor({ line: 1, ch: 1 });
-      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
+      withMultipleSelections(editor as any, deleteToEndOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\nd\namet');
@@ -123,7 +123,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should delete the newline when at the end of the line', () => {
       editor.setCursor({ line: 1, ch: 9 });
-      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
+      withMultipleSelections(editor as any, deleteToEndOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sitamet');
@@ -137,7 +137,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should delete nothing when at the end of the document', () => {
       editor.setCursor({ line: 2, ch: 4 });
-      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
+      withMultipleSelections(editor as any, deleteToEndOfLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit\namet');
@@ -152,7 +152,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('joinLines', () => {
     it('should join next line to current line', () => {
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit amet');
@@ -163,7 +163,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should not join next line when at the end of the document', () => {
       editor.setCursor({ line: 2, ch: 2 });
 
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -176,9 +176,9 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, joinLines);
-      withMultipleSelectionsNew(editor as any, joinLines);
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('- aaa bbb ccc ~ ddd');
@@ -191,7 +191,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('> aaa bbb\n> ccc');
@@ -204,7 +204,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 1, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\ndolor sit amet');
@@ -217,7 +217,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should copy current line up', () => {
       editor.setCursor({ line: 1, ch: 3 });
 
-      withMultipleSelectionsNew(editor as any, copyLine, {
+      withMultipleSelections(editor as any, copyLine, {
         args: { direction: 'up' },
       });
 
@@ -230,7 +230,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should copy current line up from the end of a line', () => {
       editor.setCursor({ line: 1, ch: 9 });
 
-      withMultipleSelectionsNew(editor as any, copyLine, {
+      withMultipleSelections(editor as any, copyLine, {
         args: { direction: 'up' },
       });
 
@@ -243,7 +243,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should copy current line down', () => {
       editor.setCursor({ line: 1, ch: 3 });
 
-      withMultipleSelectionsNew(editor as any, copyLine, {
+      withMultipleSelections(editor as any, copyLine, {
         args: { direction: 'down' },
       });
 
@@ -314,7 +314,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('selectLine', () => {
     it('should select line', () => {
-      withMultipleSelectionsNew(editor as any, selectLine);
+      withMultipleSelections(editor as any, selectLine);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -335,7 +335,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('goToLineBoundary', () => {
     it('should go to line start', () => {
-      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
+      withMultipleSelections(editor as any, goToLineBoundary, {
         args: { boundary: 'start' },
       });
 
@@ -346,7 +346,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should go to line end', () => {
-      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
+      withMultipleSelections(editor as any, goToLineBoundary, {
         args: { boundary: 'end' },
       });
 
@@ -360,7 +360,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
   describe('navigateLine', () => {
     it('should navigate to the previous line', () => {
       editor.setCursor({ line: 2, ch: 0 });
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'prev' },
       });
 
@@ -372,7 +372,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should not navigate past the start of the document', () => {
       editor.setCursor({ line: 0, ch: 0 });
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'prev' },
       });
 
@@ -383,7 +383,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should navigate to the next line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'next' },
       });
 
@@ -395,7 +395,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should not navigate past the end of the document', () => {
       editor.setCursor({ line: 2, ch: 4 });
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'next' },
       });
 
@@ -409,7 +409,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue('line zero\nzz\nline two');
       editor.setCursor({ line: 0, ch: 5 });
 
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'next' },
       });
 
@@ -419,7 +419,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should navigate to the first line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'first' },
       });
 
@@ -430,7 +430,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should navigate to the last line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         args: { position: 'last' },
       });
 
@@ -477,7 +477,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('transformCase', () => {
     it('should transform to uppercase', () => {
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         args: { caseType: CASE.UPPER },
       });
 
@@ -491,7 +491,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue('lorem ipsum\nDOLOR sit\namet');
       editor.setCursor({ line: 1, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         args: { caseType: CASE.LOWER },
       });
 
@@ -502,7 +502,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should transform to title case', () => {
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         args: { caseType: CASE.TITLE },
       });
 
@@ -523,7 +523,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue(initialContent);
         editor.setCursor({ line: 0, ch: 0 });
 
-        withMultipleSelectionsNew(editor as any, transformCase, {
+        withMultipleSelections(editor as any, transformCase, {
           args: { caseType: CASE.NEXT },
         });
 
@@ -546,7 +546,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue(content);
         editor.setCursor({ line: 0, ch: 8 });
 
-        withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
+        withMultipleSelections(editor as any, expandSelectionToBrackets);
 
         const { doc, selectedText } = getDocumentAndSelection(editor);
         expect(doc).toEqual(content);
@@ -559,7 +559,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 15 });
 
-      withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
+      withMultipleSelections(editor as any, expandSelectionToBrackets);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
@@ -571,7 +571,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 6 });
 
-      withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
+      withMultipleSelections(editor as any, expandSelectionToBrackets);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
@@ -589,7 +589,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue(content);
         editor.setCursor({ line: 0, ch: 8 });
 
-        withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
+        withMultipleSelections(editor as any, expandSelectionToQuotes);
 
         const { doc, selectedText } = getDocumentAndSelection(editor);
         expect(doc).toEqual(content);
@@ -602,7 +602,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 15 });
 
-      withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
+      withMultipleSelections(editor as any, expandSelectionToQuotes);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
@@ -614,7 +614,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue(content);
       editor.setCursor({ line: 0, ch: 6 });
 
-      withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
+      withMultipleSelections(editor as any, expandSelectionToQuotes);
 
       const { doc, selectedText } = getDocumentAndSelection(editor);
       expect(doc).toEqual(content);
@@ -718,7 +718,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('insertLineAbove', () => {
     it('should insert line above', () => {
-      withMultipleSelectionsNew(editor as any, insertLineAbove);
+      withMultipleSelections(editor as any, insertLineAbove);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('lorem ipsum\n\ndolor sit\namet');
@@ -728,7 +728,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should insert line above first line', () => {
       editor.setCursor({ line: 0, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, insertLineAbove);
+      withMultipleSelections(editor as any, insertLineAbove);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('\nlorem ipsum\ndolor sit\namet');
@@ -745,7 +745,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue('- aaa\n- bbb');
         editor.setCursor({ line: 1, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineAbove);
+        withMultipleSelections(editor as any, insertLineAbove);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual('- aaa\n\n- bbb');
@@ -761,7 +761,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue('- aaa\n- bbb');
         editor.setCursor({ line: 0, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineAbove);
+        withMultipleSelections(editor as any, insertLineAbove);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual('\n- aaa\n- bbb');
@@ -782,7 +782,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue(content);
         editor.setCursor({ line: 1, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineAbove);
+        withMultipleSelections(editor as any, insertLineAbove);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual(expectedDoc);
@@ -803,7 +803,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
           editor.setValue(content);
           editor.setCursor({ line: 1, ch: 7 });
 
-          withMultipleSelectionsNew(editor as any, insertLineAbove);
+          withMultipleSelections(editor as any, insertLineAbove);
 
           const { doc, cursor } = getDocumentAndSelection(editor as any);
           expect(doc).toEqual(expectedDoc);
@@ -820,7 +820,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue('- aaa\n  - bbb');
         editor.setCursor({ line: 1, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineAbove);
+        withMultipleSelections(editor as any, insertLineAbove);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual('- aaa\n  - \n  - bbb');
@@ -836,7 +836,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue('1. aaa\n2. bbb');
         editor.setCursor({ line: 1, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineAbove);
+        withMultipleSelections(editor as any, insertLineAbove);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual('1. aaa\n2. \n3. bbb');
@@ -852,7 +852,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('insertLineBelow', () => {
     it('should insert line below', () => {
-      withMultipleSelectionsNew(editor as any, insertLineBelow);
+      withMultipleSelections(editor as any, insertLineBelow);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('lorem ipsum\ndolor sit\n\namet');
@@ -863,7 +863,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       editor.setValue('    lorem ipsum\n    dolor sit\n    amet');
       editor.setCursor({ line: 1, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, insertLineBelow);
+      withMultipleSelections(editor as any, insertLineBelow);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('    lorem ipsum\n    dolor sit\n    \n    amet');
@@ -874,7 +874,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should insert line below last line', () => {
       editor.setCursor({ line: 2, ch: 0 });
 
-      withMultipleSelectionsNew(editor as any, insertLineBelow);
+      withMultipleSelections(editor as any, insertLineBelow);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('lorem ipsum\ndolor sit\namet\n');
@@ -891,7 +891,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue('- aaa\n- bbb');
         editor.setCursor({ line: 0, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineBelow);
+        withMultipleSelections(editor as any, insertLineBelow);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual('- aaa\n\n- bbb');
@@ -912,7 +912,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue(content);
         editor.setCursor({ line: 0, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineBelow);
+        withMultipleSelections(editor as any, insertLineBelow);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual(expectedDoc);
@@ -933,7 +933,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
           editor.setValue(content);
           editor.setCursor({ line: 0, ch: 7 });
 
-          withMultipleSelectionsNew(editor as any, insertLineBelow);
+          withMultipleSelections(editor as any, insertLineBelow);
 
           const { doc, cursor } = getDocumentAndSelection(editor as any);
           expect(doc).toEqual(expectedDoc);
@@ -950,7 +950,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue('- aaa\n  - bbb');
         editor.setCursor({ line: 1, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineBelow);
+        withMultipleSelections(editor as any, insertLineBelow);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual('- aaa\n  - bbb\n  - ');
@@ -966,7 +966,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue('1. aaa\n2. bbb');
         editor.setCursor({ line: 0, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineBelow);
+        withMultipleSelections(editor as any, insertLineBelow);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual('1. aaa\n2. \n3. bbb');
@@ -982,7 +982,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
         editor.setValue('- aaa\n  - ');
         editor.setCursor({ line: 1, ch: 4 });
 
-        withMultipleSelectionsNew(editor as any, insertLineBelow);
+        withMultipleSelections(editor as any, insertLineBelow);
 
         const { doc, cursor } = getDocumentAndSelection(editor as any);
         expect(doc).toEqual('- aaa\n');
@@ -998,7 +998,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
   describe('deleteLine', () => {
     it('should delete line at cursor', () => {
-      withMultipleSelectionsNew(editor as any, deleteLine);
+      withMultipleSelections(editor as any, deleteLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('lorem ipsum\namet');
@@ -1008,7 +1008,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should delete last line', () => {
       editor.setCursor({ line: 2, ch: 2 });
 
-      withMultipleSelectionsNew(editor as any, deleteLine);
+      withMultipleSelections(editor as any, deleteLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('lorem ipsum\ndolor sit');
@@ -1024,7 +1024,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       );
       editor.setCursor({ line: 0, ch: 53 });
 
-      withMultipleSelectionsNew(editor as any, deleteLine);
+      withMultipleSelections(editor as any, deleteLine);
 
       const { doc, cursor } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('shorter line');

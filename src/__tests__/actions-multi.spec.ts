@@ -27,7 +27,7 @@ import {
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
 import {
-  withMultipleSelectionsNew,
+  withMultipleSelections,
   defaultMultipleSelectionOptions,
 } from '../utils';
 
@@ -87,7 +87,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('deleteToStartOfLine', () => {
     it('should delete to the start of the lines', () => {
-      withMultipleSelectionsNew(editor as any, deleteToStartOfLine);
+      withMultipleSelections(editor as any, deleteToStartOfLine);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(
@@ -112,7 +112,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('deleteToEndOfLine', () => {
     it('should delete to the end of the lines', () => {
-      withMultipleSelectionsNew(editor as any, deleteToEndOfLine);
+      withMultipleSelections(editor as any, deleteToEndOfLine);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(
@@ -138,7 +138,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('joinLines', () => {
     it('should join multiple selected lines', () => {
-      withMultipleSelectionsNew(editor as any, joinLines, {
+      withMultipleSelections(editor as any, joinLines, {
         ...defaultMultipleSelectionOptions,
         repeatSameLineActions: false,
       });
@@ -170,7 +170,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 6, ch: 6 }, head: { line: 6, ch: 6 } }, // tincid{<>}unt
       ]);
 
-      withMultipleSelectionsNew(editor as any, joinLines, {
+      withMultipleSelections(editor as any, joinLines, {
         ...defaultMultipleSelectionOptions,
         repeatSameLineActions: false,
       });
@@ -208,7 +208,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 2, ch: 4 }, head: { line: 2, ch: 4 } },
       ]);
 
-      withMultipleSelectionsNew(editor as any, joinLines);
+      withMultipleSelections(editor as any, joinLines);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual('- aaa bbb\n- ccc ddd');
@@ -227,7 +227,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('copyLine', () => {
     it('should copy selected lines up', () => {
-      withMultipleSelectionsNew(editor as any, copyLine, {
+      withMultipleSelections(editor as any, copyLine, {
         ...defaultMultipleSelectionOptions,
         args: { direction: 'up' },
       });
@@ -259,7 +259,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should copy selected lines down', () => {
-      withMultipleSelectionsNew(editor as any, copyLine, {
+      withMultipleSelections(editor as any, copyLine, {
         ...defaultMultipleSelectionOptions,
         args: { direction: 'down' },
       });
@@ -346,7 +346,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('selectLine', () => {
     it('should select lines', () => {
-      withMultipleSelectionsNew(editor as any, selectLine);
+      withMultipleSelections(editor as any, selectLine);
 
       // Note: under CM5 the adjacent line selections were merged into one
       // (the legacy spec asserted a single combined selection); CM6 only
@@ -374,7 +374,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('goToLineBoundary', () => {
     it('should go to line starts', () => {
-      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
+      withMultipleSelections(editor as any, goToLineBoundary, {
         ...defaultMultipleSelectionOptions,
         args: { boundary: 'start' },
       });
@@ -398,7 +398,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should go to line ends', () => {
-      withMultipleSelectionsNew(editor as any, goToLineBoundary, {
+      withMultipleSelections(editor as any, goToLineBoundary, {
         ...defaultMultipleSelectionOptions,
         args: { boundary: 'end' },
       });
@@ -424,7 +424,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('navigateLine', () => {
     it('should navigate to the previous lines', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
         args: { position: 'prev' },
       });
@@ -448,7 +448,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should navigate to the next lines', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
         args: { position: 'next' },
       });
@@ -472,7 +472,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should navigate to the first line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
         args: { position: 'first' },
       });
@@ -488,7 +488,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should navigate to the last line', () => {
-      withMultipleSelectionsNew(editor as any, navigateLine, {
+      withMultipleSelections(editor as any, navigateLine, {
         ...defaultMultipleSelectionOptions,
         args: { position: 'last' },
       });
@@ -506,7 +506,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('transformCase', () => {
     it('should transform to uppercase', () => {
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         ...defaultMultipleSelectionOptions,
         args: { caseType: CASE.UPPER },
       });
@@ -520,7 +520,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should transform to lowercase', () => {
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         ...defaultMultipleSelectionOptions,
         args: { caseType: CASE.LOWER },
       });
@@ -534,7 +534,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should transform to title case', () => {
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         ...defaultMultipleSelectionOptions,
         args: { caseType: CASE.TITLE },
       });
@@ -548,7 +548,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
 
     it('should cycle to next case', () => {
-      withMultipleSelectionsNew(editor as any, transformCase, {
+      withMultipleSelections(editor as any, transformCase, {
         ...defaultMultipleSelectionOptions,
         args: { caseType: CASE.NEXT },
       });
@@ -569,7 +569,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 5, ch: 6 }, head: { line: 5, ch: 6 } }, // (donec{<>}
       ]);
 
-      withMultipleSelectionsNew(editor as any, expandSelectionToBrackets);
+      withMultipleSelections(editor as any, expandSelectionToBrackets);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -591,7 +591,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('expandSelectionToQuotes', () => {
     it('should expand selections to quotes', () => {
-      withMultipleSelectionsNew(editor as any, expandSelectionToQuotes);
+      withMultipleSelections(editor as any, expandSelectionToQuotes);
 
       const { doc, selections } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
@@ -666,7 +666,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         },
       ];
 
-      withMultipleSelectionsNew(editor as any, insertLineAbove);
+      withMultipleSelections(editor as any, insertLineAbove);
 
       ({ doc, selections } = getDocumentAndSelection(editor));
       expect(doc).toEqual(expectedDoc);
@@ -760,7 +760,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('insertLineAbove', () => {
     it('should insert line above', () => {
-      withMultipleSelectionsNew(editor as any, insertLineAbove);
+      withMultipleSelections(editor as any, insertLineAbove);
 
       const { doc, selections } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual(
@@ -790,7 +790,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('insertLineBelow', () => {
     it('should insert lines below', () => {
-      withMultipleSelectionsNew(editor as any, insertLineBelow);
+      withMultipleSelections(editor as any, insertLineBelow);
 
       const { doc, selections } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual(
@@ -824,7 +824,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 1, ch: 6 }, head: { line: 1, ch: 6 } },
       ]);
 
-      withMultipleSelectionsNew(editor as any, insertLineBelow);
+      withMultipleSelections(editor as any, insertLineBelow);
 
       const { doc, selections } = getDocumentAndSelection(editor as any);
       expect(doc).toEqual('- aaa\n- \n  - bbb\n  - ');
@@ -843,7 +843,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
 
   describe('deleteLine', () => {
     it('should delete selected lines', () => {
-      withMultipleSelectionsNew(editor as any, deleteLine, {
+      withMultipleSelections(editor as any, deleteLine, {
         combineSameLineSelections: true,
       });
 

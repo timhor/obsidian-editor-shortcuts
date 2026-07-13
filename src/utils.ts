@@ -5,43 +5,24 @@ import {
   EditorRangeOrCaret,
   EditorPosition,
   EditorSelection,
-  EditorSelectionOrCaret,
 } from 'obsidian';
 import {
   SEARCH_DIRECTION,
   LOWERCASE_ARTICLES,
   LIST_CHARACTER_REGEX,
 } from './constants';
-import { CustomSelectionHandler } from './custom-selection-handlers';
 
-type EditorActionCallbackNew = (
+type EditorActionCallback = (
   editor: Editor,
   selection: EditorSelection,
   args: any,
 ) => { changes: EditorChange[]; newSelection: EditorRangeOrCaret };
 
-type EditorActionCallback = (
-  editor: Editor,
-  selection: EditorSelection,
-  args: string,
-) => EditorSelectionOrCaret;
+export type EditorActionCallbackArgs = Record<string, any>;
 
 type MultipleSelectionOptions = {
   // Additional information to be passed to the EditorActionCallback
-  args?: string;
-
-  // Perform further processing of new selections before they are set
-  customSelectionHandler?: CustomSelectionHandler;
-
-  // Whether the action should be repeated for cursors on the same line
-  repeatSameLineActions?: boolean;
-};
-
-export type EditorActionCallbackNewArgs = Record<string, any>;
-
-type MultipleSelectionOptionsNew = {
-  // Additional information to be passed to the EditorActionCallback
-  args?: EditorActionCallbackNewArgs;
+  args?: EditorActionCallbackArgs;
 
   // Whether the action should be repeated for cursors on the same line
   repeatSameLineActions?: boolean;
@@ -117,10 +98,10 @@ const normalizeChanges = (changes: EditorChange[]): EditorChange[] => {
   return result;
 };
 
-export const withMultipleSelectionsNew = (
+export const withMultipleSelections = (
   editor: Editor,
-  callback: EditorActionCallbackNew,
-  options: MultipleSelectionOptionsNew = defaultMultipleSelectionOptions,
+  callback: EditorActionCallback,
+  options: MultipleSelectionOptions = defaultMultipleSelectionOptions,
 ) => {
   const selections = editor.listSelections();
   let selectionIndexesToProcess: number[];
@@ -220,80 +201,13 @@ export const withMultipleSelectionsNew = (
   }
 };
 
-export const withMultipleSelections = (
-  editor: Editor,
-  callback: EditorActionCallback,
-  options: MultipleSelectionOptions = defaultMultipleSelectionOptions,
-) => {
-  // @ts-expect-error: Obsidian's Editor interface does not explicitly
-  // include the CodeMirror cm object, but it is there when using the
-  // legacy editor
-  const { cm } = editor;
-
-  const selections = editor.listSelections();
-  let selectionIndexesToProcess: number[];
-  let newSelections: EditorSelectionOrCaret[] = [];
-
-  if (!options.repeatSameLineActions) {
-    const seenLines: number[] = [];
-    selectionIndexesToProcess = selections.reduce(
-      (indexes, currSelection, currIndex) => {
-        const currentLine = currSelection.head.line;
-        if (!seenLines.includes(currentLine)) {
-          seenLines.push(currentLine);
-          indexes.push(currIndex);
-        }
-        return indexes;
-      },
-      [],
-    );
-  }
-
-  const applyCallbackOnSelections = () => {
-    for (let i = 0; i < selections.length; i++) {
-      // Controlled by repeatSameLineActions
-      if (selectionIndexesToProcess && !selectionIndexesToProcess.includes(i)) {
-        continue;
-      }
-
-      // Can't reuse selections variable as positions may change on each iteration
-      const selection = editor.listSelections()[i];
-
-      // Selections may disappear (e.g. running delete line for two cursors on the same line)
-      if (selection) {
-        const newSelection = callback(editor, selection, options.args);
-        newSelections.push(newSelection);
-      }
-    }
-
-    if (options.customSelectionHandler) {
-      newSelections = options.customSelectionHandler(newSelections);
-    }
-    editor.setSelections(newSelections);
-  };
-
-  if (cm && cm.operation) {
-    // Group all the updates into one atomic operation (so undo/redo work as expected)
-    cm.operation(applyCallbackOnSelections);
-  } else {
-    // Safe fallback if cm doesn't exist (so undo/redo will step through each change)
-    console.debug('cm object not found, operations will not be buffered');
-    applyCallbackOnSelections();
-  }
-};
-
 /**
- * Executes the supplied callback for each top-level CodeMirror div element in the
- * DOM. This is an interim util made to work with both CM5 and CM6 as Obsidian's
- * `iterateCodeMirrors` method only works with CM5.
+ * Executes the supplied callback for each top-level CodeMirror (CM6) content
+ * div element in the DOM, as Obsidian's `iterateCodeMirrors` method only
+ * works with CM5.
  */
 export const iterateCodeMirrorDivs = (callback: (cm: HTMLElement) => any) => {
-  let codeMirrors: NodeListOf<HTMLElement>;
-  codeMirrors = document.querySelectorAll('.cm-content'); // CM6
-  if (codeMirrors.length === 0) {
-    codeMirrors = document.querySelectorAll('.CodeMirror'); // CM5
-  }
-  codeMirrors.forEach(callback);
+  document.querySelectorAll<HTMLElement>('.cm-content').forEach(callback);
 };
 
 export const getLineStartPos = (line: number): EditorPosition => ({

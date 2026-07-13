@@ -4,7 +4,7 @@ import {
   EditorViewWithLegacyMethods,
   getDocumentAndSelection,
 } from './test-helpers';
-import { withMultipleSelectionsNew } from '../utils';
+import { withMultipleSelections } from '../utils';
 import {
   deleteLine,
   deleteToStartOfLine,
@@ -13,7 +13,7 @@ import {
 } from '../actions';
 import { CASE } from '../constants';
 
-describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
+describe('Code Editor Shortcuts: utils - withMultipleSelections', () => {
   let view: EditorViewWithLegacyMethods;
 
   const originalDoc = 'lorem ipsum\ndolor sit\namet';
@@ -36,7 +36,7 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
       { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
     ]);
 
-    withMultipleSelectionsNew(view as any, (editor, selection) => ({
+    withMultipleSelections(view as any, (editor, selection) => ({
       changes: [],
       newSelection: {
         from: selection.head,
@@ -58,7 +58,7 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
       { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
     ]);
 
-    withMultipleSelectionsNew(view as any, () => ({
+    withMultipleSelections(view as any, () => ({
       changes: [
         { from: { line: 0, ch: 0 }, to: { line: 0, ch: 5 }, text: 'XXXXX' },
       ],
@@ -75,7 +75,7 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
       { anchor: { line: 0, ch: 3 }, head: { line: 0, ch: 3 } },
     ]);
 
-    withMultipleSelectionsNew(view as any, () => ({
+    withMultipleSelections(view as any, () => ({
       changes: [{ from: { line: 0, ch: 0 }, text: 'X' }],
       newSelection: { from: { line: 0, ch: 0 } },
     }));
@@ -94,7 +94,7 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
 
     let call = 0;
     expect(() =>
-      withMultipleSelectionsNew(view as any, () => {
+      withMultipleSelections(view as any, () => {
         call++;
         const changes =
           call === 1
@@ -116,7 +116,7 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
       { anchor: { line: 1, ch: 5 }, head: { line: 0, ch: 6 } },
     ]);
 
-    withMultipleSelectionsNew(view as any, expandSelectionToQuotes);
+    withMultipleSelections(view as any, expandSelectionToQuotes);
 
     const { doc, selections } = getDocumentAndSelection(view as any);
     expect(doc).toEqual(originalDoc);
@@ -134,7 +134,7 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
       { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
     ]);
 
-    withMultipleSelectionsNew(view as any, deleteToStartOfLine);
+    withMultipleSelections(view as any, deleteToStartOfLine);
 
     const { doc, selections } = getDocumentAndSelection(view as any);
     expect(doc).toEqual('ipsumdolor sit\namet');
@@ -153,7 +153,7 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
       { anchor: { line: 0, ch: 9 }, head: { line: 0, ch: 9 } },
     ]);
 
-    withMultipleSelectionsNew(view as any, transformCase, {
+    withMultipleSelections(view as any, transformCase, {
       args: { caseType: CASE.NEXT },
     });
 
@@ -167,7 +167,7 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
       { anchor: { line: 1, ch: 2 }, head: { line: 1, ch: 2 } },
     ]);
 
-    withMultipleSelectionsNew(view as any, deleteLine, {
+    withMultipleSelections(view as any, deleteLine, {
       combineSameLineSelections: true,
     });
 

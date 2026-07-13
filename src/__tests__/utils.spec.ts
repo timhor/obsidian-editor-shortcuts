@@ -5,7 +5,7 @@ import {
 } from './test-helpers';
 import {
   defaultMultipleSelectionOptions,
-  withMultipleSelectionsNew,
+  withMultipleSelections,
   getLineStartPos,
   getLineEndPos,
   getSelectionBoundaries,
@@ -45,7 +45,7 @@ describe('Code Editor Shortcuts: utils', () => {
     editor.setCursor({ line: 0, ch: 0 });
   });
 
-  describe('withMultipleSelectionsNew', () => {
+  describe('withMultipleSelections', () => {
     const emptyResult = {
       changes: [] as any[],
       newSelection: { from: { line: 0, ch: 0 } },
@@ -66,12 +66,12 @@ describe('Code Editor Shortcuts: utils', () => {
     });
 
     it('should execute callback for each editor selection', () => {
-      withMultipleSelectionsNew(editor as any, mockCallback);
+      withMultipleSelections(editor as any, mockCallback);
       expect(mockCallback).toHaveBeenCalledTimes(2);
     });
 
     it('should forward any arguments to the callback along with the iteration', () => {
-      withMultipleSelectionsNew(editor as any, mockCallback, {
+      withMultipleSelections(editor as any, mockCallback, {
         ...defaultMultipleSelectionOptions,
         args: { foo: 'bar' },
       });
@@ -88,7 +88,7 @@ describe('Code Editor Shortcuts: utils', () => {
     });
 
     it('should filter out subsequent selections on the same line if repeatSameLineActions is false', () => {
-      withMultipleSelectionsNew(editor as any, mockCallback, {
+      withMultipleSelections(editor as any, mockCallback, {
         repeatSameLineActions: false,
       });
       expect(mockCallback).toHaveBeenCalledTimes(1);

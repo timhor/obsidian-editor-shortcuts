@@ -23,6 +23,12 @@ by a regression test:
   CM5 behavior, without relying on cursor remapping/collapsing mid-command.)
 - **Delete to start of line with multiple cursors on one line:** likewise
   merged into a single deletion from the line start.
+- **Select line with adjacent multi-cursor selections:** CM5 merged
+  touching (not just overlapping) selections, so selecting adjacent lines
+  with multiple cursors used to collapse into one combined selection. CM6
+  only merges overlapping ranges; adjacent line selections stay separate.
+  (This has been the actual behavior in Obsidian 1.x already; the test
+  suite now pins it.)
 - **Selection-only commands** (select line, go to line start/end, navigate
   line, expand selection to brackets/quotes) no longer dispatch an editor
   transaction at all, so they cannot pollute undo history.
