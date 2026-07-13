@@ -1,11 +1,13 @@
-import CodeMirror from 'codemirror';
-import type { Editor } from 'codemirror';
+import { EditorView } from '@codemirror/view';
 import {
+  defineLegacyEditorMethods,
+  EditorViewWithLegacyMethods,
   getDocumentAndSelection,
-  defineCm5TransactionMethod,
 } from './test-helpers';
 import {
+  deleteLine,
   insertLineAbove,
+  insertLineBelow,
   deleteToStartOfLine,
   deleteToEndOfLine,
   joinLines,
@@ -25,7 +27,6 @@ import {
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
 import {
-  withMultipleSelections,
   withMultipleSelectionsNew,
   defaultMultipleSelectionOptions,
 } from '../utils';
@@ -45,21 +46,14 @@ document.createRange = () => {
 };
 
 describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
-  let editor: Editor;
+  let editor: EditorViewWithLegacyMethods;
   const originalDoc =
     `lorem ipsum\ndolor sit\namet\n\n` +
     `consectetur "adipiscing" 'elit'\n(donec [mattis])\ntincidunt metus`;
 
   beforeAll(() => {
-    editor = CodeMirror(document.body);
-    // To make cm.operation() work, since editor here already refers to the
-    // CodeMirror object
-    (editor as any).cm = editor;
-    defineCm5TransactionMethod(editor);
-
-    // Assign the CodeMirror equivalents of posToOffset and offsetToPos
-    (editor as any).posToOffset = editor.indexFromPos;
-    (editor as any).offsetToPos = editor.posFromIndex;
+    editor = new EditorView({ parent: document.body });
+    defineLegacyEditorMethods(editor);
   });
 
   const originalSelectionRanges = [
@@ -354,11 +348,17 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     it('should select lines', () => {
       withMultipleSelectionsNew(editor as any, selectLine);
 
-      const { doc, selectedText } = getDocumentAndSelection(editor);
+      // Note: under CM5 the adjacent line selections were merged into one
+      // (the legacy spec asserted a single combined selection); CM6 only
+      // merges overlapping ranges, not touching ones, which matches what
+      // Obsidian 1.x actually does in production
+      const { doc, selectedTextMultiple } = getDocumentAndSelection(editor);
       expect(doc).toEqual(originalDoc);
-      expect(selectedText).toEqual(
-        `lorem ipsum\ndolor sit\namet\n\nconsectetur "adipiscing" 'elit'\n`,
-      );
+      expect(selectedTextMultiple).toEqual([
+        'lorem ipsum\ndolor sit\n',
+        'amet\n',
+        `consectetur "adipiscing" 'elit'\n`,
+      ]);
     });
   });
 
@@ -640,7 +640,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
     });
   });
 
-  describe.skip('undo: sanity check', () => {
+  describe('undo: sanity check', () => {
     it('should group changes as a single transaction', () => {
       let doc: string;
       let selections: any;
@@ -666,9 +666,7 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         },
       ];
 
-      // @ts-expect-error - the new version of insertLineAbove is
-      // incompatible with `withMultipleSelections`
-      withMultipleSelections(editor as any, insertLineAbove);
+      withMultipleSelectionsNew(editor as any, insertLineAbove);
 
       ({ doc, selections } = getDocumentAndSelection(editor));
       expect(doc).toEqual(expectedDoc);
@@ -756,6 +754,110 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 1, ch: 1 }, head: { line: 1, ch: 3 } },
         { anchor: { line: 2, ch: 2 }, head: { line: 2, ch: 2 } },
         { anchor: { line: 3, ch: 2 }, head: { line: 3, ch: 2 } },
+      ]);
+    });
+  });
+
+  describe('insertLineAbove', () => {
+    it('should insert line above', () => {
+      withMultipleSelectionsNew(editor as any, insertLineAbove);
+
+      const { doc, selections } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual(
+        `\nlorem ipsum\ndolor sit\n\namet\n\n\n\n` +
+          `consectetur "adipiscing" 'elit'\n(donec [mattis])\ntincidunt metus`,
+      );
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 0 }),
+          head: expect.objectContaining({ line: 3, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 6, ch: 0 }),
+          head: expect.objectContaining({ line: 6, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 7, ch: 0 }),
+          head: expect.objectContaining({ line: 7, ch: 0 }),
+        },
+      ]);
+    });
+  });
+
+  describe('insertLineBelow', () => {
+    it('should insert lines below', () => {
+      withMultipleSelectionsNew(editor as any, insertLineBelow);
+
+      const { doc, selections } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual(
+        `lorem ipsum\n\ndolor sit\namet\n\n\n` +
+          `consectetur "adipiscing" 'elit'\n\n\n(donec [mattis])\ntincidunt metus`,
+      );
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 0 }),
+          head: expect.objectContaining({ line: 1, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 4, ch: 0 }),
+          head: expect.objectContaining({ line: 4, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 7, ch: 0 }),
+          head: expect.objectContaining({ line: 7, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 8, ch: 0 }),
+          head: expect.objectContaining({ line: 8, ch: 0 }),
+        },
+      ]);
+    });
+
+    it('should insert prefixes when inside a list', () => {
+      editor.setValue('- aaa\n  - bbb');
+      editor.setSelections([
+        { anchor: { line: 0, ch: 2 }, head: { line: 0, ch: 2 } },
+        { anchor: { line: 1, ch: 6 }, head: { line: 1, ch: 6 } },
+      ]);
+
+      withMultipleSelectionsNew(editor as any, insertLineBelow);
+
+      const { doc, selections } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual('- aaa\n- \n  - bbb\n  - ');
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 2 }),
+          head: expect.objectContaining({ line: 1, ch: 2 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 3, ch: 4 }),
+          head: expect.objectContaining({ line: 3, ch: 4 }),
+        },
+      ]);
+    });
+  });
+
+  describe('deleteLine', () => {
+    it('should delete selected lines', () => {
+      withMultipleSelectionsNew(editor as any, deleteLine, {
+        combineSameLineSelections: true,
+      });
+
+      const { doc, selections } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual(`\n(donec [mattis])\ntincidunt metus`);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 0, ch: 0 }),
+          head: expect.objectContaining({ line: 0, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 16 }),
+          head: expect.objectContaining({ line: 1, ch: 16 }),
+        },
       ]);
     });
   });
