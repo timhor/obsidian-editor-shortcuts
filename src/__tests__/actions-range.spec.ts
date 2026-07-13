@@ -1,11 +1,14 @@
-import CodeMirror from 'codemirror';
-import type { Editor } from 'codemirror';
+import { EditorView } from '@codemirror/view';
 import {
+  defineLegacyEditorMethods,
+  EditorViewWithLegacyMethods,
   getDocumentAndSelection,
-  defineCm5TransactionMethod,
 } from './test-helpers';
 import {
+  deleteLine,
   deleteToStartOfLine,
+  insertLineAbove,
+  insertLineBelow,
   deleteToEndOfLine,
   joinLines,
   copyLine,
@@ -25,6 +28,7 @@ import {
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
 import { withMultipleSelectionsNew } from '../utils';
+import { SettingsState } from '../state';
 
 // fixes jsdom type error - https://github.com/jsdom/jsdom/issues/3002#issuecomment-655748833
 document.createRange = () => {
@@ -41,23 +45,16 @@ document.createRange = () => {
 };
 
 describe('Code Editor Shortcuts: actions - single range selection', () => {
-  let editor: Editor;
+  let editor: EditorViewWithLegacyMethods;
   const originalDoc = 'lorem ipsum\ndolor sit\namet';
 
   beforeAll(() => {
-    editor = CodeMirror(document.body);
-
-    // To make cm.operation() work, since editor here already refers to the
-    // CodeMirror object
-    (editor as any).cm = editor;
-    defineCm5TransactionMethod(editor);
-
-    // Assign the CodeMirror equivalents of posToOffset and offsetToPos
-    (editor as any).posToOffset = editor.indexFromPos;
-    (editor as any).offsetToPos = editor.posFromIndex;
+    editor = new EditorView({ parent: document.body });
+    defineLegacyEditorMethods(editor);
   });
 
   beforeEach(() => {
+    SettingsState.autoInsertListPrefix = true;
     editor.setValue(originalDoc);
     editor.setSelection({ line: 0, ch: 6 }, { line: 1, ch: 5 });
   });
@@ -853,6 +850,82 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
         { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 5 } },
         { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 3 } },
       ]);
+    });
+  });
+
+  describe('insertLineAbove', () => {
+    it('should insert line above', () => {
+      withMultipleSelectionsNew(editor as any, insertLineAbove);
+
+      const { doc, cursor } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual('lorem ipsum\n\ndolor sit\namet');
+      expect(cursor.line).toEqual(1);
+    });
+  });
+
+  describe('insertLineBelow', () => {
+    it('should insert line below', () => {
+      withMultipleSelectionsNew(editor as any, insertLineBelow);
+
+      const { doc, cursor } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual('lorem ipsum\ndolor sit\n\namet');
+      expect(cursor.line).toEqual(2);
+    });
+
+    it('should insert prefix when inside a list', () => {
+      editor.setValue('- aaa\n- bbb');
+      editor.setSelection({ line: 0, ch: 2 }, { line: 0, ch: 5 });
+
+      withMultipleSelectionsNew(editor as any, insertLineBelow);
+
+      const { doc, cursor } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual('- aaa\n- \n- bbb');
+      expect(cursor).toEqual(
+        expect.objectContaining({
+          line: 1,
+          ch: 2,
+        }),
+      );
+    });
+  });
+
+  describe('deleteLine', () => {
+    it('should delete selected lines', () => {
+      withMultipleSelectionsNew(editor as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual('amet');
+      expect(cursor.line).toEqual(0);
+    });
+
+    it('should delete all lines if entire document is selected', () => {
+      editor.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 4 });
+
+      withMultipleSelectionsNew(editor as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual('');
+      expect(cursor.line).toEqual(0);
+    });
+
+    it('should exclude line starting at trailing newline from being deleted', () => {
+      editor.setSelection({ line: 0, ch: 0 }, { line: 1, ch: 0 });
+
+      withMultipleSelectionsNew(editor as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual('dolor sit\namet');
+      expect(cursor.line).toEqual(0);
+    });
+
+    it('should exclude line starting at trailing newline at end of document from being deleted', () => {
+      editor.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 0 });
+
+      withMultipleSelectionsNew(editor as any, deleteLine);
+
+      const { doc, cursor } = getDocumentAndSelection(editor as any);
+      expect(doc).toEqual('amet');
+      expect(cursor.line).toEqual(0);
     });
   });
 });
