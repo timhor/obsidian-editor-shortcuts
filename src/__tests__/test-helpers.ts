@@ -1,14 +1,15 @@
 import { EditorState, EditorSelection, Text } from '@codemirror/state';
 import { history, redo, undo } from '@codemirror/commands';
 import type { EditorView } from '@codemirror/view';
-import type { Editor } from 'codemirror';
 import type {
   EditorPosition,
   EditorSelection as ObsidianEditorSelection,
   EditorTransaction,
 } from 'obsidian';
 
-export const getDocumentAndSelection = (editor: Editor) => {
+export const getDocumentAndSelection = (
+  editor: EditorViewWithLegacyMethods,
+) => {
   return {
     doc: editor.getValue(),
     cursor: editor.getCursor(),
@@ -202,32 +203,5 @@ export const defineLegacyEditorMethods = (
   view.textAtSelection = (length = 10) => {
     const from = view.state.selection.main.from;
     return view.state.doc.slice(from, from + length).toString();
-  };
-};
-
-/**
- * Defines an Obsidian-style `transaction` method on a legacy CM5 test editor,
- * so specs can exercise actions that dispatch through `editor.transaction`.
- * Changes are applied from the end of the document backwards so that earlier
- * positions remain valid while applying.
- */
-export const defineCm5TransactionMethod = (editor: any) => {
-  editor.transaction = (tx: EditorTransaction) => {
-    if (tx.changes) {
-      const sortedDescending = [...tx.changes].sort(
-        (a, b) => b.from.line - a.from.line || b.from.ch - a.from.ch,
-      );
-      for (const change of sortedDescending) {
-        editor.replaceRange(change.text, change.from, change.to ?? change.from);
-      }
-    }
-    if (tx.selections) {
-      editor.setSelections(
-        tx.selections.map((selection) => ({
-          anchor: selection.from,
-          head: selection.to ?? selection.from,
-        })),
-      );
-    }
   };
 };

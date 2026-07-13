@@ -2569,13 +2569,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codemirror@npm:^5.65.0":
-  version: 5.65.0
-  resolution: "codemirror@npm:5.65.0"
-  checksum: e2e017d91787f4d4c41a7920b9285d65d1806c70bf9098e6d88c6ff6c8d091bef197059b8177635d4f00285e4dc8222a2709fb64dbd6561cfbfd559a2b13dbe5
-  languageName: node
-  linkType: hard
-
 "collect-v8-coverage@npm:^1.0.0":
   version: 1.0.1
   resolution: "collect-v8-coverage@npm:1.0.1"
@@ -5134,7 +5127,6 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.9.0
     "@typescript-eslint/parser": ^5.9.0
     babel-jest: ^27.4.5
-    codemirror: ^5.65.0
     esbuild: 0.13.8
     eslint: ^8.6.0
     husky: ^7.0.2
