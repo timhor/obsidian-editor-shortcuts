@@ -79,7 +79,12 @@ export const defineLegacyEditorMethods = (
     );
   };
 
-  view.getLine = (n: number) => view.state.doc.line(n + 1).text;
+  // Out-of-range lines return undefined (as CM5's getLine did) since some
+  // callers (e.g. findPosOfNextCharacter) probe one line past the end
+  view.getLine = (n: number) =>
+    n >= 0 && n < view.state.doc.lines
+      ? view.state.doc.line(n + 1).text
+      : undefined;
 
   view.getRange = (from, to) =>
     view.state.sliceDoc(

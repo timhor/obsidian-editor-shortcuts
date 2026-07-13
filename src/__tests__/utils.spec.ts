@@ -1,7 +1,11 @@
-import CodeMirror from 'codemirror';
-import type { Editor } from 'codemirror';
+import { EditorView } from '@codemirror/view';
 import {
-  withMultipleSelections,
+  defineLegacyEditorMethods,
+  EditorViewWithLegacyMethods,
+} from './test-helpers';
+import {
+  defaultMultipleSelectionOptions,
+  withMultipleSelectionsNew,
   getLineStartPos,
   getLineEndPos,
   getSelectionBoundaries,
@@ -28,11 +32,12 @@ document.createRange = () => {
 };
 
 describe('Code Editor Shortcuts: utils', () => {
-  let editor: Editor;
+  let editor: EditorViewWithLegacyMethods;
   const originalDoc = 'lorem ipsum';
 
   beforeAll(() => {
-    editor = CodeMirror(document.body);
+    editor = new EditorView({ parent: document.body });
+    defineLegacyEditorMethods(editor);
   });
 
   beforeEach(() => {
@@ -40,10 +45,10 @@ describe('Code Editor Shortcuts: utils', () => {
     editor.setCursor({ line: 0, ch: 0 });
   });
 
-  describe('withMultipleSelections', () => {
-    const emptySelection = {
-      anchor: { line: 0, ch: 0 },
-      head: { line: 0, ch: 0 },
+  describe('withMultipleSelectionsNew', () => {
+    const emptyResult = {
+      changes: [] as any[],
+      newSelection: { from: { line: 0, ch: 0 } },
     };
     const firstWordSelection = {
       anchor: { line: 0, ch: 2 },
@@ -56,61 +61,41 @@ describe('Code Editor Shortcuts: utils', () => {
     let mockCallback: jest.Mock;
 
     beforeEach(() => {
-      // expect error to be thrown due to cm object not existing in the test editor
-      jest.spyOn(console, 'error').mockImplementation(() => jest.fn());
-
       editor.setSelections([firstWordSelection, secondWordSelection]);
-      mockCallback = jest.fn().mockReturnValue(emptySelection);
+      mockCallback = jest.fn().mockReturnValue(emptyResult);
     });
 
     it('should execute callback for each editor selection', () => {
-      withMultipleSelections(editor as any, mockCallback);
-      expect(mockCallback).toHaveBeenCalled();
+      withMultipleSelectionsNew(editor as any, mockCallback);
+      expect(mockCallback).toHaveBeenCalledTimes(2);
     });
 
-    it('should forward any arguments to the callback', () => {
-      withMultipleSelections(editor as any, mockCallback, {
-        args: 'foobar',
+    it('should forward any arguments to the callback along with the iteration', () => {
+      withMultipleSelectionsNew(editor as any, mockCallback, {
+        ...defaultMultipleSelectionOptions,
+        args: { foo: 'bar' },
       });
       expect(mockCallback).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
-        'foobar',
+        expect.objectContaining({ foo: 'bar', iteration: 0 }),
       );
-    });
-
-    it('should post-process new selections if customSelectionHandler is provided', () => {
-      const customSelectionHandler = jest.fn().mockReturnValue([
-        {
-          anchor: { line: 0, ch: 3 },
-          head: { line: 0, ch: 7 },
-        },
-      ]);
-      withMultipleSelections(editor as any, mockCallback, {
-        customSelectionHandler,
-      });
-      expect(customSelectionHandler).toHaveBeenCalledWith([emptySelection]);
-      expect(editor.listSelections()).toEqual([
-        {
-          anchor: expect.objectContaining({ line: 0, ch: 3 }),
-          head: expect.objectContaining({ line: 0, ch: 7 }),
-        },
-      ]);
+      expect(mockCallback).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ foo: 'bar', iteration: 1 }),
+      );
     });
 
     it('should filter out subsequent selections on the same line if repeatSameLineActions is false', () => {
-      withMultipleSelections(editor as any, mockCallback, {
+      withMultipleSelectionsNew(editor as any, mockCallback, {
         repeatSameLineActions: false,
       });
+      expect(mockCallback).toHaveBeenCalledTimes(1);
       expect(mockCallback).toHaveBeenCalledWith(
         expect.anything(),
         firstWordSelection,
-        undefined,
-      );
-      expect(mockCallback).not.toHaveBeenCalledWith(
-        expect.anything(),
-        secondWordSelection,
-        undefined,
+        expect.objectContaining({ iteration: 0 }),
       );
     });
   });
