@@ -35,6 +35,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Go to line number                                | Not set                    |
 | Delete to start of line                          | Not set                    |
 | Delete to end of line                            | Not set                    |
+| Delete word before cursor                        | Not set                    |
+| Delete word after cursor                         | Not set                    |
 | Transform selection to uppercase                 | Not set                    |
 | Transform selection to lowercase                 | Not set                    |
 | Transform selection to title case                | Not set                    |

@@ -511,6 +511,51 @@ export const moveWord = (editor: Editor, direction: 'left' | 'right') => {
   }
 };
 
+// There is no built-in command for deleting a word (unlike goWordLeft /
+// goWordRight, delWordBefore / delWordAfter are not supported by Obsidian's
+// editor.exec), so the word boundary is instead found by moving the cursor
+// with moveWord and deleting the text passed over. The case of an existing
+// selection is specially handled by just deleting the selection.
+export const deleteWordInDirection = (
+  editor: Editor,
+  direction: 'before' | 'after',
+) => {
+  const oldSelections = editor.listSelections();
+
+  // Move each selection's word boundary one at a time to prevent the
+  // selections from being merged, which would prevent us from matching which
+  // head belongs with which anchor.
+  const changes = oldSelections.map((oldSelection) => {
+    let from: EditorPosition;
+    let to: EditorPosition;
+    if (
+      oldSelection.anchor.line === oldSelection.head.line &&
+      oldSelection.anchor.ch === oldSelection.head.ch
+    ) {
+      // Calculate where to delete to by moving the cursor.
+      editor.setSelection(oldSelection.head, oldSelection.head);
+      moveWord(editor, direction === 'before' ? 'left' : 'right');
+      from = oldSelection.head;
+      to = editor.getCursor();
+    } else {
+      // If the selection is a range, just delete the range in the selection.
+      from = oldSelection.anchor;
+      to = oldSelection.head;
+    }
+
+    // Ensure `from` is before `to`
+    ({ from, to } = getSelectionBoundaries({ anchor: from, head: to }));
+
+    return { from, to, text: '' };
+  });
+
+  // Reset the selections to their original positions, before the deletion
+  // invalidates the positions.
+  editor.setSelections(oldSelections);
+
+  editor.transaction({ changes });
+};
+
 export const selectToWordInDirection = (
   editor: Editor,
   direction: 'left' | 'right',

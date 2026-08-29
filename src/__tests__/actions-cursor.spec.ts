@@ -21,6 +21,7 @@ import {
   insertCursorAbove,
   insertCursorBelow,
   moveWord,
+  deleteWordInDirection,
   selectToWordInDirection,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
@@ -478,6 +479,39 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should go to previous word', () => {
       moveWord(editor as any, 'left');
       expect(editor.exec).toHaveBeenCalledWith('goWordLeft');
+    });
+  });
+
+  describe('deleteWordInDirection', () => {
+    // deleteWord computes the deletion range via moveWord (goWordLeft /
+    // goWordRight), so forward the mocked `exec` to the real CodeMirror
+    // command in order to verify the resulting document mutation
+    beforeEach(() => {
+      (editor.exec as jest.Mock).mockImplementation((name: string) =>
+        (editor as any).execCommand(name),
+      );
+    });
+
+    afterEach(() => {
+      (editor.exec as jest.Mock).mockReset();
+    });
+
+    it('should delete the word before the cursor', () => {
+      editor.setCursor({ line: 1, ch: 5 }); // 'dolor{cursor} sit'
+      deleteWordInDirection(editor as any, 'before');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\n sit\namet');
+      expect(cursor).toEqual(expect.objectContaining({ line: 1, ch: 0 }));
+    });
+
+    it('should delete the word after the cursor', () => {
+      editor.setCursor({ line: 1, ch: 0 }); // '{cursor}dolor sit'
+      deleteWordInDirection(editor as any, 'after');
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\n sit\namet');
+      expect(cursor).toEqual(expect.objectContaining({ line: 1, ch: 0 }));
     });
   });
 

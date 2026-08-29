@@ -5,6 +5,7 @@ import {
   deleteLine,
   deleteToStartOfLine,
   deleteToEndOfLine,
+  deleteWordInDirection,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
@@ -100,6 +101,18 @@ export default class CodeEditorShortcuts extends Plugin {
       name: 'Delete to end of line',
       editorCallback: (editor) =>
         withMultipleSelections(editor, deleteToEndOfLine),
+    });
+
+    this.addCommand({
+      id: 'deleteWordBefore',
+      name: 'Delete word before cursor',
+      editorCallback: (editor) => deleteWordInDirection(editor, 'before'),
+    });
+
+    this.addCommand({
+      id: 'deleteWordAfter',
+      name: 'Delete word after cursor',
+      editorCallback: (editor) => deleteWordInDirection(editor, 'after'),
     });
 
     this.addCommand({
