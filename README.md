@@ -24,6 +24,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Move cursor right                                | Not set                    |
 | Go to previous word                              | Not set                    |
 | Go to next word                                  | Not set                    |
+| Select to previous word                          | Not set                    |
+| Select to next word                              | Not set                    |
 | Go to start of line                              | Not set                    |
 | Go to end of line                                | Not set                    |
 | Go to previous line                              | Not set                    |

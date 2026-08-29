@@ -511,6 +511,32 @@ export const moveWord = (editor: Editor, direction: 'left' | 'right') => {
   }
 };
 
+export const selectToWordInDirection = (
+  editor: Editor,
+  direction: 'left' | 'right',
+) => {
+  const oldSelections = editor.listSelections();
+
+  // Move each selection's word boundary one at a time to prevent the
+  // selections from being merged, which would prevent us from matching which
+  // head belongs with which anchor.
+  const newSelections: EditorSelection[] = oldSelections.map((oldSelection) => {
+    editor.setSelection(oldSelection.head, oldSelection.head);
+    moveWord(editor, direction);
+    return {
+      anchor: oldSelection.anchor,
+      head: editor.getCursor(),
+    };
+  });
+
+  // CodeMirror will automatically merge selections that overlap. There is a
+  // bug in CM5 where if two selections have the same head with anchors on
+  // either side, one of the selections will be dropped. But it is simpler to
+  // accept that CM has a bug for this very specific edge case than to try to
+  // rewrite the merging logic.
+  editor.setSelections(newSelections);
+};
+
 export const transformCase = (
   editor: Editor,
   selection: EditorSelection,

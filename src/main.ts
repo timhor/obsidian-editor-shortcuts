@@ -18,6 +18,7 @@ import {
   isProgrammaticSelectionChange,
   selectAllOccurrences,
   selectLine,
+  selectToWordInDirection,
   selectWordOrNextOccurrence,
   setIsManualSelection,
   setIsProgrammaticSelectionChange,
@@ -317,6 +318,18 @@ export default class CodeEditorShortcuts extends Plugin {
       id: 'goToNextWord',
       name: 'Go to next word',
       editorCallback: (editor) => moveWord(editor, 'right'),
+    });
+
+    this.addCommand({
+      id: 'selectToPreviousWord',
+      name: 'Select to previous word',
+      editorCallback: (editor) => selectToWordInDirection(editor, 'left'),
+    });
+
+    this.addCommand({
+      id: 'selectToNextWord',
+      name: 'Select to next word',
+      editorCallback: (editor) => selectToWordInDirection(editor, 'right'),
     });
 
     this.addCommand({
