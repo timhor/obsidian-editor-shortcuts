@@ -7,6 +7,10 @@
     "target": "es6",
     "allowJs": true,
     "noImplicitAny": true,
+    // Do not type-check third-party .d.ts files; this gate exists to check
+    // *our* source, and bundled typings (@types/node, @types/codemirror)
+    // carry incompatibilities we neither own nor can fix.
+    "skipLibCheck": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "allowSyntheticDefaultImports": true,
