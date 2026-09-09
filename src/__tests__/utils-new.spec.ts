@@ -6,6 +6,7 @@ import {
 } from './test-helpers';
 import { withMultipleSelectionsNew } from '../utils';
 import {
+  deleteLine,
   deleteToStartOfLine,
   expandSelectionToQuotes,
   transformCase,
@@ -158,5 +159,23 @@ describe('Code Editor Shortcuts: utils - withMultipleSelectionsNew', () => {
 
     const { doc } = getDocumentAndSelection(view as any);
     expect(doc).toEqual('lorem Ipsum\ndolor sit\namet');
+  });
+
+  it('undoes a multi-cursor command in a single undo step', () => {
+    view.setSelections([
+      { anchor: { line: 0, ch: 2 }, head: { line: 0, ch: 2 } },
+      { anchor: { line: 1, ch: 2 }, head: { line: 1, ch: 2 } },
+    ]);
+
+    withMultipleSelectionsNew(view as any, deleteLine, {
+      combineSameLineSelections: true,
+    });
+
+    expect(view.getValue()).toEqual('amet');
+
+    view.undo();
+
+    const { doc } = getDocumentAndSelection(view as any);
+    expect(doc).toEqual(originalDoc);
   });
 });

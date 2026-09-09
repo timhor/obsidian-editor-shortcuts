@@ -1,4 +1,5 @@
 import { EditorState, EditorSelection, Text } from '@codemirror/state';
+import { history, redo, undo } from '@codemirror/commands';
 import type { EditorView } from '@codemirror/view';
 import type { Editor } from 'codemirror';
 import type {
@@ -34,6 +35,15 @@ export interface EditorViewWithLegacyMethods extends EditorView {
   setSelections?: (selectionRanges: ObsidianEditorSelection[]) => void;
   listSelections?: () => ObsidianEditorSelection[];
   transaction?: (tx: EditorTransaction) => void;
+  replaceRange?: (
+    text: string,
+    from: EditorPosition,
+    to?: EditorPosition,
+  ) => void;
+  scrollIntoView?: (...args: any[]) => void;
+  undo?: () => void;
+  redo?: () => void;
+  exec?: (name: string) => void;
   textAtSelection?: (length?: number) => string;
 }
 
@@ -60,7 +70,13 @@ export const defineLegacyEditorMethods = (
   view.getValue = () => view.state.doc.toString();
 
   view.setValue = (value) => {
-    view.setState(EditorState.create({ doc: value }));
+    // Recreate state with a fresh undo history for each test document
+    view.setState(
+      EditorState.create({
+        doc: value,
+        extensions: [history(), EditorState.allowMultipleSelections.of(true)],
+      }),
+    );
   };
 
   view.getLine = (n: number) => view.state.doc.line(n + 1).text;
@@ -109,7 +125,8 @@ export const defineLegacyEditorMethods = (
     const selections = selectionRanges.map((range) =>
       EditorSelection.range(
         posToOffset(view.state.doc, range.anchor),
-        posToOffset(view.state.doc, range.head),
+        // Caret-only entries may omit head
+        posToOffset(view.state.doc, range.head ?? range.anchor),
       ),
     );
     view.dispatch({
@@ -120,7 +137,9 @@ export const defineLegacyEditorMethods = (
   view.listSelections = () =>
     view.state.selection.ranges.map((range) => ({
       anchor: offsetToPos(view.state.doc, range.anchor),
-      head: offsetToPos(view.state.doc, range.head ? range.head : range.anchor),
+      // Note: don't use a truthiness check here as a head offset of 0
+      // (start of document) is valid
+      head: offsetToPos(view.state.doc, range.head ?? range.anchor),
     }));
 
   view.transaction = (tx) => {
@@ -150,6 +169,28 @@ export const defineLegacyEditorMethods = (
         selection: EditorSelection.create(selections),
       });
     }
+  };
+
+  view.replaceRange = (text, from, to) => {
+    view.dispatch({
+      changes: {
+        from: posToOffset(view.state.doc, from),
+        ...(to && { to: posToOffset(view.state.doc, to) }),
+        insert: text,
+      },
+    });
+  };
+
+  view.scrollIntoView = () => {
+    // no-op: scrolling is not meaningful in jsdom
+  };
+
+  view.undo = () => {
+    undo(view);
+  };
+
+  view.redo = () => {
+    redo(view);
   };
 
   // For debugging tests

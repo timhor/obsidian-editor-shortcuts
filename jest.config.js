@@ -17,4 +17,10 @@ module.exports = {
   transform: {
     '^.+\\.[t|j]sx?$': 'babel-jest',
   },
+
+  // Some CodeMirror packages ship untranspiled ES modules; let babel-jest
+  // transform them instead of ignoring node_modules entirely
+  transformIgnorePatterns: [
+    '/node_modules/(?!(@codemirror|@marijn|style-mod|w3c-keyname|crelt)/)',
+  ],
 };
