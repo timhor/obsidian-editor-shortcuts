@@ -497,18 +497,22 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     });
 
     it('should delete the word before the cursor', () => {
-      editor.setCursor({ line: 1, ch: 5 }); // 'dolor{cursor} sit'
+      // Cursor state: 'dolor| sit'
+      editor.setCursor({ line: 1, ch: 5 });
       deleteWordInDirection(editor as any, 'before');
 
+      // Cursor state: '| sit'
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\n sit\namet');
       expect(cursor).toEqual(expect.objectContaining({ line: 1, ch: 0 }));
     });
 
     it('should delete the word after the cursor', () => {
-      editor.setCursor({ line: 1, ch: 0 }); // '{cursor}dolor sit'
+      // Cursor state: '|dolor sit'
+      editor.setCursor({ line: 1, ch: 0 });
       deleteWordInDirection(editor as any, 'after');
 
+      // Cursor state: '| sit'
       const { doc, cursor } = getDocumentAndSelection(editor);
       expect(doc).toEqual('lorem ipsum\n sit\namet');
       expect(cursor).toEqual(expect.objectContaining({ line: 1, ch: 0 }));
@@ -534,9 +538,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should extend the selection to the previous word, preserving the anchor', () => {
       // Cursor state: 'dolor| sit'
-      editor.setSelections([
-        { anchor: { line: 1, ch: 5 }, head: { line: 1, ch: 5 } },
-      ]);
+      editor.setCursor({ line: 1, ch: 5 });
 
       selectToWordInDirection(editor as any, 'left');
 
@@ -550,9 +552,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should extend the selection to the next word, preserving the anchor', () => {
       // Cursor state: '|dolor sit'
-      editor.setSelections([
-        { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 0 } },
-      ]);
+      editor.setCursor({ line: 1, ch: 0 });
 
       selectToWordInDirection(editor as any, 'right');
 
@@ -566,9 +566,7 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
 
     it('should keep expanding on repeated calls in the same direction', () => {
       // Cursor state: 'do|lor sit'
-      editor.setSelections([
-        { anchor: { line: 1, ch: 2 }, head: { line: 1, ch: 2 } },
-      ]);
+      editor.setCursor({ line: 1, ch: 2 });
 
       selectToWordInDirection(editor as any, 'right');
 
@@ -586,22 +584,6 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
       expect(editor.listSelections()[0]).toEqual({
         anchor: expect.objectContaining({ line: 1, ch: 2 }),
         head: expect.objectContaining({ line: 1, ch: 9 }),
-      });
-    });
-
-    it('should shrink the selection when moving in the opposite direction', () => {
-      // Cursor state: 'do[lor sit)'
-      editor.setSelections([
-        { anchor: { line: 1, ch: 2 }, head: { line: 1, ch: 9 } },
-      ]);
-
-      selectToWordInDirection(editor as any, 'left');
-
-      // Cursor state: 'do[lor )sit'
-      expect(editor.exec).toHaveBeenCalledWith('goWordLeft');
-      expect(editor.listSelections()[0]).toEqual({
-        anchor: expect.objectContaining({ line: 1, ch: 2 }),
-        head: expect.objectContaining({ line: 1, ch: 6 }),
       });
     });
   });

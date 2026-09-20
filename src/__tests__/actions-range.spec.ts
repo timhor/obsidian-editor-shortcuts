@@ -4,9 +4,11 @@ import { getDocumentAndSelection } from './test-helpers';
 import {
   deleteToStartOfLine,
   deleteToEndOfLine,
+  deleteWordInDirection,
   joinLines,
   copyLine,
   selectWordOrNextOccurrence,
+  selectToWordInDirection,
   selectAllOccurrences,
   selectLine,
   goToLineBoundary,
@@ -834,6 +836,86 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       expect(selections).toEqual([
         { anchor: { line: 0, ch: 0 }, head: { line: 0, ch: 5 } },
         { anchor: { line: 1, ch: 0 }, head: { line: 1, ch: 3 } },
+      ]);
+    });
+  });
+
+  describe('deleteWordInDirection', () => {
+    // deleteWordInDirection computes word boundaries via moveWord
+    // (goWordLeft / goWordRight), so forward the mocked `exec` to the real
+    // CodeMirror command in order to verify the resulting document mutation
+    beforeEach(() => {
+      (editor as any).exec = (name: string) =>
+        (editor as any).execCommand(name);
+      (editor as any).transaction = (tx: any) => {
+        tx.changes?.forEach((change: any) =>
+          editor.replaceRange(change.text, change.from, change.to),
+        );
+      };
+    });
+
+    afterEach(() => {
+      delete (editor as any).exec;
+      delete (editor as any).transaction;
+    });
+
+    it.each([['before'], ['after']] as const)(
+      "should delete the existing selection outright, ignoring word boundaries ('%s')",
+      (direction) => {
+        // Cursor state: 'd[olor s)it'
+        editor.setSelection({ line: 1, ch: 1 }, { line: 1, ch: 7 });
+
+        deleteWordInDirection(editor as any, direction);
+
+        // Cursor state: 'd|it'
+        const { doc, cursor } = getDocumentAndSelection(editor);
+        expect(doc).toEqual('lorem ipsum\ndit\namet');
+        expect(cursor).toEqual(expect.objectContaining({ line: 1, ch: 1 }));
+      },
+    );
+  });
+
+  describe('selectToWordInDirection', () => {
+    beforeEach(() => {
+      (editor as any).exec = (name: string) =>
+        (editor as any).execCommand(name);
+    });
+
+    afterEach(() => {
+      delete (editor as any).exec;
+    });
+
+    it('should extend an already-expanded selection further in the same direction, preserving the anchor', () => {
+      // Cursor state: 'do[lor) sit'
+      editor.setSelection({ line: 1, ch: 2 }, { line: 1, ch: 5 });
+
+      selectToWordInDirection(editor as any, 'right');
+
+      // Cursor state: 'do[lor sit)'
+      // (goWordRight from the end of 'dolor' moves to the end of 'sit')
+      const { selections } = getDocumentAndSelection(editor);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 2 }),
+          head: expect.objectContaining({ line: 1, ch: 9 }),
+        },
+      ]);
+    });
+
+    it('should shrink an already-expanded selection when called in the opposite direction', () => {
+      // Cursor state: 'do[lor sit)'
+      editor.setSelection({ line: 1, ch: 2 }, { line: 1, ch: 9 });
+
+      selectToWordInDirection(editor as any, 'left');
+
+      // Cursor state: 'do[lor )sit'
+      // (goWordLeft from the end of 'sit' moves to its start)
+      const { selections } = getDocumentAndSelection(editor);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 2 }),
+          head: expect.objectContaining({ line: 1, ch: 6 }),
+        },
       ]);
     });
   });
