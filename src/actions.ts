@@ -296,6 +296,53 @@ export const joinLines = (editor: Editor, selection: EditorSelection) => {
   };
 };
 
+const lineCollator = new Intl.Collator(undefined, { numeric: true });
+
+/**
+ * Sorts the lines covered by the selection. Partially selected lines are
+ * sorted as whole lines, and a selection ending at the start of a line does
+ * not include that line. With no selection, the whole document is sorted.
+ */
+export const sortLines = (
+  editor: Editor,
+  selection: EditorSelection,
+  direction: 'asc' | 'desc' = 'asc',
+) => {
+  const { from, to, hasTrailingNewline } = getSelectionBoundaries(selection);
+  const isEmpty = from.line === to.line && from.ch === to.ch;
+
+  const startLine = isEmpty ? 0 : from.line;
+  const endLine = isEmpty
+    ? editor.lineCount() - 1
+    : hasTrailingNewline
+    ? to.line - 1
+    : to.line;
+
+  if (endLine <= startLine) {
+    return selection;
+  }
+
+  const lines: string[] = [];
+  for (let i = startLine; i <= endLine; i++) {
+    lines.push(editor.getLine(i));
+  }
+  const sorted = [...lines].sort(lineCollator.compare);
+  if (direction === 'desc') {
+    sorted.reverse();
+  }
+
+  const rangeStart = getLineStartPos(startLine);
+  const rangeEnd = getLineEndPos(endLine, editor);
+  if (sorted.some((line, i) => line !== lines[i])) {
+    editor.replaceRange(sorted.join('\n'), rangeStart, rangeEnd);
+  }
+
+  if (isEmpty) {
+    return selection;
+  }
+  return { anchor: rangeStart, head: getLineEndPos(endLine, editor) };
+};
+
 export const copyLine = (
   editor: Editor,
   selection: EditorSelection,

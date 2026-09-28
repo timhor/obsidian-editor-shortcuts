@@ -36,6 +36,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Transform selection to uppercase                 | Not set                    |
 | Transform selection to lowercase                 | Not set                    |
 | Transform selection to title case                | Not set                    |
+| Sort lines ascending                             | Not set                    |
+| Sort lines descending                            | Not set                    |
 | Toggle case of selection                         | Not set                    |
 | Expand selection to brackets                     | Not set                    |
 | Expand selection to quotes                       | Not set                    |
