@@ -24,6 +24,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Move cursor right                                | Not set                    |
 | Go to previous word                              | Not set                    |
 | Go to next word                                  | Not set                    |
+| Select to previous word                          | Not set                    |
+| Select to next word                              | Not set                    |
 | Go to start of line                              | Not set                    |
 | Go to end of line                                | Not set                    |
 | Go to previous line                              | Not set                    |
@@ -33,6 +35,8 @@ This [Obsidian](https://obsidian.md) plugin adds keyboard shortcuts (hotkeys) co
 | Go to line number                                | Not set                    |
 | Delete to start of line                          | Not set                    |
 | Delete to end of line                            | Not set                    |
+| Delete word before cursor                        | Not set                    |
+| Delete word after cursor                         | Not set                    |
 | Transform selection to uppercase                 | Not set                    |
 | Transform selection to lowercase                 | Not set                    |
 | Transform selection to title case                | Not set                    |

@@ -1,5 +1,6 @@
 import CodeMirror from 'codemirror';
 import type { Editor } from 'codemirror';
+import type { EditorChange } from 'obsidian';
 import { getDocumentAndSelection } from './test-helpers';
 import {
   deleteToStartOfLine,
@@ -20,6 +21,8 @@ import {
   insertCursorAbove,
   insertCursorBelow,
   moveWord,
+  deleteWordInDirection,
+  selectToWordInDirection,
 } from '../actions';
 import { CASE, CODE_EDITOR } from '../constants';
 import { withMultipleSelections } from '../utils';
@@ -44,6 +47,11 @@ export interface ObsidianEditorBridge extends Editor {
    * `exec` is the CodeMirror equivalent of `execCommand`
    */
   exec?: (name: string) => void;
+  /**
+   * Minimal stand-in for Obsidian's `transaction`, applying each change via
+   * the real CodeMirror `replaceRange`
+   */
+  transaction?: (tx: { changes?: EditorChange[] }) => void;
 }
 
 describe('Code Editor Shortcuts: actions - single cursor selection', () => {
@@ -61,6 +69,12 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     (editor as any).offsetToPos = editor.posFromIndex;
 
     editor.exec = jest.fn();
+
+    editor.transaction = (tx) => {
+      tx.changes?.forEach((change) =>
+        editor.replaceRange(change.text, change.from, change.to),
+      );
+    };
   });
 
   beforeEach(() => {
@@ -465,6 +479,112 @@ describe('Code Editor Shortcuts: actions - single cursor selection', () => {
     it('should go to previous word', () => {
       moveWord(editor as any, 'left');
       expect(editor.exec).toHaveBeenCalledWith('goWordLeft');
+    });
+  });
+
+  describe('deleteWordInDirection', () => {
+    // deleteWord computes the deletion range via moveWord (goWordLeft /
+    // goWordRight), so forward the mocked `exec` to the real CodeMirror
+    // command in order to verify the resulting document mutation
+    beforeEach(() => {
+      (editor.exec as jest.Mock).mockImplementation((name: string) =>
+        (editor as any).execCommand(name),
+      );
+    });
+
+    afterEach(() => {
+      (editor.exec as jest.Mock).mockReset();
+    });
+
+    it('should delete the word before the cursor', () => {
+      // Cursor state: 'dolor| sit'
+      editor.setCursor({ line: 1, ch: 5 });
+      deleteWordInDirection(editor as any, 'before');
+
+      // Cursor state: '| sit'
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\n sit\namet');
+      expect(cursor).toEqual(expect.objectContaining({ line: 1, ch: 0 }));
+    });
+
+    it('should delete the word after the cursor', () => {
+      // Cursor state: '|dolor sit'
+      editor.setCursor({ line: 1, ch: 0 });
+      deleteWordInDirection(editor as any, 'after');
+
+      // Cursor state: '| sit'
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\n sit\namet');
+      expect(cursor).toEqual(expect.objectContaining({ line: 1, ch: 0 }));
+    });
+  });
+
+  describe('selectToWordInDirection', () => {
+    // selectToWordInDirection computes the new head via moveWord (goWordLeft /
+    // goWordRight), so forward the mocked `exec` to the real CodeMirror command
+    // in order to verify the resulting document mutation
+    beforeEach(() => {
+      (editor.exec as jest.Mock).mockImplementation((name: string) =>
+        (editor as any).execCommand(name),
+      );
+    });
+
+    afterEach(() => {
+      (editor.exec as jest.Mock).mockReset();
+    });
+
+    // Line 1 of originalDoc is 'dolor sit': 'dolor' occupies ch 0-5, the
+    // space is at ch 5, and 'sit' occupies ch 6-9.
+
+    it('should extend the selection to the previous word, preserving the anchor', () => {
+      // Cursor state: 'dolor| sit'
+      editor.setCursor({ line: 1, ch: 5 });
+
+      selectToWordInDirection(editor as any, 'left');
+
+      // Cursor state: '(dolor] sit'
+      expect(editor.exec).toHaveBeenCalledWith('goWordLeft');
+      expect(editor.listSelections()[0]).toEqual({
+        anchor: expect.objectContaining({ line: 1, ch: 5 }),
+        head: expect.objectContaining({ line: 1, ch: 0 }),
+      });
+    });
+
+    it('should extend the selection to the next word, preserving the anchor', () => {
+      // Cursor state: '|dolor sit'
+      editor.setCursor({ line: 1, ch: 0 });
+
+      selectToWordInDirection(editor as any, 'right');
+
+      // Cursor state: '[dolor) sit'
+      expect(editor.exec).toHaveBeenCalledWith('goWordRight');
+      expect(editor.listSelections()[0]).toEqual({
+        anchor: expect.objectContaining({ line: 1, ch: 0 }),
+        head: expect.objectContaining({ line: 1, ch: 5 }),
+      });
+    });
+
+    it('should keep expanding on repeated calls in the same direction', () => {
+      // Cursor state: 'do|lor sit'
+      editor.setCursor({ line: 1, ch: 2 });
+
+      selectToWordInDirection(editor as any, 'right');
+
+      // Cursor state: 'do[lor) sit'
+      expect(editor.exec).toHaveBeenCalledWith('goWordRight');
+      expect(editor.listSelections()[0]).toEqual({
+        anchor: expect.objectContaining({ line: 1, ch: 2 }),
+        head: expect.objectContaining({ line: 1, ch: 5 }),
+      });
+
+      selectToWordInDirection(editor as any, 'right');
+
+      // Cursor state: 'do[lor sit)'
+      expect(editor.exec).toHaveBeenCalledWith('goWordRight');
+      expect(editor.listSelections()[0]).toEqual({
+        anchor: expect.objectContaining({ line: 1, ch: 2 }),
+        head: expect.objectContaining({ line: 1, ch: 9 }),
+      });
     });
   });
 

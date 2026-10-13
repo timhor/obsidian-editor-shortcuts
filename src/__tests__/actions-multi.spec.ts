@@ -5,9 +5,11 @@ import {
   insertLineAbove,
   deleteToStartOfLine,
   deleteToEndOfLine,
+  deleteWordInDirection,
   joinLines,
   copyLine,
   selectWordOrNextOccurrence,
+  selectToWordInDirection,
   selectAllOccurrences,
   selectLine,
   goToLineBoundary,
@@ -752,6 +754,131 @@ describe('Code Editor Shortcuts: actions - multiple mixed selections', () => {
         { anchor: { line: 2, ch: 2 }, head: { line: 2, ch: 2 } },
         { anchor: { line: 3, ch: 2 }, head: { line: 3, ch: 2 } },
       ]);
+    });
+  });
+
+  describe('deleteWordInDirection', () => {
+    const wordDoc = 'lorem ipsum\ndolor sit\namet';
+
+    // deleteWordInDirection computes word boundaries via moveWord
+    // (goWordLeft / goWordRight), so forward the mocked `exec` to the real
+    // CodeMirror command in order to verify the resulting document mutation
+    beforeEach(() => {
+      (editor as any).exec = (name: string) =>
+        (editor as any).execCommand(name);
+      (editor as any).transaction = (tx: any) => {
+        tx.changes?.forEach((change: any) =>
+          editor.replaceRange(change.text, change.from, change.to),
+        );
+      };
+    });
+
+    afterEach(() => {
+      delete (editor as any).exec;
+      delete (editor as any).transaction;
+    });
+
+    it("should delete each cursor's word independently when the cursors are on different lines", () => {
+      // Cursor state, line 1: 'do|lor sit'
+      // Cursor state, line 2: 'am|et'
+      editor.setValue(wordDoc);
+      editor.setSelections([
+        { anchor: { line: 1, ch: 2 }, head: { line: 1, ch: 2 } },
+        { anchor: { line: 2, ch: 2 }, head: { line: 2, ch: 2 } },
+      ]);
+
+      deleteWordInDirection(editor as any, 'before');
+
+      // Cursor state, line 1: '|lor sit'
+      // Cursor state, line 2: '|et'
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('lorem ipsum\nlor sit\net');
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 0 }),
+          head: expect.objectContaining({ line: 1, ch: 0 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 2, ch: 0 }),
+          head: expect.objectContaining({ line: 2, ch: 0 }),
+        },
+      ]);
+    });
+
+    it('should not throw and should remove the whole word when multiple cursors are inside the same word', () => {
+      // Cursor state: 'do|lo|r sit'
+      editor.setValue(wordDoc);
+      editor.setSelections([
+        { anchor: { line: 1, ch: 2 }, head: { line: 1, ch: 2 } },
+        { anchor: { line: 1, ch: 4 }, head: { line: 1, ch: 4 } },
+      ]);
+
+      expect(() =>
+        deleteWordInDirection(editor as any, 'before'),
+      ).not.toThrow();
+
+      const { doc } = getDocumentAndSelection(editor);
+      // Loosely check the union was deleted, without pinning down exactly
+      // how the two cursors' resulting selections got resolved
+      expect(doc).not.toContain('dolor');
+      expect(doc).toContain('sit');
+      expect(doc).toContain('amet');
+    });
+  });
+
+  describe('selectToWordInDirection', () => {
+    const wordDoc = 'lorem ipsum\ndolor sit\namet';
+
+    beforeEach(() => {
+      (editor as any).exec = (name: string) =>
+        (editor as any).execCommand(name);
+    });
+
+    afterEach(() => {
+      delete (editor as any).exec;
+    });
+
+    it('should extend each cursor independently when the cursors are in different words', () => {
+      // Cursor state: 'do|lor s|it'
+      editor.setValue(wordDoc);
+      editor.setSelections([
+        { anchor: { line: 1, ch: 2 }, head: { line: 1, ch: 2 } },
+        { anchor: { line: 1, ch: 8 }, head: { line: 1, ch: 8 } },
+      ]);
+
+      selectToWordInDirection(editor as any, 'right');
+
+      // Cursor state: 'do[lor) s[it)'
+      const { selections } = getDocumentAndSelection(editor);
+      expect(selections).toEqual([
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 2 }),
+          head: expect.objectContaining({ line: 1, ch: 5 }),
+        },
+        {
+          anchor: expect.objectContaining({ line: 1, ch: 8 }),
+          head: expect.objectContaining({ line: 1, ch: 9 }),
+        },
+      ]);
+    });
+
+    it('should merge two cursors into one selection when their extended ranges overlap', () => {
+      // Cursor state: 'do|lo|r sit'
+      editor.setValue(wordDoc);
+      editor.setSelections([
+        { anchor: { line: 1, ch: 2 }, head: { line: 1, ch: 2 } },
+        { anchor: { line: 1, ch: 4 }, head: { line: 1, ch: 4 } },
+      ]);
+
+      selectToWordInDirection(editor as any, 'left');
+
+      // Cursor state: '(dolo]r sit'
+      const { selections } = getDocumentAndSelection(editor);
+      expect(selections).toHaveLength(1);
+      expect(selections[0]).toEqual({
+        anchor: expect.objectContaining({ line: 1, ch: 4 }),
+        head: expect.objectContaining({ line: 1, ch: 0 }),
+      });
     });
   });
 });
