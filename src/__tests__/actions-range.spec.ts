@@ -14,6 +14,7 @@ import {
   goToLineBoundary,
   navigateLine,
   transformCase,
+  sortLines,
   expandSelectionToBrackets,
   expandSelectionToQuotes,
   expandSelectionToQuotesOrBrackets,
@@ -700,6 +701,51 @@ describe('Code Editor Shortcuts: actions - single range selection', () => {
       expect(doc).toEqual(
         'An Example To Test the Obsidian Plugin And a Case Conversion Feature',
       );
+    });
+  });
+
+  describe('sortLines', () => {
+    it('should sort whole lines touched by the selection', () => {
+      editor.setValue('pear\ncherry\napple\nbanana');
+      editor.setSelection({ line: 0, ch: 2 }, { line: 2, ch: 1 });
+
+      withMultipleSelections(editor as any, sortLines, { args: 'asc' });
+
+      const { doc, selections } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('apple\ncherry\npear\nbanana');
+      expect(selections[0]).toEqual({
+        anchor: { line: 0, ch: 0 },
+        head: { line: 2, ch: 4 },
+      });
+    });
+
+    it('should sort descending', () => {
+      editor.setValue('b\nc\na');
+      editor.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 1 });
+
+      withMultipleSelections(editor as any, sortLines, { args: 'desc' });
+
+      expect(editor.getValue()).toEqual('c\nb\na');
+    });
+
+    it('should exclude a line where the selection ends at column 0', () => {
+      editor.setValue('b\na\n0');
+      editor.setSelection({ line: 0, ch: 0 }, { line: 2, ch: 0 });
+
+      withMultipleSelections(editor as any, sortLines, { args: 'asc' });
+
+      expect(editor.getValue()).toEqual('a\nb\n0');
+    });
+
+    it('should sort the whole document when nothing is selected', () => {
+      editor.setValue('item 10\nitem 2\nItem 1');
+      editor.setCursor({ line: 1, ch: 2 });
+
+      withMultipleSelections(editor as any, sortLines, { args: 'asc' });
+
+      const { doc, cursor } = getDocumentAndSelection(editor);
+      expect(doc).toEqual('Item 1\nitem 2\nitem 10');
+      expect(cursor).toEqual({ line: 1, ch: 2 });
     });
   });
 

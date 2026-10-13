@@ -27,6 +27,7 @@ import {
   insertCursorAbove,
   insertCursorBelow,
   moveWord,
+  sortLines,
 } from './actions';
 import {
   defaultMultipleSelectionOptions,
@@ -382,6 +383,26 @@ export default class CodeEditorShortcuts extends Plugin {
         withMultipleSelections(editor, transformCase, {
           ...defaultMultipleSelectionOptions,
           args: CASE.NEXT,
+        }),
+    });
+
+    this.addCommand({
+      id: 'sortLinesAscending',
+      name: 'Sort lines ascending',
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, sortLines, {
+          ...defaultMultipleSelectionOptions,
+          args: 'asc',
+        }),
+    });
+
+    this.addCommand({
+      id: 'sortLinesDescending',
+      name: 'Sort lines descending',
+      editorCallback: (editor) =>
+        withMultipleSelections(editor, sortLines, {
+          ...defaultMultipleSelectionOptions,
+          args: 'desc',
         }),
     });
 
